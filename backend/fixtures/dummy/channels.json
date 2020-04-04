@@ -1,0 +1,13 @@
+[
+{
+  "model": "backend.channel",
+  "pk": 1,
+  "fields": {
+    "name": "TRACLE",
+    "channel_id": "FN_JtxgkmtA",
+    "created": "2020-04-04T17:04:05.198Z",
+    "last_login": "2020-04-04T17:04:05.198Z",
+    "user": 1
+  }
+}
+]

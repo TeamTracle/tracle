@@ -1,0 +1,37 @@
+{% load static %}
+
+<nav class="nav">
+	<div class="nav__left">
+		<a href="{% url 'web_home' %}" class="nav__brand">
+			<img src="{% static 'web/img/tracle.png' %}">
+		</a>
+
+		<div id="search-form" class="nav__search">
+			<button id="search-close" class="btn btn-gray nav__search__submit nav__search__close" onclick="onCloseSearch()"><i class="fas fa-times"></i></button>
+			<form>
+				<input class="nav__search__input" type="text" name="q">
+				<button class="btn btn-gray nav__search__submit"><i class="fas fa-search"></i></button>
+			</form>
+		</div>
+		<button id="search-open" class="btn btn-gray nav__search__open"><i class="fas fa-search" onclick="onOpenSearch()"></i></button>
+		
+		<div class="nav__section">
+			<a class="nav__item" href="{% url 'web_home' %}">Browse</a>
+			<div class="seperator">|</div>
+			<a class="nav__item" href="#">Upload</a>
+		</div>
+	</div>
+
+	<div class="nav__right">
+		<div class="nav__section">
+			{% if request.user.is_authenticated %}
+				<a class="nav__item" href="{% url 'web_signout' %}">Sign out {{ request.session.channel_name }}</a>
+			{% else %}
+				<a class="nav__item" href="{% url 'web_signup' %}">Create Account</a>
+				<div class="seperator">|</div>
+				<a class="nav__item" href="{% url 'web_signin' %}">Sign In</a>
+			{% endif %}
+		</div>
+	</div>
+	<div id="nav-open" class="nav__toggle" onclick="navMenuOpen()"><i class="fas fa-bars"></i></div>
+</nav>

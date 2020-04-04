@@ -1,0 +1,85 @@
+.secondary-feed {
+
+	&__container {
+		display: flex;
+		flex-direction: column;
+		margin-left: 1em;
+
+		@media only screen and (max-width: 1279px) {
+			margin: 0;
+		}
+	}
+
+	&__video {
+		display: flex;
+		margin-bottom: 1em;
+		color: #333;
+		text-decoration: none;
+
+		&:hover {
+			background-color: white;
+			border-bottom-color: #ccc;
+			border-right-color: #ccc;
+			border-bottom: 1px solid #ccc;
+			border-right: 1px solid #ccc;
+			color: blue;
+		}
+
+		&__thumbnail {
+			max-width: 35%;
+		}
+
+		&__details {
+			margin-left: 1em;
+			max-width: 50%;
+
+			&__title {
+				margin: 0;
+				font-size: 1rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-height: 2.3rem;
+				margin-bottom: 0.5em;
+				color: inherit;
+			}
+
+			&__channel {
+				font-size: 0.9rem;
+				color: #333;
+			}
+
+			&__views {
+				font-size: 0.9rem;
+				color: #333;
+			}
+		}
+	}
+}
+
+.alpha-banner {
+	color: #e2e2e2;
+    background-color: #2b2b2b;
+    padding: 10px;
+    border-top-right-radius: 5px;
+    margin-left: 1em;
+    margin-bottom: 1em;
+
+    > a {
+    	color: inherit;
+	    text-decoration: none;
+
+	    > div {
+	    	display: flex;
+    	    align-items: center;
+    	    background-color: #0008;
+    	    border-radius: 8px;
+    	    margin: 5px;
+    	    padding: 0px 6px;
+
+    	    > img {
+			    height: 32px;
+				margin-right: 1em;
+    	    }
+	    }
+    }
+}

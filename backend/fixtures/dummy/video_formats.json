@@ -1,0 +1,32 @@
+[
+{
+  "model": "video_encoding.format",
+  "pk": 1,
+  "fields": {
+    "object_id": 1,
+    "content_type": 8,
+    "field_name": "file",
+    "progress": 100,
+    "format": "mp4_sd",
+    "file": "formats/mp4_sd/tracle.mp4",
+    "width": 854,
+    "height": 480,
+    "duration": 60
+  }
+},
+{
+  "model": "video_encoding.format",
+  "pk": 2,
+  "fields": {
+    "object_id": 1,
+    "content_type": 8,
+    "field_name": "file",
+    "progress": 100,
+    "format": "mp4_hd",
+    "file": "formats/mp4_hd/tracle.mp4",
+    "width": 1280,
+    "height": 720,
+    "duration": 60
+  }
+}
+]

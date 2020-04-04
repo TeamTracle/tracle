@@ -1,0 +1,105 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block title %}
+	<title>{{ video.title }} - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	<link href="https://vjs.zencdn.net/7.6.6/video-js.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{% static 'web/css/watch.css' %}">
+{% endblock css %}
+
+{% block body %}
+	<div class="container">
+		{% include 'web/includes/nav.html' %}
+		<div class="header">
+			<h2>{{ video.title }}</h2>
+			<button class="btn btn-gray" href="#">{{ video.channel.name }}</button>
+			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.session.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
+		</div>
+		<div class="primary">
+			<div class="video__container">
+				<video id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.thumbnail.url }}">
+					{% for format in video.file.format_set.all %}
+						<source src="{{ format.file.url }}" type="video/mp4" />
+					{% endfor %}
+					<p class="vjs-no-js">
+						To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+					</p>
+				</video>
+			</div>
+			<div class="panel">
+				<div class="panel__actions">
+					<div class="panel__actions__left">
+						<div class="panel__actions__like">
+							<button id='btn-like' class="btn btn-gray btn-like {% if is_liked %} active {% endif %}" {% if request.user.is_authenticated %} onclick="like()" {% else %} disabled {% endif %}><i class="fas fa-thumbs-up"></i></button><button id="btn-dislike" class="btn btn-gray btn-dislike {% if is_disliked %} active {% endif %}" {% if request.user.is_authenticated %} onclick="dislike()" {% else %} disabled {% endif %}><i class="fas fa-thumbs-down"></i></button>
+						</div>
+						<button class="btn btn-gray btn-addto"><i class="fas fa-plus"></i></button>
+						<button class="btn btn-gray">Share</button>
+						<button class="btn btn-gray"><i class="fas fa-flag"></i></button>
+					</div>
+					<div class="panel__actions__right">
+						<div class="panel__actions__views"><span>{{ video.views }}</span> views</div>
+						<button class="btn btn-gray"><i class="fa fa-chart-bar"></i></button>
+					</div>
+				</div>
+				<div id="panel-details" class="panel__details panel__details--collapsed">
+					<div class="panel__details__left">
+						<div class="panel__details__uploader">Uploaded by <a href="#">{{ video.channel.name }}</a> on {{ video.created }}</div>
+						<div class="panel__details__description">{{ video.description|linebreaks }}</div>
+						<div class="panel__details__minor">
+							<strong>Category:</strong><br>
+							{{ video.category }}<br>
+							<strong>License:</strong><br>
+							PLAcEHOLDER
+						</div>
+					</div>
+					<div class="panel__details__right">
+						<div class="panel__details__likebar">
+							<div id="likebar" class="panel__details__likebar__likes" style="width: {{ likebar_value }}%"></div>
+						</div>
+						<div class="panel__details__likes"><span id="like-counter">{{ video.likes.count }}</span> likes, <span id="dislike-counter">{{ video.dislikes.count }}</span> dislikes</div>
+					</div>
+				</div>
+				<div class="panel__expander" onclick="toggleExpander()">
+					<div class="panel__expander__button">Show more</div>
+				</div>
+			</div>
+		</div>
+		<div class="secondary">
+			{% include 'web/includes/secondary-feed.html' %}
+		</div>
+	</div>
+	{% csrf_token %}
+	<input id="channel_id" type="hidden" value="{{ video.channel.channel_id }}">
+	<input id="watch_id" type="hidden" name="watch_id" value="{{ video.watch_id }}">
+
+	<script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>
+	<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
+	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
+	<script>
+		var player = videojs('player', {
+			aspectRatio: "16:9", 
+			responsive: true,
+			userActions: {
+				doubleClick: true,
+				hotkeys: true
+			},
+			controlBar: {
+				children: [
+					'playToggle',
+					'currentTimeDisplay',
+					'progressControl',
+					'durationDisplay',
+					'volumePanel',
+					'fullscreenToggle'
+				],
+				volumePanel: {
+				  inline: false
+				}
+			}
+		});
+		player.landscapeFullscreen();
+	</script>
+{% endblock %}

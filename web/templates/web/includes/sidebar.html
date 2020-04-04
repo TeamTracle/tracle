@@ -1,0 +1,33 @@
+{% load static %}
+
+<nav class="sidebar">
+	{% if request.user.is_authenticated %}
+		<div class="sidebar__header">
+			<button class="btn btn-blue sidebar__header__button"><i class="fas fa-plus-circle"></i> Browse channels</button>
+		</div>
+		<div class="sidebar__profile">
+            <img class="sidebar__profile__avatar" src="{% static 'web/img/avatar.png' %}">
+            <div class="sidebar__profile__itemlist">
+                <a class="sidebar__profile__item" href="#">My Channel</a>
+                <a class="sidebar__profile__item" href="#">Videos</a>
+                <a class="sidebar__profile__item" href="#">Likes</a>
+                <a class="sidebar__profile__item" href="#">History</a>
+                <a class="sidebar__profile__item" href="#">Watch Later</a>
+            </div>
+        </div>
+	{% else %}
+		<div class="sidebar__header">
+			<h2>Sign in to add channls to your homepage</h2>
+			<a class="btn btn-dark sidebar__header__button" href="{% url 'web_signin' %}">Sign In</a>
+			<a class="btn btn-blue sidebar__header__button" href="{% url 'web_signup' %}">Create Account</a>
+		</div>
+	{% endif %}
+	<ul class="sidebar__guide">
+		<li class="sidebar__guide__item"><i class="fas fa-list sidebar__guide__item__icon"></i><a href="#">From Tracle</a></li>
+		<li class="sidebar__guide__item"><i class="fas fa-chart-bar sidebar__guide__item__icon"></i><a href="#">Trending</a></li>
+		<li class="sidebar__guide__item"><i class="fas fa-star sidebar__guide__item__icon"></i><a href="#">Popular</a></li>
+		{% for category in categories %}
+			<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="#">{{ category.title }}</a></li>
+		{% endfor %}
+	</ul>
+</nav>

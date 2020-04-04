@@ -1,0 +1,47 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block title %}
+	<title>Sign In - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'web/css/signin.css' %}">
+	<script type="text/javascript" src="{% static 'web/js/main.js' %}"></script>
+{% endblock css %}
+
+{% block body %}
+<div class="container">
+	{% include 'web/includes/nav.html' %}
+	<div class="login__container">
+		<div class="login__header">
+			<h2>Sign in to TRACLE!</h2>
+			<p><strong>Get full access to TRACLE with your account:</strong></p>
+			<ul>
+				<li>Upload and share your own videos with the world</li>
+				<li>Comment on, rate, and make video responses to your favorite videos</li>
+				<li>Build playlists of favorites to watch later</li>
+			</ul>
+		</div>
+		<div class="login__form">
+			<h2>Sign in</h2>
+			<form method="post">
+				{% csrf_token %}
+				{{ form.non_field_errors }}
+				<p>
+					{{ form.errors.email }}
+					{{ form.email }}
+				</p>
+				<p>
+					{{ form.password }}
+				</p>
+				<button class="btn btn-blue login__form__button" type="submit">Sign in</button>
+				<label class="login__form__remember">
+					<input type="checkbox">
+					<span>Stay signed in</span>
+				</label>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

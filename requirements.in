@@ -1,0 +1,11 @@
+Django
+psycopg2-binary
+django_rq
+django-appconf
+shutilwhich
+-e git+https://github.com/ajacobsen/django-video-encoding.git@f88b4b296024a2f1dfaadfcfcc3744f36ef5812d#egg=django_video_encoding
+python-magic
+fixedint
+Pillow
+python-dotenv
+wheel

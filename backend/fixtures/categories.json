@@ -1,0 +1,137 @@
+[
+{
+    "model": "backend.category",
+    "pk": 1,
+    "fields": {
+        "title": "Music",
+        "slug": "music",
+        "icon": "fa-headphones"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 2,
+    "fields": {
+        "title": "Entertainment",
+        "slug": "entertainment",
+        "icon": "fa-glass-cheers"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 3,
+    "fields": {
+        "title": "Sports",
+        "slug": "sports",
+        "icon": "fa-football-ball"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 4,
+    "fields": {
+        "title": "Film & Animation",
+        "slug": "film_animation",
+        "icon": "fa-film"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 5,
+    "fields": {
+        "title": "News & Politics",
+        "slug": "news_politics",
+        "icon": "fa-broadcast-tower"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 6,
+    "fields": {
+        "title": "Comedy",
+        "slug": "comedy",
+        "icon": "fa-theater-masks"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 7,
+    "fields": {
+        "title": "People & Blogs",
+        "slug": "people_blogs",
+        "icon": "fa-users"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 8,
+    "fields": {
+        "title": "Science & Technology",
+        "slug": "science_technology",
+        "icon": "fa-flask"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 9,
+    "fields": {
+        "title": "Gaming",
+        "slug": "gaming",
+        "icon": "fa-gamepad"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 10,
+    "fields": {
+        "title": "Howto & Style",
+        "slug": "howto_style",
+        "icon": "fa-magic"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 11,
+    "fields": {
+        "title": "Education",
+        "slug": "education",
+        "icon": "fa-book-open"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 12,
+    "fields": {
+        "title": "Pets & Animals",
+        "slug": "pets_animals",
+        "icon": "fa-fish"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 13,
+    "fields": {
+        "title": "Auto & Vehicles",
+        "slug": "auto_vehicles",
+        "icon": "fa-car"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 14,
+    "fields": {
+        "title": "Travel & Events",
+        "slug": "travel_events",
+        "icon": "fa-plane"
+    }
+},
+{
+    "model": "backend.category",
+    "pk": 15,
+    "fields": {
+        "title": "Nonprofits & Activism",
+        "slug": "nonprofits_activism",
+        "icon": "fa-seedling"
+    }
+}
+]

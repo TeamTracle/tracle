@@ -1,0 +1,270 @@
+@use 'base';
+@use 'secondary-feed';
+
+.container {
+	width: 90vw;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+
+	@media only screen and (min-width: 1280px) {
+		display: grid;
+		grid-template-areas:
+			"nav nav"
+			"header header"
+			"primary secondary"
+			"footer footer";
+		grid-template-columns: 2fr 1fr;
+	}
+}
+
+.nav {
+	grid-area: nav;
+}
+
+
+.header {
+	grid-area: header;
+	margin-bottom: 1em;
+}
+
+.primary {
+	grid-area: primary;
+	margin-bottom: 1em;
+}
+
+.secondary {
+	grid-area: secondary;
+}
+
+.panel {
+	margin-top: 1em;
+
+	&__actions {
+		display: flex;
+		justify-content: space-between;
+
+		&__left, &__right {
+			display: flex;
+			align-items: center;
+		}
+
+		&__left { 
+			> button {
+				margin-right: 0.5em;
+			}
+
+			> .btn-addto {
+				&::after {
+					@media only screen and (min-width: 600px) {
+						content: ' Add to.. ';
+					}
+				}
+			}
+		}
+
+		&__like {
+			margin-right: 0.5em;
+
+			@media (hover: hover) {
+				&:hover > .btn-like {
+					border: 1px solid #999;
+				}
+
+				&:hover > .btn-dislike {
+					border: 1px solid #999;
+					border-left: none;
+				}
+			}
+
+			> .btn-like {
+				border-right: 1px solid #9990;
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+
+				&:focus {
+					border-right: 1px solid #999;
+				}
+
+				&::after {
+					@media only screen and (min-width: 600px) {
+						content: ' Like';
+					}
+				}
+			}
+
+			> .btn-dislike {
+				border-left: none;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+
+				&:focus {
+					border-left: 1px solid #999;
+				}
+			}
+
+			> .active {
+				color: blue;
+			}
+		}
+
+		&__views {
+			margin-right: 0.5em;
+			color: #333;
+
+			> span {
+				font-size: 1.5rem;
+			}
+		}
+	}
+
+	&__details {
+		display: flex;
+		margin-top: 1em;
+		justify-content: space-between;
+		height: 100%;
+		overflow: hidden;
+
+		 &--collapsed {
+			height: 6em;
+		}
+
+		&__uploader {
+			color: #666;
+			font-size: 0.9rem;
+		}
+
+		&__description {
+			color: #333;
+		}
+
+		&__left {
+			margin-right: 1em;
+		}
+
+		&__right {
+			min-width: 100px;
+			display: none;
+
+			@media only screen and (min-width: 768px) {
+				display: block;
+			}
+		}
+
+		&__likes {
+			color: #333;
+			font-size: 0.9rem;
+		}
+
+		&__likebar {
+			background-color: red;
+			width: 100%;
+			height: 5px;
+
+			&__likes {
+				background-color: green;
+				width: 30%;
+				height: 5px;
+			}
+		}
+
+		&__minor {
+			color: #666;
+			font-size: 0.9rem;
+		}
+	}
+
+	&__expander {
+		display: flex;
+		justify-content: center;
+		border-top: 1px solid #bbb;
+		cursor: pointer;
+
+		&__button {
+			color: #555;
+			font-weight: bold;
+			font-size: 0.8rem;
+			cursor: pointer;
+		}
+	}
+}
+
+// ####################
+// VIDEO JS
+// ####################
+
+
+.video-js .vjs-big-play-button {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAnElEQ…p2Utr2tFn/OvT5s5b0BHwJdmZ2Bybg0NmllB5d190kHb5cL8J5WhbWZJeBAAAAAElFTkSuQmCC), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA8CAIAAAAok0etAAAAJUlEQVR42mNKTU1lunnzJtP///+ZGBgYwDQ6xiVOrhw1zSNRPQBu5Zagca3K1AAAAABJRU5ErkJggg==), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAmklEQ…iRMhrXA1Gk0D+uoQH+gIkIRSCrC5gIeOIBkA74+PHjRgDhswBcaL43lQAAAABJRU5ErkJggg==);
+    background-size: 10px 100%, 40px 100%, 10px 100% !important;
+    background-position: left center, center center, right center;
+    border: none;
+}
+
+.video-js .vjs-big-play-button .vjs-icon-placeholder::before {
+	content: '\f04b';
+	font-style: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	font-family: "FA5Free";
+	font-weight: 900;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.video-js .vjs-control-bar {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAaCAIAAAD5ZqGGAAAAJklEQVR42mNKSUlhevToEdPXr1+Z/v37RxH+//8/htjv379BZgMA4j5LOzqaqAsAAAAASUVORK5CYII=) center center repeat-x;
+    background-repeat: repeat-x;
+    background-size: contain;
+    width: 98%;
+	margin: 0 auto;
+	border-radius: 0.5em;
+}
+
+.video-js .vjs-progress-holder {
+	border-radius: 1em;
+	height: 0.9em;
+	background-color: #333;
+	box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.75);
+}
+
+.video-js .vjs-progress-holder .vjs-load-progress {
+	background: black;
+	border-radius: 1em;
+}
+
+.video-js .vjs-progress-holder .vjs-load-progress div {
+	background-color: black;
+    border-radius: 1em;
+}
+
+
+.video-js .vjs-progress-holder .vjs-play-progress {
+	border-radius: 1em;
+}
+
+.video-js .vjs-progress-holder .vjs-play-progress::before {
+	content: unset;
+}
+
+.video-js .vjs-current-time {
+	display: block;
+}
+
+.video-js .vjs-duration {
+	display: block;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress > .vjs-time-tooltip {
+	display: none;
+}
+
+.video-js .vjs-progress-control:hover .vjs-time-tooltip {
+	font-size: 0.8rem;
+}
+
+.video-js .vjs-progress-control:hover .vjs-progress-holder {
+	font-size: inherit;
+}

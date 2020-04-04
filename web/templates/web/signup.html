@@ -1,0 +1,43 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block title %}
+	<title>Sign Up - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'web/css/signup.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+	{% include 'web/includes/nav.html' %}
+	<div class="signup__container">
+		<div class="signup__header">
+			<h2>Sign up to TRACLE!</h2>
+			<p><strong>Get full access to TRACLE with your account:</strong></p>
+			<ul>
+				<li>Upload and share your own videos with the world</li>
+				<li>Comment on, rate, and make video responses to your favorite videos</li>
+				<li>Build playlists of favorites to watch later</li>
+			</ul>
+		</div>
+		<div class="signup__form">
+			<h2>Sign Up</h2>
+			<form method='post'>
+				{% csrf_token %}
+				{% for field in form %}
+				  <p>
+				    {{ field }}
+				    {% for error in field.errors %}
+				      <p style="color: red">{{ error }}</p>
+				    {% endfor %}
+				  </p>
+				{% endfor %}
+				<button class="btn btn-blue signup__form__button" type='submit'>Sign up</button>
+				<span class="signup__form__signin">Already have an account? <a href="{% url 'web_signin' %}">Sign in</a></span>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}

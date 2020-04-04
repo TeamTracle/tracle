@@ -1,0 +1,90 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block title %}
+	<title>Home - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'web/css/home.css' %}">
+{% endblock css %}
+
+{% block body %}
+<div class="container">
+	
+	{% include 'web/includes/nav.html' %}
+	{% include 'web/includes/sidebar.html' %}
+	<div class="primary">
+		<div class="feed">
+			<div class="feed__header" onclick="toggleCategories()">
+				<h2>From TRACLE</h2>
+				<div><i id="header-drop" class="fas fa-angle-down"></i></div>
+			</div>
+			<ul id="cat-list" class="sidebar__guide sidebar__guide__closed">
+				{% for category in categories %}
+					<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="#">{{ category.title }}</a></li>
+				{% endfor %}
+			</ul>
+			<div class="feed__container">
+				{% for video in videos %}
+				<div class="feed__video">
+					<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.thumbnail.url }}"></a>
+					<div class="feed__video__details">
+						<h2 class="feed__video__details__title"><a href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a></h2>
+						<div class="feed__video__details__description">{{ video.description }}</div>
+						<div class="feed__video__details__views">{{ video.views }} views</div>
+						<a href="#" class="feed__video__details__channel">{{ video.channel.name }} </a>
+						<div class="feed__video__details__timestamp">{{ video.created|date:'Y-m-d'}}</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="secondary">
+		<div class="alpha-banner">
+			<h2>Welcome to TRACLE Alpha</h2>
+			<a target="_blank" href="https://discord.gg/uJd9nxD">
+				<div>
+					<img src="https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png">
+					<p>Join the official discord server to share your thoughts about TRACLE with us!</p>
+				</div>
+			</a>
+			<a target="_blank" href="https://www.github.com/ajacobsen/VidHub">
+				<div>
+					<img src="{% static 'web/img/github.png' %}">
+					<p>Report bugs, make suggestions or make your contribution on GitHub!</p>
+				</div>
+			</a>
+			<a target="_blank" href="https://www.buymeacoffee.com/tracle">
+				<div>
+					<img style="margin-left: 0.7em;" src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy us a coffee">
+					<p>Buy us a coffee!</p>
+				</div>
+			</a>
+		</div>
+		{% include 'web/includes/secondary-feed.html' %}
+	</div>
+	<div class="footer">FOOTER</div>
+</div>
+	
+</nav>
+
+<nav class="bottom-nav">
+	<a class="bottom-nav__item" href=""><i class="fas fa-home"></i></a>
+	<a class="bottom-nav__item" href=""><i class="fas fa-burn"></i></a>
+	<a class="bottom-nav__item" href=""><i class="fas fa-book"></i></a>
+</nav>
+
+<!-- <script>
+	var app = new Vue({
+	    delimiters: ['${', '}'],
+	    el: '#app',
+	    data: {
+	      message: 'Hello Vue!',
+	      seen: 'true',
+	    }
+	})
+</script> -->
+
+{% endblock %}

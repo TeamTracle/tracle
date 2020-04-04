@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi,
+
+Please click on the link below to confirm your registration:
+
+https://{{ domain }}{% url 'web_activate' key=uid token=token %}
+{% endautoescape %}

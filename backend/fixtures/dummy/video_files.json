@@ -1,0 +1,13 @@
+[
+{
+  "model": "backend.videofile",
+  "pk": 1,
+  "fields": {
+    "width": 1280,
+    "height": 720,
+    "duration": 60.0,
+    "file": "tracle.mp4",
+    "processed": false
+  }
+}
+]
