@@ -15,7 +15,7 @@ First, clone, fork or download this repository.
 Open a terminal and change your working directory to the root of the repository, e.g.
 
 ```
-git clone https://github.com/ajacobsen/tracle.git
+git clone https://github.com/TeamTracle/tracle.git
 cd tracle
 ```
 Next, create a virtual environment and activate it. I recommend [venv](https://docs.python.org/3/library/venv.html), e.g.
