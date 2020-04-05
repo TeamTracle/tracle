@@ -404,13 +404,13 @@ html {
 .sidebar__guide__item > a:hover {
   color: inherit;
 }
-.sidebar__guide__item .selected {
+.sidebar__guide__item.selected {
   border-right: 4px solid;
   border-right-color: #c4302b;
   background: #1c1c1c;
   color: #999;
 }
-.sidebar__guide__item .selected:hover {
+.sidebar__guide__item.selected:hover {
   border-right-color: #c4302b;
 }
 .sidebar__guide__closed {

@@ -76,15 +76,28 @@
 	<a class="bottom-nav__item" href=""><i class="fas fa-book"></i></a>
 </nav>
 
-<!-- <script>
-	var app = new Vue({
-	    delimiters: ['${', '}'],
-	    el: '#app',
-	    data: {
-	      message: 'Hello Vue!',
-	      seen: 'true',
-	    }
-	})
-</script> -->
+{% endblock %}
 
+{% block script %}
+<script>
+
+	// QUERY PARAMS
+	function getUrlParameter(name) {
+		name = name.replace(/[\[]/, '\\]');
+		var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+		var results = regex.exec(location.search);
+		return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+	}
+
+	$(function() { 
+		var selected_catetory = getUrlParameter('c');
+		if (selected_catetory) {
+			console.log(selected_catetory);
+			$('#' + selected_catetory).addClass('selected');
+
+		} else {
+			console.log('NONE');
+		}
+	});
+</script>
 {% endblock %}

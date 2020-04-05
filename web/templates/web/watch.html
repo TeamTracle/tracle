@@ -74,8 +74,9 @@
 	{% csrf_token %}
 	<input id="channel_id" type="hidden" value="{{ video.channel.channel_id }}">
 	<input id="watch_id" type="hidden" name="watch_id" value="{{ video.watch_id }}">
+{% endblock %}
 
-	<script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>
+{% block script %}
 	<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 	<script>

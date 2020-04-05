@@ -8,12 +8,16 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
 from backend.forms import SignupForm, SigninForm
-from backend.queries import get_latest_videos, get_all_categories, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user
+from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user
 from .tokens import account_activation_token
 
 class HomeView(View):
     def get(self, request):
         videos = get_latest_videos()
+        category_slug = request.GET.get('c', None)
+        if category_slug:
+            category = get_category(category_slug)
+            videos = videos.filter(category__exact=category)
         categories = get_all_categories()
         return render(request, 'web/home.html', {'videos' : videos, 'categories' : categories})
 

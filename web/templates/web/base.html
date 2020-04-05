@@ -34,7 +34,12 @@
   </div>
   {% block body %}
   {% endblock %}
+
+  <script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>
   <script src="{% static 'web/js/main.js' %}"></script>
+  
+  {% block script %}
+  {% endblock %}
 </body>
 
 </html>

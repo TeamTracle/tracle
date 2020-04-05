@@ -27,7 +27,7 @@
 		<li class="sidebar__guide__item"><i class="fas fa-chart-bar sidebar__guide__item__icon"></i><a href="#">Trending</a></li>
 		<li class="sidebar__guide__item"><i class="fas fa-star sidebar__guide__item__icon"></i><a href="#">Popular</a></li>
 		{% for category in categories %}
-			<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="#">{{ category.title }}</a></li>
+			<li id="{{ category.slug }}" class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="/?c={{ category.slug }}">{{ category.title }}</a></li>
 		{% endfor %}
 	</ul>
 </nav>
