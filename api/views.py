@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_channel, toggle_subscription, get_channel_by_id
+from backend.queries import toggle_like, toggle_dislike, get_video, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
 
 class LikeView(View):
 	def get(self, request):
@@ -61,3 +61,15 @@ class SubscribeView(View):
 		subscriber_count = toggle_subscription(to_channel, from_channel)
 
 		return JsonResponse({'success' : True, 'subscriber_count' : subscriber_count})
+
+class IncrementViewsView(View):
+	def get(self, request):
+		return JsonResponse({'success' : False, 'error' : 'Operation not supported.'})
+
+	def post(self, request):
+		watch_id = request.POST.get('watch_id', None)
+		if not watch_id:
+			return JsonResponse({'success' : False, 'error' : 'Missing watch_id.'})
+		view_count = increment_view_count(watch_id)
+
+		return JsonResponse({'success' : True, 'view_count' : view_count})

@@ -40,7 +40,7 @@
 						<button class="btn btn-gray"><i class="fas fa-flag"></i></button>
 					</div>
 					<div class="panel__actions__right">
-						<div class="panel__actions__views"><span>{{ video.views }}</span> views</div>
+						<div class="panel__actions__views"><span id="view_count">{{ video.views }}</span> views</div>
 						<button class="btn btn-gray"><i class="fa fa-chart-bar"></i></button>
 					</div>
 				</div>
@@ -80,6 +80,7 @@
 	<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 	<script>
+
 		var player = videojs('player', {
 			aspectRatio: "16:9", 
 			responsive: true,
@@ -102,5 +103,25 @@
 			}
 		});
 		player.landscapeFullscreen();
+
+		function handleEnded() {
+			const view_count = $('#view_count');
+			const watch_id = $('#watch_id').val();
+			const csrftoken = $("[name=csrfmiddlewaretoken").val();
+			$.ajax({
+				type: 'POST',
+				url: '/api/incrementviews',
+				data: {'watch_id' : watch_id},
+				beforeSend: function (request) {
+					request.setRequestHeader("X-CSRFToken", csrftoken);
+				},
+				error: function (result) {
+					console.log(result);
+				}
+			});
+		}
+
+		player.one('ended', handleEnded);
+
 	</script>
 {% endblock %}

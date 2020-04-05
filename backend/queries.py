@@ -78,3 +78,9 @@ def get_subscriber_count(channel):
 
 def is_subscribed(to_channel, from_channel):
 	return Subscription.objects.filter(to_channel__exact=to_channel, from_channel__exact=from_channel).exists()
+
+def increment_view_count(watch_id):
+	video = get_video(watch_id)
+	video.views += 1
+	video.save()
+	return video.views
