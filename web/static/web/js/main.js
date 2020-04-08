@@ -36,6 +36,12 @@ onCloseSearch = () => {
 	menu_toggle.classList.remove("d-none");
 }
 
+navMenuDesktopToggle = () => {
+	const toggle = document.getElementById("navdesktopmenu-toggle");
+	const menu = document.getElementById("navdesktop-menu");
+	menu.classList.toggle("nav__desktop-menu--open");
+}
+
 toggleCategories = () => {
 	const cat_list = document.getElementById("cat-list")
 	const header_drop = document.getElementById("header-drop");

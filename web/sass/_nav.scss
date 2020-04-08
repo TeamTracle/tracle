@@ -146,6 +146,10 @@
 	    background: linear-gradient(90deg, rgba(235,235,235,1) 0%, rgba(226,226,226,1) 35%, rgba(238,238,238,1) 100%);
 	    z-index: 1;
 
+		> button {
+			margin: 10px auto 10px 10px;
+		}
+
 	    &__open {
 	    	transform: scale(1, 1);
 	    	opacity: 1;
@@ -153,20 +157,115 @@
 
 	    &__head {
 	    	display: flex;
-			align-items: center;
+	    	margin-left: 1em;
+	    	color: #333;
+	    	font-size: 1.4rem;
+	    	border-bottom: 2px solid white;
+	    	padding-bottom: 1em;
 
-			> button {
-				margin: 1em;
-				margin-right: 3em;
-			}
+	    	> img {
+	    		width: 5em;
+	    	}
+
+	    	&__details {
+	    		display: flex;
+	    		flex-direction: column;
+	    		margin-left: 1em;
+
+		    	> a {
+		    		color: blue;
+					text-decoration: none;
+					margin-top: auto;
+		    	}
+		    }
 	    }
 
 		> .item {
 			display: block;
 			text-decoration: none;
 			color: #333;
-			border-bottom: 1px solid white;
-			margin: 1em;
+			margin-left: 1em;
+			margin-top: 1em;
+		}
+	}
+
+	&__desktop-menu {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		top: 33px;
+		right: 20px;
+	    line-height: 1.4;
+	    transform-origin: top;
+	    padding: 1em;
+	    transform: scale(1, 0);
+	    opacity: 0;
+	    transition: transform 150ms ease-in-out, opacity 300ms ease-in-out;
+	    background: linear-gradient(90deg, rgba(235,235,235,1) 0%, rgba(226,226,226,1) 35%, rgba(238,238,238,1) 100%);
+	    border: 1px solid #999;
+	    z-index: 1;
+
+	    &::after, &::before {
+	    	bottom: 100%;
+	    	border: solid transparent;
+	    	content: " ";
+	    	height: 0;
+	    	width: 0;
+	    	position: absolute;
+	    	pointer-events: none;
+	    }
+
+	    &::after {
+	    	border-color: rgba(255, 255, 255, 0);
+	    	border-bottom-color: #ebebeb;
+	    	border-width: 11px;
+	    	right: 2px;
+	    	margin-left: -19px;
+	    }
+
+	    &::before {
+	    	border-color: rgba(113, 158, 206, 0);
+	    	border-bottom-color: #999;
+	    	border-width: 12px;
+	    	right: 1px;
+	    	margin-left: -20px;
+	    }
+
+	    &__head {
+	    	display: flex;
+	    	// margin-left: 1em;
+	    	color: #333;
+	    	border-bottom: 2px solid white;
+	    	padding-bottom: 1em;
+
+	    	> img {
+	    		// width: 5em;
+	    	}
+
+	    	&__details {
+	    		display: flex;
+	    		flex-direction: column;
+	    		margin-left: 1em;
+
+		    	> a {
+		    		color: blue;
+					text-decoration: none;
+					margin-top: auto;
+		    	}
+		    }
+	    }
+
+	    > .item {
+			display: block;
+			text-decoration: none;
+			color: #333;
+			margin-left: 1em;
+			margin-top: 1em;
+		}
+
+		&--open {
+			transform: scale(1, 1);
+			opacity: 1;
 		}
 	}
 }

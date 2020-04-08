@@ -220,24 +220,106 @@
   background: linear-gradient(90deg, #ebebeb 0%, #e2e2e2 35%, #eeeeee 100%);
   z-index: 1;
 }
+.nav__menu > button {
+  margin: 10px auto 10px 10px;
+}
 .nav__menu__open {
   transform: scale(1, 1);
   opacity: 1;
 }
 .nav__menu__head {
   display: flex;
-  align-items: center;
+  margin-left: 1em;
+  color: #333;
+  font-size: 1.4rem;
+  border-bottom: 2px solid white;
+  padding-bottom: 1em;
 }
-.nav__menu__head > button {
-  margin: 1em;
-  margin-right: 3em;
+.nav__menu__head > img {
+  width: 5em;
+}
+.nav__menu__head__details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1em;
+}
+.nav__menu__head__details > a {
+  color: blue;
+  text-decoration: none;
+  margin-top: auto;
 }
 .nav__menu > .item {
   display: block;
   text-decoration: none;
   color: #333;
-  border-bottom: 1px solid white;
-  margin: 1em;
+  margin-left: 1em;
+  margin-top: 1em;
+}
+.nav__desktop-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 33px;
+  right: 20px;
+  line-height: 1.4;
+  transform-origin: top;
+  padding: 1em;
+  transform: scale(1, 0);
+  opacity: 0;
+  transition: transform 150ms ease-in-out, opacity 300ms ease-in-out;
+  background: linear-gradient(90deg, #ebebeb 0%, #e2e2e2 35%, #eeeeee 100%);
+  border: 1px solid #999;
+  z-index: 1;
+}
+.nav__desktop-menu::after, .nav__desktop-menu::before {
+  bottom: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.nav__desktop-menu::after {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: #ebebeb;
+  border-width: 11px;
+  right: 2px;
+  margin-left: -19px;
+}
+.nav__desktop-menu::before {
+  border-color: rgba(113, 158, 206, 0);
+  border-bottom-color: #999;
+  border-width: 12px;
+  right: 1px;
+  margin-left: -20px;
+}
+.nav__desktop-menu__head {
+  display: flex;
+  color: #333;
+  border-bottom: 2px solid white;
+  padding-bottom: 1em;
+}
+.nav__desktop-menu__head__details {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1em;
+}
+.nav__desktop-menu__head__details > a {
+  color: blue;
+  text-decoration: none;
+  margin-top: auto;
+}
+.nav__desktop-menu > .item {
+  display: block;
+  text-decoration: none;
+  color: #333;
+  margin-left: 1em;
+  margin-top: 1em;
+}
+.nav__desktop-menu--open {
+  transform: scale(1, 1);
+  opacity: 1;
 }
 
 @font-face {

@@ -25,7 +25,20 @@
 	<div class="nav__right">
 		<div class="nav__section">
 			{% if request.user.is_authenticated %}
-				<a class="nav__item" href="{% url 'web_signout' %}">Sign out {{ request.session.channel_name }}</a>
+				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.session.channel_name }}</div>
+				<div id="navdesktop-menu" class="nav__desktop-menu">
+					<div class="nav__desktop-menu__head">
+					  <img src="{% static 'web/img/avatar.png' %}">
+					  <div class="nav__desktop-menu__head__details">
+					    <div>{{ request.session.channel_name }}</div>
+					    <div>{{ request.user.email }}</div>
+					    <a href="#">Manage your TRACLE Account</a>
+					  </div>
+					</div>
+					<a class="item" href="#">Browse</a>
+					<a class="item" href="#">Upload</a>
+					<a class="item" href="{% url 'web_signout' %}">Sign Out</a>
+				</div>
 			{% else %}
 				<a class="nav__item" href="{% url 'web_signup' %}">Create Account</a>
 				<div class="seperator">|</div>
