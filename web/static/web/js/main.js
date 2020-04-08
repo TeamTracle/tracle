@@ -160,10 +160,10 @@ function toggleSubscribe() {
 		},
 		success: function (result) {
 			console.log(result);
-			if (btn_sub_text.html() == 'Subscribe') {
-				btn_sub_text.html('Unsubscribe');
+			if (btn_sub_text.html().trim() == 'Subscribe') {
+				btn_sub_text.html(' Unsubscribe ');
 			} else {
-				btn_sub_text.html('Subscribe');
+				btn_sub_text.html(' Subscribe ');
 			}
 		},
 		error: function (result) {
