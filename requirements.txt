@@ -7,18 +7,23 @@
 -e git+https://github.com/ajacobsen/django-video-encoding.git@f88b4b296024a2f1dfaadfcfcc3744f36ef5812d#egg=django_video_encoding  # via -r requirements.in
 asgiref==3.2.3            # via django
 click==7.0                # via rq
-django-appconf==1.0.3     # via -r requirements.in
+django-appconf==1.0.3     # via -r requirements.in, django-compressor
+django-compressor==2.4    # via -r requirements.in, django-libsass
+django-libsass==0.8       # via -r requirements.in
 django-rq==2.3.0          # via -r requirements.in
 django==3.0.3             # via -r requirements.in, django-appconf, django-rq
 fixedint==0.1.5           # via -r requirements.in
+libsass==0.19.4           # via django-libsass
 pillow==7.0.0             # via -r requirements.in
 psycopg2-binary==2.8.4    # via -r requirements.in
 python-dotenv==0.12.0     # via -r requirements.in
 python-magic==0.4.15      # via -r requirements.in
 pytz==2019.3              # via django
+rcssmin==1.0.6            # via django-compressor
 redis==3.4.1              # via django-rq, rq
+rjsmin==1.1.0             # via django-compressor
 rq==1.2.2                 # via django-rq
 shutilwhich==1.1.0        # via -r requirements.in
-six==1.14.0               # via django-appconf
+six==1.14.0               # via django-appconf, django-compressor, libsass
 sqlparse==0.3.0           # via django
 wheel==0.34.2             # via -r requirements.in

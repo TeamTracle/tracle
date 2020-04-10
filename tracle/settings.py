@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     'django_rq',
     'video_encoding',
+    'compressor',
 ] 
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 
@@ -104,8 +105,14 @@ AUTH_USER_MODEL = 'backend.User'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
-
-# for dev toolbar
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+COMPRESS_PRECOMPILERS = (('text/x-scss', 'django_libsass.SassCompiler'),)
+LIBSASS_OUTPUT_STYLE = 'compressed'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # for video_encoding
 RQ_QUEUES = {

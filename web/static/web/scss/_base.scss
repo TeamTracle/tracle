@@ -1,7 +1,7 @@
-@use 'mixins';
-@use 'vars';
-@use 'button';
-@use 'nav';
+@import 'mixins';
+@import 'vars';
+@import 'button';
+@import 'nav';
 
 $min_width: 320px;
 $max_width: 1200px;
@@ -14,9 +14,9 @@ $max_font: 14px;
 }
 
 html {
-	background-color: vars.$body-bg-color;
-    font: vars.$font-stack;
-    @include mixins.fluid-type($min_width, $max_width, $min_font, $max_font);
+	background-color: $body-bg-color;
+    font: $font-stack;
+    @include fluid-type($min_width, $max_width, $min_font, $max_font);
 }
 
 .d-none {

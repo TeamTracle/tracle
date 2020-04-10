@@ -1,24 +1,23 @@
-@use 'base';
+@import 'base';
 
 .container {
 	width: 90vw;
 	margin: 0 auto;
 }
 
-.signup {
+.login {
+		&__container {
 
-	&__container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			margin: 2em 0 0 0;
 
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		margin: 2em 0 0 0;
-
-		@media only screen and (min-width: 1280px) {
-			margin: 5em 0 0 0;
-			flex-direction: row;
+			@media only screen and (min-width: 1280px) {
+				margin: 5em 0 0 0;
+				flex-direction: row;
+			}
 		}
-	}
 
 	&__header {
 		color: #333;
@@ -52,15 +51,23 @@
 			font-size: 0.9rem;
 		}
 
-		input[type=email],input[type=password],input[type=text] {
+		input[type=email],input[type=password] {
 			width: 100%;
 		}
 
-		&__signin {
+		&__remember {
 			display: inline-block;
 			vertical-align: top;
 			color: #666;
 			margin: 6px 0 0 10px;
+
+			@media only screen and (min-width: 1280px) {
+				margin: 10px 0 0 10px;
+			}
+
+			> input {
+				vertical-align: bottom;
+			}
 		}
 	}
 }

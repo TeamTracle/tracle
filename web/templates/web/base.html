@@ -1,4 +1,5 @@
 {% load static %}
+{% load compress %}
 
 <!doctype html>
 <html class="no-js" lang="en">
@@ -10,7 +11,9 @@
   {% endblock %}
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="{% static 'web/css/normalize.css' %}">
+  {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'web/css/normalize.css' %}">
+  {% endcompress %}
   <script src="https://kit.fontawesome.com/f471545931.js" crossorigin="anonymous"></script>
   {% block css %}
   {% endblock %}

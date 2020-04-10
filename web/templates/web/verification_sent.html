@@ -1,12 +1,15 @@
 {% extends 'web/base.html' %}
 {% load static %}
+{% load compress %}
 
 {% block title %}
 	<title>Verify Your E-mail Address - TRACLE</title>
 {% endblock %}
 
 {% block css %}
-	<link rel="stylesheet" type="text/css" href="{% static 'web/css/verification_sent.css' %}">
+	{% compress css %}
+		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/verification_sent.scss' %}">
+	{% endcompress %}
 {% endblock %}
 
 {% block body %}

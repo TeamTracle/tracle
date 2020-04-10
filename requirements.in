@@ -9,3 +9,5 @@ fixedint
 Pillow
 python-dotenv
 wheel
+django_compressor
+django-libsass

@@ -1,6 +1,6 @@
-@use 'base';
-@use 'sidebar';
-@use 'secondary-feed';
+@import 'base';
+@import 'sidebar';
+@import 'secondary-feed';
 
 .container {
 	position: relative;
