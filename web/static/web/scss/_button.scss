@@ -11,8 +11,6 @@
     text-align: center;
     cursor: pointer;
     overflow: visible;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
 }
 
@@ -54,16 +52,8 @@
     background-color: #6891e7;
     border-color: #304ea6 #304ea6 #000;
     text-shadow: 0 1px 0 rgba(0,0,0,.45);
-    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
-    -ms-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
-    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
-    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#6891e7,EndColorStr=#304ea6);
-    background-image: -moz-linear-gradient(top,#6891e7 0,#304ea6 100%);
-    background-image: -ms-linear-gradient(top,#6891e7 0,#304ea6 100%);
-    background-image: -o-linear-gradient(top,#6891e7 0,#304ea6 100%);
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#6891e7),color-stop(100%,#304ea6));
-    background-image: -webkit-linear-gradient(top,#6891e7 0,#304ea6 100%);
+    // filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#6891e7,EndColorStr=#304ea6);
     background-image: linear-gradient(to bottom,#6891e7 0,#304ea6 100%);
 
     &:hover {

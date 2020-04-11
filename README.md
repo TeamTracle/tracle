@@ -48,13 +48,18 @@ Setup the database:
 ```
 ./manage.py migrate
 ./manage.py loaddata backend/fixtures/categories.json
-
 ```
 
 You can run a local development server using the following command:
 
 ```
 ./manage.py runserver
+```
+
+Autoprefixer is run only on deployment or when DEBUG is set to false. You'll npm to install these node modules:
+
+```
+npm install -g postcss-cli autoprefixer
 ```
 
 ### Loading dummy data for testing
