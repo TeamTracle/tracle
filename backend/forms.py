@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm, _unicode_ci_compare
+from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
 from .models import VideoFile, Channel
 
@@ -103,3 +104,25 @@ class SigninForm(forms.Form):
             if not user_cache.email_confirmed:
                 raise forms.ValidationError('email address not confirmed, boi!')
         return self.cleaned_data
+
+class ResetPasswordForm(PasswordResetForm):
+    def get_users(self, email):
+        email_field_name = User.get_email_field_name()
+        active_users = User._default_manager.filter(**{
+            '%s__iexact' % email_field_name: email
+        })
+        return (
+            u for u in active_users
+            if u.has_usable_password() and
+            _unicode_ci_compare(email, getattr(u, email_field_name))
+        )
+
+class SetPasswordForm(DjangoSetPasswordForm):
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder' : 'PASSWORD'}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        strip=False,
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder' : 'CONFIRM PASSWORD'}),
+    )

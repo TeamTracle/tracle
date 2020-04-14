@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.conf import settings
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
-from backend.forms import SignupForm, SigninForm
+from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm
 from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user
 from .tokens import account_activation_token
 
@@ -81,6 +82,18 @@ class SignoutView(View):
     def get(self, request):
         logout(request)
         return redirect('web_home')
+
+class ResetPasswordView(PasswordResetView):
+    template_name = 'web/forgot_password.html'
+    email_template_name = 'web/forgot_password_email.html'
+    domain = settings.DOMAIN
+    form_class = ResetPasswordForm
+    success_url = '/'
+
+class ResetPasswordConfirmView(PasswordResetConfirmView):
+    template_name = 'web/forgot_password_confirm.html'
+    form_class = SetPasswordForm
+    success_url = '/signin'
 
 class WatchView(View):
     def get(self, request):
