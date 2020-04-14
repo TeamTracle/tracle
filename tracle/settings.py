@@ -121,8 +121,12 @@ COMPRESS_FILTERS = {
         'compressor.filters.jsmin.JSMinFilter'
     ]
 }
+COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
+COMPRESS_STORAGE = STATICFILES_STORAGE
+COMPRESS_URL = STATIC_URL
 COMPRESS_ENABLED = not DEBUG
 COMPRESS_OFFLINE = not DEBUG
+
 
 # for video_encoding
 RQ_QUEUES = {
