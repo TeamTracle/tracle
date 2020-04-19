@@ -105,7 +105,7 @@ AUTH_USER_MODEL = 'backend.User'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'compressor.storage.CompressorFileStorage'
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -121,9 +121,9 @@ COMPRESS_FILTERS = {
         'compressor.filters.jsmin.JSMinFilter'
     ]
 }
-COMPRESS_STORAGE = 'compressor.storage.CompressorFileStorage'
 COMPRESS_STORAGE = STATICFILES_STORAGE
 COMPRESS_URL = STATIC_URL
+COMPRESS_ROOT = STATIC_ROOT
 COMPRESS_ENABLED = not DEBUG
 COMPRESS_OFFLINE = not DEBUG
 
