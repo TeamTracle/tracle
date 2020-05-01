@@ -1,0 +1,26 @@
+{% extends 'web/dashboard_base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block css %}
+	{% compress css %}
+		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/dashboard_account.scss' %}">
+	{% endcompress %}
+{% endblock css %}
+
+{% block dashboard_body %}
+	<div class="dashboard__body">
+		<div class="dashboard__sidebar">
+		</div>
+		<div class="dashboard__primary">
+			<h2 class="dashboard__title">Account settings</h2>
+			<form method="post">
+				{% csrf_token %}
+				<p>{{ form.email }}</p>
+				<p>{{ form.channel_name }}</p>
+				<p><a href="{% url 'web_forgot_password' %}">Change password</a></p>
+				<input class="btn btn-blue" type="submit" name="submit" value="Save">
+			</form>
+		</div>
+	</div>
+{% endblock %}

@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
-from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm
-from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user
+from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
+from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel
 from .tokens import account_activation_token
 
 class HomeView(View):
@@ -116,3 +117,45 @@ class WatchView(View):
             likebar_value = 50
 
         return render(request, 'web/watch.html', {'video' : video, 'is_liked' : is_liked, 'is_disliked': is_disliked, 'likebar_value' : likebar_value, 'is_subscribed' : subscribed, 'videos' : videos})
+
+class DashboardBaseView(LoginRequiredMixin, View):
+    login_url = '/signin'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        return redirect('web_dashboard_videos')
+
+class DashboardSettingsView(DashboardBaseView):
+
+    def get(self, request):
+        channel = get_channel(request.user)
+        form = ChangeUserForm({'email' : request.user.email, 'channel_name' : channel.name})
+        return render(request, 'web/dashboard_account.html', {'form' : form})
+
+    def post(self, request):
+        channel = get_channel(request.user)
+        form = ChangeUserForm({'email' : request.user.email, 'channel_name': request.POST.get('channel_name')})
+        context = {'form' : form}
+        if form.is_valid():
+            form.save(channel)
+        return render(request, 'web/dashboard_account.html', context)
+
+class DashboardVideosView(DashboardBaseView):
+
+    def get(self, request):
+        return render(request, 'web/dashboard_videos.html')
+
+class DashboardEditVideoView(DashboardBaseView):
+    def get(self, request, watch_id):
+        video = get_video(watch_id)
+        form = VideoDetailsForm(instance=video)
+        return render(request, 'web/dashboard_edit_video.html', {'video' : video, 'form' : form})
+
+    def post(self, request, watch_id):
+        video = get_video(watch_id)
+        form = VideoDetailsForm(request.POST, instance=video)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success' : True})
+
+        return JsonResponse({'success' : False})

@@ -133,11 +133,6 @@ class Video(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-    def clean_fields(self, exclude=None):
-        super().clean_fields(exclude=exclude)
-        if not magic.from_file(self.thumbnail.file.temporary_file_path(), mime=True).startswith('image/'):
-            raise ValidationError('Unregocnized file format.')
-
     def __str__(self):
         return str(self.title)
 

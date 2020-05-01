@@ -1,0 +1,21 @@
+{% extends 'web/base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block title %}
+	<title>Dashboard - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		{% include 'web/includes/nav.html' %}
+
+		{% include 'web/includes/dashboard_nav.html' %}
+
+		{% block dashboard_body %}
+		{% endblock %}
+	</div>
+{% endblock %}

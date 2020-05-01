@@ -1,0 +1,68 @@
+{% extends 'web/dashboard_base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block title %}
+	<title>{{ video.title }} - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	{% compress css %}
+		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/dashboard_edit_video.scss' %}">
+	{% endcompress %}
+{% endblock %}
+
+
+{% block dashboard_body %}
+	<div class="dashboard__body">
+		<div class="dashboard__head">
+			<h2>{{ video.title }}</h2>
+			<div>
+				<button class="btn btn-gray" onclick="location.href='/dashboard/videos';">Cancel</button>
+				<button class="btn btn-blue" onclick="save_form()">Save changes</button>
+			</div>
+		</div>
+		<div class="dashboard__left">
+			<form id="video-form" class="video-form">
+				<h4>Video Information</h4>
+				{% csrf_token %}
+				<input id="watch_id" type="hidden" value="{{ video.watch_id }}">
+				<p>
+					<label for="id_title">Title</label>
+					{{ form.title }}
+				</p>
+				<p>
+					<label for="id_description">Description</label>
+					{{ form.description }}
+				</p>
+				<p>
+					<span>Category: </span>
+					{{ form.category }}
+				</p>
+			</form>
+		</div>
+		<div class="dashboard__right">
+			<div class="thumbnail">
+				<img src="{{ video.thumbnail.url }}">
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	function save_form() {
+		const csrftoken = $("[name=csrfmiddlewaretoken").val();
+		const watch_id = $('#watch_id').val();
+
+		$.post('/dashboard/videos/' + watch_id, $('#video-form').serialize())
+			.done(function(data) {
+				console.log(data)
+				if (data.success) {
+					console.log('SAVED');
+					location.href='/dashboard/videos';
+				}
+		});
+	}
+</script>
+{% endblock %}

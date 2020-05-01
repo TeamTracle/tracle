@@ -83,15 +83,6 @@
 
 {% block script %}
 <script>
-
-	// QUERY PARAMS
-	function getUrlParameter(name) {
-		name = name.replace(/[\[]/, '\\]');
-		var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-		var results = regex.exec(location.search);
-		return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-	}
-
 	$(function() { 
 		var selected_catetory = getUrlParameter('c');
 		if (selected_catetory) {

@@ -12,3 +12,4 @@ wheel
 django_compressor
 django-libsass
 django-compressor-autoprefixer
+djangorestframework

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
-from .models import VideoFile, Channel
+from .models import VideoFile, Video, Channel
 
 User = get_user_model()
 class UserAdminCreationForm(forms.ModelForm):
@@ -126,3 +126,19 @@ class SetPasswordForm(DjangoSetPasswordForm):
         strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder' : 'CONFIRM PASSWORD'}),
     )
+
+class ChangeUserForm(forms.Form):
+
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'disabled' : True}))
+    channel_name = forms.CharField()
+
+    def save(self, instance):
+        instance.name = self.cleaned_data['channel_name']
+        instance.save()
+        return instance
+
+
+class VideoDetailsForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ('title', 'description', 'category')

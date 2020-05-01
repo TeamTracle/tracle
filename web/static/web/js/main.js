@@ -1,4 +1,12 @@
+// QUERY PARAMS
+function getUrlParameter(name) {
+   name = name.replace(/[\[]/, '\\]');
+   var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+   var results = regex.exec(location.search);
+   return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
 
+// NAV
 toggleNav = () => {
 	// e = document.getElementById("nav-menu-m");
 	// e.classList.toggle("d-none");

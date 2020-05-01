@@ -3,8 +3,15 @@ import json
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
+from django.core import serializers
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
+from rest_framework import viewsets
+from rest_framework.response import Response
+
+from .serializers import VideoSerializer
+from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
+
+from backend.models import Video 
 
 class LikeView(View):
 	def get(self, request):
@@ -73,3 +80,10 @@ class IncrementViewsView(View):
 		view_count = increment_view_count(watch_id)
 
 		return JsonResponse({'success' : True, 'view_count' : view_count})
+
+class VideoViewSet(viewsets.ModelViewSet):
+		def list(self, request, channel_id):
+			channel = get_channel_by_id(channel_id)
+			queryset = Video.objects.filter(channel__exact=channel)
+			serializer = VideoSerializer(queryset, many=True)
+			return Response(serializer.data)

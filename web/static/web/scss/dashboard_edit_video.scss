@@ -1,0 +1,51 @@
+@import 'base';
+@import 'dashboard_nav';
+
+.container {
+	width: 90vw;
+	margin: 0 auto;
+}
+
+.dashboard {
+	
+	&__body {
+		display: grid;
+		grid-template-areas: "head head" "left right";
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 1em;
+	}
+
+	&__head {
+		display: flex;
+		grid-area: head;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	&__left {
+		grid-area: left; 
+	}
+
+	&__right {
+		grid-area: right;
+
+		& > .thumbnail img {
+			max-width: 100%;
+		}
+	}
+}
+
+
+.video-form {
+	padding: 1em;
+	border: 1px solid #aaa;
+
+	& label {
+		display: block;
+	}
+
+
+	& input, & textarea {
+		width: 100%;
+	}
+}

@@ -1,0 +1,31 @@
+@import 'base';
+@import 'dashboard_nav';
+
+.container {
+	width: 90vw;
+	margin: 0 auto;
+}
+
+.dashboard {
+
+	&__body {
+		display: grid;
+		grid-template-areas: "head head" "sidebar primary";
+		grid-template-columns: 1fr 5fr;
+	}
+
+	&__title {
+		margin-left: 1em;
+		grid-area: head;
+	}
+
+	&__sidebar {
+		grid-area: sidebar;
+		background-image: linear-gradient(to right, $body-bg-color 0%, #e1e0e1 100%);
+	}
+
+	&__primary {
+		grid-area: primary;
+	}
+}
+

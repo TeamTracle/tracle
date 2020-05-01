@@ -29,7 +29,7 @@
         <div class="nav__menu__head__details">
           <div>{{ request.session.channel_name }}</div>
           <div>{{ request.user.email }}</div>
-          <a href="#">Manage your TRACLE Account</a>
+          <a href="{% url 'web_dashboard_settings' %}">Manage your TRACLE Account</a>
         </div>
       </div>
       <a class="item" href="#">Browse</a>
