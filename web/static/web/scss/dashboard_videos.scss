@@ -18,6 +18,7 @@
 	display: flex;
 
 	@media only screen and (min-width: 1280px) {
+		display: block;
 		background-image: linear-gradient(to right, $body-bg-color 0%, #e1e0e1 100%);
 	}
 
