@@ -81,7 +81,7 @@ class User(AbstractBaseUser):
 
 class Channel(models.Model):
     name = models.CharField(max_length=20)
-    channel_id = models.CharField(max_length=10, editable=False, blank=True)
+    channel_id = models.CharField(max_length=11, editable=False, blank=True)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
 
@@ -130,7 +130,7 @@ class Video(models.Model):
     thumbnail = models.ImageField(upload_to='thumbnails', blank=True)
 
     file = models.OneToOneField(VideoFile, on_delete=models.CASCADE)
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
