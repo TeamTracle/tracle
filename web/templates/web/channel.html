@@ -1,0 +1,69 @@
+{% extends 'web/base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block title %}
+	<title>{{ channel.name }} - TRACLE</title>
+{% endblock %}
+
+{% block css %}
+	{% compress css %}
+		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel.scss' %}">
+	{% endcompress %}
+{% endblock %}
+
+{% block body %}
+
+<div class=container>
+	{% include 'web/includes/nav.html' %}
+</div>
+
+<div class="channel__container">
+	<div class="container">
+		<div class="channel__header">
+			<img class="channel__header__thumb" src="{% static 'web/img/avatar.png' %}">
+			<h1 class="channel__header__title">{{ channel.name }}</h1>
+			<button id="btn-subscribe" class="channel__header__btn-subscribe" {% if not request.user.is_authenticated or request.session.channel_id == channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i><span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</button>
+			<div class="channel__header__subscribers">
+				<span id="sub-count">{{ channel.subscriptions.count }}</span>subscribers
+			</div>
+			<div class="channel__header__views">
+				<span>{{ total_views }}</span> video views
+			</div>
+		</div>
+		<div class="channel__body">
+			<div class="channel__body__header">
+				<h2>Uploads ({{ channel.videos.all.count }})</h2>
+				<button class="btn btn-gray channel__body__header__button" disabled>Date added (newest - oldest) <i class="fas fa-caret-down"></i></button>
+			</div>
+			<div class="channel__body__sidebar">
+				<div class="channel__body__sidebar__item selected">
+					Uploaded Videos
+				</div>
+				<div class="channel__body__sidebar__item">
+					<!-- Playlists -->
+				</div>
+			</div>
+			<div class="channel__body__primary">
+				<div class="feed__container">
+					{% for video in channel.videos.all %}
+					<div class="feed__video">
+						<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.thumbnail.url }}"></a>
+						<div class="feed__video__details">
+							<a class="feed__video__details__title" href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a>
+							<span class="feed__video__details__views">{{ video.views }} views</span><span class="feed__video__details__timestamp">{{ video.created|date:'Y-m-d'}}</span>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% csrf_token %}
+<input id="channel_id" type="hidden" value="{{ channel.channel_id }}">
+{% endblock %}
+
+
+{% block script %}
+{% endblock %}

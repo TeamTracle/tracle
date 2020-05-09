@@ -18,7 +18,7 @@
 		{% include 'web/includes/nav.html' %}
 		<div class="header">
 			<h2>{{ video.title }}</h2>
-			<button class="btn btn-gray" href="#">{{ video.channel.name }}</button>
+			<button class="btn btn-gray" onclick="location.href='{% url "web_channel" video.channel.channel_id %}'">{{ video.channel.name }}</button>
 			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.session.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
 		</div>
 		<div class="primary">
@@ -49,7 +49,7 @@
 				</div>
 				<div id="panel-details" class="panel__details panel__details--collapsed">
 					<div class="panel__details__left">
-						<div class="panel__details__uploader">Uploaded by <a href="#">{{ video.channel.name }}</a> on {{ video.created }}</div>
+						<div class="panel__details__uploader">Uploaded by <a href="{% url 'web_channel' video.channel.channel_id %}">{{ video.channel.name }}</a> on {{ video.created }}</div>
 						<div class="panel__details__description">{{ video.description|linebreaks }}</div>
 						<div class="panel__details__minor">
 							<strong>Category:</strong><br>

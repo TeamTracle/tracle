@@ -8,8 +8,8 @@
 		<div class="sidebar__profile">
             <img class="sidebar__profile__avatar" src="{% static 'web/img/avatar.png' %}">
             <div class="sidebar__profile__itemlist">
-                <a class="sidebar__profile__item" href="#">My Channel</a>
-                <a class="sidebar__profile__item" href="#">Videos</a>
+                <a class="sidebar__profile__item" href="{% url 'web_channel' request.session.channel_id %}">My Channel</a>
+                <a class="sidebar__profile__item" href="{% url 'web_dashboard_videos' %}">Videos</a>
                 <a class="sidebar__profile__item" href="#">Likes</a>
                 <a class="sidebar__profile__item" href="#">History</a>
                 <a class="sidebar__profile__item" href="#">Watch Later</a>
