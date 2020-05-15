@@ -137,6 +137,10 @@ class ChangeUserForm(forms.Form):
         instance.save()
         return instance
 
+class ChangeAvatarForm(forms.ModelForm):
+    class Meta:
+        model = Channel
+        fields = ('avatar',)
 
 class VideoDetailsForm(forms.ModelForm):
     class Meta:

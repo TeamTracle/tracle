@@ -76,6 +76,11 @@ class SigninView(View):
                 channel = get_channel(user)
                 request.session['channel_id'] =  channel.channel_id
                 request.session['channel_name'] = channel.name
+                avatar = '/static/web/img/avatar.png'
+                if channel.avatar:
+                    avatar = channel.avatar.url
+                request.session['channel_avatar'] = avatar
+
                 return redirect('web_home')
         return render(request, 'web/signin.html', {'form' : form})
 
@@ -130,12 +135,12 @@ class DashboardSettingsView(DashboardBaseView):
     def get(self, request):
         channel = get_channel(request.user)
         form = ChangeUserForm({'email' : request.user.email, 'channel_name' : channel.name})
-        return render(request, 'web/dashboard_account.html', {'form' : form})
+        return render(request, 'web/dashboard_account.html', {'form' : form, 'channel' : channel})
 
     def post(self, request):
         channel = get_channel(request.user)
-        form = ChangeUserForm({'email' : request.user.email, 'channel_name': request.POST.get('channel_name')})
-        context = {'form' : form}
+        form = ChangeUserForm({'email' : request.user.email, 'channel_name' : request.POST.get('channel_name')})
+        context = {'form' : form, 'channel' : channel}
         if form.is_valid():
             form.save(channel)
         return render(request, 'web/dashboard_account.html', context)

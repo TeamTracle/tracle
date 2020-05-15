@@ -28,7 +28,7 @@
 				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.session.channel_name }}</div>
 				<div id="navdesktop-menu" class="nav__desktop-menu">
 					<div class="nav__desktop-menu__head">
-					  <img src="{% static 'web/img/avatar.png' %}">
+					  <img src="{{ request.session.channel_avatar }}">
 					  <div class="nav__desktop-menu__head__details">
 					    <div>{{ request.session.channel_name }}</div>
 					    <div>{{ request.user.email }}</div>

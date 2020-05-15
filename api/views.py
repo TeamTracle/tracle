@@ -1,9 +1,15 @@
 import json
+import os
+
+from PIL import Image
 
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 from django.core import serializers
+from django.core.files.base import ContentFile
+
+from io import BytesIO
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -11,7 +17,7 @@ from rest_framework.response import Response
 from .serializers import VideoSerializer
 from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
 
-from backend.models import Video 
+from backend.models import Video
 
 class LikeView(View):
 	def get(self, request):
@@ -87,3 +93,16 @@ class VideoViewSet(viewsets.ModelViewSet):
 			queryset = Video.objects.filter(channel__exact=channel)
 			serializer = VideoSerializer(queryset, many=True)
 			return Response(serializer.data)
+
+class UploadAvatarView(View):
+	def post(self, request):
+		channel = get_channel(request.user)
+		in_file = request.FILES.get('avatar')
+		out_file = BytesIO()
+		in_image = Image.open(in_file)
+		out_image = in_image.resize((144, 144))
+		in_image.close()
+		out_image.save(out_file, 'PNG')
+		channel.avatar.save('avatars/' + channel.channel_id + '.png', ContentFile(out_file.getvalue()))
+		result = {'success' : 'idk'}
+		return JsonResponse(result)

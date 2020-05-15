@@ -21,7 +21,7 @@
 <div class="channel__container">
 	<div class="container">
 		<div class="channel__header">
-			<img class="channel__header__thumb" src="{% static 'web/img/avatar.png' %}">
+			<img class="channel__header__thumb" src="{% if channel.avatar %}{{ channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
 			<h1 class="channel__header__title">{{ channel.name }}</h1>
 			<button id="btn-subscribe" class="channel__header__btn-subscribe" {% if not request.user.is_authenticated or request.session.channel_id == channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i><span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</button>
 			<div class="channel__header__subscribers">

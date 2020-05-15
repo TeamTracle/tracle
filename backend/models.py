@@ -84,6 +84,7 @@ class Channel(models.Model):
     channel_id = models.CharField(max_length=11, editable=False, blank=True)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
+    avatar = models.ImageField(blank=True, null=True)
 
     user = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)
 
