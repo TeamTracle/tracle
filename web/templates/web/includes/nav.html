@@ -25,12 +25,12 @@
 	<div class="nav__right">
 		<div class="nav__section">
 			{% if request.user.is_authenticated %}
-				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.session.channel_name }}</div>
+				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.channel.name }}</div>
 				<div id="navdesktop-menu" class="nav__desktop-menu">
 					<div class="nav__desktop-menu__head">
-					  <img src="{{ request.session.channel_avatar }}">
+					  <img src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
 					  <div class="nav__desktop-menu__head__details">
-					    <div>{{ request.session.channel_name }}</div>
+					    <div>{{ request.channel.name }}</div>
 					    <div>{{ request.user.email }}</div>
 					    <a href="{% url 'web_dashboard_settings' %}">Manage your TRACLE Account</a>
 					  </div>

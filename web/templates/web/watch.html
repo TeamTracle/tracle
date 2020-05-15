@@ -19,7 +19,7 @@
 		<div class="header">
 			<h2>{{ video.title }}</h2>
 			<button class="btn btn-gray" onclick="location.href='{% url "web_channel" video.channel.channel_id %}'">{{ video.channel.name }}</button>
-			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.session.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
+			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.channel.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
 		</div>
 		<div class="primary">
 			<div class="video__container">

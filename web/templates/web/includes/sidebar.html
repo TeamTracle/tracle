@@ -6,9 +6,9 @@
 			<button class="btn btn-blue sidebar__header__button"><i class="fas fa-plus-circle"></i> Browse channels</button>
 		</div>
 		<div class="sidebar__profile">
-            <img class="sidebar__profile__avatar" src="{{ request.session.channel_avatar }}">
+            <img class="sidebar__profile__avatar" src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
             <div class="sidebar__profile__itemlist">
-                <a class="sidebar__profile__item" href="{% url 'web_channel' request.session.channel_id %}">My Channel</a>
+                <a class="sidebar__profile__item" href="{% url 'web_channel' request.channel.channel_id %}">My Channel</a>
                 <a class="sidebar__profile__item" href="{% url 'web_dashboard_videos' %}">Videos</a>
                 <a class="sidebar__profile__item" href="#">Likes</a>
                 <a class="sidebar__profile__item" href="#">History</a>

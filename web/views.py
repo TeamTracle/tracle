@@ -73,14 +73,6 @@ class SigninView(View):
             user = authenticate(username=email, password=raw_password)
             if user is not None:
                 login(request, user)
-                channel = get_channel(user)
-                request.session['channel_id'] =  channel.channel_id
-                request.session['channel_name'] = channel.name
-                avatar = '/static/web/img/avatar.png'
-                if channel.avatar:
-                    avatar = channel.avatar.url
-                request.session['channel_avatar'] = avatar
-
                 return redirect('web_home')
         return render(request, 'web/signin.html', {'form' : form})
 
