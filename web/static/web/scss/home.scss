@@ -5,8 +5,6 @@
 .container {
 	position: relative;
 	display: grid;
-	width: 90vw;
-	margin: 0 auto;
 	grid-template-columns: 1fr;
 	grid-template-areas: 
 		"nav"
