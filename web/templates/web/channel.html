@@ -48,7 +48,7 @@
 				<div class="feed__container">
 					{% for video in channel.videos.all %}
 					<div class="feed__video">
-						<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.thumbnail.url }}"></a>
+						<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
 						<div class="feed__video__details">
 							<a class="feed__video__details__title" href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a>
 							<span class="feed__video__details__views">{{ video.views }} views</span><span class="feed__video__details__timestamp">{{ video.created|date:'Y-m-d'}}</span>

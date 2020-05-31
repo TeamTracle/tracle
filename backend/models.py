@@ -1,18 +1,23 @@
-import os, string, random, magic, base64, fixedint
+import os, string, random, magic, base64, fixedint, json
 
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
-from video_encoding.fields import VideoField
-from video_encoding.models import Format
+import django_rq
+from django_rq.jobs import Job
 
-fs = FileSystemStorage(location=settings.TRACLE_UPLOAD_PATH)
+upload_fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
+
+def get_media_location(channel_id, watch_id):
+    return os.path.join(settings.MEDIA_ROOT, channel_id, watch_id)
+
+def get_upload_location(instance, filename):
+    return os.path.join(instance.channel.channel_id, filename)
 
 class UserManager(BaseUserManager):
 
@@ -99,22 +104,6 @@ class Category(models.Model):
     def __str__(self):
         return str(self.title)
 
-class VideoFile(models.Model):
-    width = models.PositiveIntegerField(editable=False, null=True)
-    height = models.PositiveIntegerField(editable=False, null=True)
-    duration = models.FloatField(editable=False, null=True)
-    file = VideoField(width_field='width', height_field='height', duration_field='duration', storage=fs)
-    format_set = GenericRelation(Format)
-    processed = models.BooleanField(default=False)
-
-    def clean_fields(self, exclude=None):
-        super().clean_fields(exclude=exclude)
-        if not magic.from_file(self.file.file.temporary_file_path(), mime=True).startswith('video/'):
-            raise ValidationError('Unregocnized file format.')
-
-    def __str__(self):
-        return self.file.name
-
 class Video(models.Model):
 
     class Visibility(models.TextChoices):
@@ -122,20 +111,50 @@ class Video(models.Model):
         PUBLIC = 'PUBLIC', 'Public'
         UNLISTED = 'UNLISTED', 'Unlisted'
 
-    title = models.CharField(max_length=100, blank=True)
-    description = models.TextField(blank=True ,null=True)
-    watch_id = models.CharField(max_length=11, blank=True)
+    title = models.CharField(max_length=100, default='UNTITLED VIDEO')
+    description = models.TextField(blank=True, null=True)
+    watch_id = models.CharField(max_length=11, blank=True, null=True)
     visibility = models.CharField(max_length=8, choices=Visibility.choices, default=Visibility.PUBLIC)
     views = models.BigIntegerField(default=0)
     created = models.DateTimeField(default=timezone.now)
-    thumbnail = models.ImageField(upload_to='thumbnails', blank=True)
+    uploaded_file = models.FileField(upload_to=get_upload_location, storage=upload_fs, null=True)
+    thumbnail = models.CharField(max_length=255, null=True)
+    processed = models.BooleanField(default=False)
+    status = models.CharField(max_length=255, default='queued')
+    job_id = models.CharField(max_length=255, null=True, blank=True)
 
-    file = models.OneToOneField(VideoFile, on_delete=models.CASCADE)
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, blank=True, related_name='videos')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 
     def __str__(self):
         return str(self.title)
+
+    def get_thumbnail(self):
+        if self.thumbnail:
+            fsmedia = FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
+            return fsmedia.url(os.path.join(self.channel.channel_id, self.watch_id, self.thumbnail))
+        else:
+            return ''
+
+    def get_url(self):
+        fsmedia = FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
+        return fsmedia.url(os.path.join(self.channel.channel_id, self.watch_id, 'playlist.m3u8'))
+
+    def get_media_fs(self):
+        return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
+
+    def get_upload_fs(self):
+        return FileSystemStorage(location=get_upload_location())
+
+    def get_status(self):
+        status = self.status
+        try:
+            job = Job.fetch(self.job_id, django_rq.get_connection())
+            status = job.get_status()
+        except:
+            pass
+            
+        return status
 
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

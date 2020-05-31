@@ -31,7 +31,7 @@
 			<div class="feed__container">
 				{% for video in videos %}
 				<div class="feed__video">
-					<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.thumbnail.url }}"></a>
+					<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
 					<div class="feed__video__details">
 						<h2 class="feed__video__details__title"><a href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a></h2>
 						<div class="feed__video__details__description">{{ video.description }}</div>

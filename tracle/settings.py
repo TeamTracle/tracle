@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
 
     'django_rq',
-    'video_encoding',
     'compressor',
     'rest_framework',
 ] 
@@ -171,7 +170,7 @@ VIDEO_ENCODING_FORMATS = {
 
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
-TRACLE_UPLOAD_PATH = os.environ.get('UPLOAD_PATH', os.path.join(BASE_DIR, 'uploads'))
+UPLOAD_ROOT = os.environ.get('UPLOAD_PATH', os.path.join(BASE_DIR, 'uploads'))
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
 
 CSRF_COOKIE_DOMAIN = os.environ.get('CSRF_COOKIE_DOMAIN', 'localhost')

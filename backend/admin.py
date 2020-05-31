@@ -3,10 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from video_encoding.admin import FormatInline
-
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Channel, Video, VideoFile, Category
+from .models import Channel, Video, Category
 
 User = get_user_model()
 
@@ -43,10 +41,3 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Channel)
 admin.site.register(Category)
 admin.site.register(Video)
-@admin.register(VideoFile)
-class VideoAdmin(admin.ModelAdmin):
-    inlines = (FormatInline,)
-
-    list_dispaly = ('get_filename', 'width', 'height', 'duration')
-    fields = ('file', 'width', 'height', 'duration')
-    readonly_fields = ('width', 'height', 'duration')

@@ -18,19 +18,16 @@
 		{% include 'web/includes/nav.html' %}
 		<div class="header">
 			<h2>{{ video.title }}</h2>
-			<button class="btn btn-gray" onclick="location.href='{% url "web_channel" video.channel.channel_id %}'">{{ video.channel.name }}</button>
+		<button class="btn btn-gray" onclick="location.href='{% url "web_channel" video.channel.channel_id %}'">{{ video.channel.name }}</button>
 			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.channel.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
 		</div>
 		<div class="primary">
 			<div class="video__container">
-				<video id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.thumbnail.url }}">
-					{% for format in video.file.format_set.all %}
-						<source src="{{ format.file.url }}" type="video/mp4" />
-					{% endfor %}
+				<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.get_thumbnail }}">
 					<p class="vjs-no-js">
 						To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
 					</p>
-				</video>
+				</video-js>
 			</div>
 			<div class="panel">
 				<div class="panel__actions">
@@ -85,6 +82,12 @@
 	<script>
 
 		var player = videojs('player', {
+			html5: {
+		        hls: {
+		        	// overrideNative: !videojs.browser.IS_ANY_SAFARI
+		        	overrideNative: true
+		      	}  
+		    },
 			aspectRatio: "16:9", 
 			responsive: true,
 			userActions: {
@@ -105,6 +108,12 @@
 				}
 			}
 		});
+
+		player.src({
+			src: '{{ video.get_url }}',
+			type: 'application/x-mpegURL'
+		});
+
 		player.landscapeFullscreen();
 
 		function handleEnded() {

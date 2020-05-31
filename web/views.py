@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
 from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views
@@ -165,3 +166,11 @@ class ChannelView(View):
         if request.user.is_authenticated:
             subscribed = is_subscribed(channel, get_channel(request.user))
         return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views})
+
+class UploadVideoView(LoginRequiredMixin, View):
+    login_url = '/signin'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        form = VideoDetailsForm()
+        return render(request, 'web/upload_video.html', {'form' : form})

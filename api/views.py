@@ -2,22 +2,31 @@ import json
 import os
 
 from PIL import Image
+from io import BytesIO
 
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 
-from io import BytesIO
+import django_rq
+from django_rq.jobs import Job
 
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
-from .serializers import VideoSerializer
+from .serializers import VideoSerializer, VideoUploadSerializer
+from .permissions import IsAuthenticated, ReadOnly
+
 from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
-
+from backend.utils import video_transcode_task, get_thumbnails, get_preview_thumbnails
 from backend.models import Video
+from backend.forms import VideoDetailsForm
+
 
 class LikeView(View):
 	def get(self, request):
@@ -106,3 +115,49 @@ class UploadAvatarView(View):
 		channel.avatar.save('avatars/' + channel.channel_id + '.png', ContentFile(out_file.getvalue()))
 		result = {'success' : 'idk'}
 		return JsonResponse(result)
+
+class VideoView(APIView):
+	permission_classes = [IsAuthenticated|ReadOnly]
+
+	def get(self, request, watch_id):
+		video = get_video(watch_id)
+		serializer = VideoSerializer(video)
+		return Response(serializer.data)
+
+	def post(self, request):
+		request.data.update({'channel' : request.channel.pk})
+		serializer = VideoUploadSerializer(data=request.data)
+		if serializer.is_valid():
+			video = serializer.save()
+			job = django_rq.enqueue(video_transcode_task, video=video)
+			video.job_id = job.id
+			video.status = job.get_status()
+			video.save()
+			thumbnails = get_preview_thumbnails(video.uploaded_file.path)
+			serialized_data = serializer.data
+			serialized_data['thumbnails'] = thumbnails
+			serialized_data['watch_id'] = video.watch_id
+			serialized_data['channel'] = request.channel.pk
+			serialized_data['status'] = video.status
+			serialized_data['job_id'] = job.id
+			return Response(serialized_data)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def put(self, request):
+		instance = Video.objects.get(watch_id=request.data.get('watch_id'))
+		if not request.channel == instance.channel:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		serializer = VideoUploadSerializer(data=request.data, instance=instance)
+		if serializer.is_valid():
+			instance = serializer.save()
+			thumbnails = get_thumbnails(instance, [request.data.get('thumbnail_0'), request.data.get('thumbnail_1'), request.data.get('thumbnail_2')], request.data.get('thumbnail_timestamp'))
+			return Response(serializer.data)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VideoStatusView(View):
+	def get(self, request, watch_id):
+		video = get_video(watch_id)
+		status = video.get_status()
+		return JsonResponse({'status' : status})

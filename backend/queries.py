@@ -6,7 +6,7 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	return Video.objects.filter(visibility__exact='PUBLIC')
+	return Video.objects.filter(visibility__exact='PUBLIC', processed=True)
 
 def get_video(watch_id):
 	return Video.objects.get(watch_id__exact=watch_id)

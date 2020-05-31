@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
-from .models import VideoFile, Video, Channel
+from .models import Video, Channel
 
 User = get_user_model()
 class UserAdminCreationForm(forms.ModelForm):

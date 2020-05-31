@@ -7,6 +7,8 @@ urlpatterns = [
 	path('dislike', views.DislikeView.as_view(), name='api_dislike'),
 	path('subscribe', views.SubscribeView.as_view(), name='api_subscribe'),
 	path('incrementviews', views.IncrementViewsView.as_view(), name='api_incrementviews'),
+	path('videos', views.VideoView.as_view(), name='api_videos'),
+	path('videos/status/<watch_id>', views.VideoStatusView.as_view(), name='api_video_status'),
 	path('videos/<channel_id>', views.VideoViewSet.as_view({'get' : 'list'}), name='api_videos_from_channel'),
 	path('uploadavatar', views.UploadAvatarView.as_view(), name='api_upload_avatar'),
 ]

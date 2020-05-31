@@ -18,7 +18,7 @@
 		<div class="nav__section">
 			<a class="nav__item" href="{% url 'web_home' %}">Browse</a>
 			<div class="seperator">|</div>
-			<a class="nav__item" href="#">Upload</a>
+			<a class="nav__item" href="{% url 'web_upload_video' %}">Upload</a>
 		</div>
 	</div>
 
@@ -35,8 +35,8 @@
 					    <a href="{% url 'web_dashboard_settings' %}">Manage your TRACLE Account</a>
 					  </div>
 					</div>
-					<a class="item" href="#">Browse</a>
-					<a class="item" href="#">Upload</a>
+					<a class="item" href="{% url 'web_home' %}">Browse</a>
+					<a class="item" href="{% url 'web_upload_video' %}">Upload</a>
 					<a class="item" href="{% url 'web_signout' %}">Sign Out</a>
 				</div>
 			{% else %}

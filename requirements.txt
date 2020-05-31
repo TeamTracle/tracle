@@ -4,7 +4,6 @@
 #
 #    pip-compile requirements.in
 #
--e git+https://github.com/ajacobsen/django-video-encoding.git@f88b4b296024a2f1dfaadfcfcc3744f36ef5812d#egg=django_video_encoding  # via -r requirements.in
 asgiref==3.2.3            # via django
 click==7.0                # via rq
 django-appconf==1.0.3     # via -r requirements.in, django-compressor
