@@ -4,8 +4,8 @@
 #
 #    pip-compile requirements_dev.in
 #
-asgiref==3.2.3            # via django
-django-debug-toolbar==2.2
-django==3.0.3             # via django-debug-toolbar
-pytz==2019.3              # via django
-sqlparse==0.3.0           # via django, django-debug-toolbar
+asgiref==3.2.3            # via -c requirements.txt, django
+django-debug-toolbar==2.2  # via -r requirements_dev.in
+django==3.0.7             # via -c requirements.txt, django-debug-toolbar
+pytz==2019.3              # via -c requirements.txt, django
+sqlparse==0.3.0           # via -c requirements.txt, django, django-debug-toolbar
