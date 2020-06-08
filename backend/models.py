@@ -127,7 +127,7 @@ class Video(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 
     def __str__(self):
-        return str(self.title)
+        return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
     def get_thumbnail(self):
         if self.thumbnail:
