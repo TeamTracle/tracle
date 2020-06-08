@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import base64
 import random
+import json
 
 from backend.models import get_media_location
 
@@ -12,19 +13,29 @@ def _run(cmd):
         print(p.stderr)
     return p
 
-def create_thumbnail(in_file, timestamp, size='0', out_file=None):
+def get_video_duration(in_file):
+    cmd = ['ffprobe', '-i', in_file, '-v', 'quiet', '-print_format', 'json', '-show_format']
+    p = _run(cmd)
+    data = json.loads(p.stdout)
+    return int(float(data['format']['duration']))
+
+def get_random_timestamp(duration, offset=1):
+    return random.randint(offset, duration)
+
+def create_thumbnail(in_file, timestamp, size='1280x720', out_file=None):
     if not out_file:
         _, out_file = tempfile.mkstemp(suffix='.png')
-    cmd = ['ffmpegthumbnailer', '-i', in_file, '-o', out_file, '-t', str(timestamp), '-s', str(size)]
+    cmd = ['ffmpeg', '-ss', str(timestamp), '-i', in_file, '-vframes', '1', '-s', size, '-y', out_file]
     p = _run(cmd)
     return out_file
 
 
 def get_preview_thumbnails(file_path):
+    duration = get_video_duration(file_path)
     thumbnails = []
     for i in range(3):
-        timestamp = int(random.random()*100)
-        image_path = create_thumbnail(file_path, timestamp, size='150')
+        timestamp = get_random_timestamp(duration)
+        image_path = create_thumbnail(file_path, timestamp, size='256x144')
         with open(image_path, 'rb') as f:
             blob = base64.b64encode(f.read())
         thumbnails.append({'timestamp' : timestamp, 'file' : 'data:image/png;base64,' + blob.decode('utf-8')})
