@@ -146,8 +146,7 @@ class DashboardVideosView(DashboardBaseView):
 class DashboardEditVideoView(DashboardBaseView):
     def get(self, request, watch_id):
         video = get_video(watch_id)
-        form = VideoDetailsForm(instance=video)
-        return render(request, 'web/dashboard_edit_video.html', {'video' : video, 'form' : form})
+        return render(request, 'web/dashboard_edit_video.html', {'video' : video})
 
     def post(self, request, watch_id):
         video = get_video(watch_id)

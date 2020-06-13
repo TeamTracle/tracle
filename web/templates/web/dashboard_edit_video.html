@@ -14,55 +14,123 @@
 
 
 {% block dashboard_body %}
-	<div class="dashboard__body">
+	<div id="app" v-cloak class="dashboard__body">
 		<div class="dashboard__head">
 			<h2>{{ video.title }}</h2>
-			<div>
+			<div class="dashboard__head__right">
+				<div class="message">
+					<span class="success">[[ success_message ]]</span>
+					<span class="error">[[ error_message ]]</span>
+				</div>
 				<button class="btn btn-gray" onclick="location.href='/dashboard/videos';">Cancel</button>
-				<button class="btn btn-blue" onclick="save_form()">Save changes</button>
+				<button class="btn btn-blue" @click="save_form()">[[ confirm_button_text ]]</button>
 			</div>
 		</div>
 		<div class="dashboard__left">
 			<form id="video-form" class="video-form">
 				<h4>Video Information</h4>
 				{% csrf_token %}
-				<input id="watch_id" type="hidden" value="{{ video.watch_id }}">
+				<input id="watch_id" type="hidden" :value="video.watch_id">
+				<input id="id_thumbnail" type="hidden" name="thumbnail" :value="video.thumbnail">
 				<p>
 					<label for="id_title">Title</label>
-					{{ form.title }}
+					<input id="id_title" type="text" name="title" v-model="video.title" @input="set_unsaved">
 				</p>
 				<p>
 					<label for="id_description">Description</label>
-					{{ form.description }}
+					<textarea id="id_description" name="description" cols="40" rows="10" v-model="video.description" @input="set_unsaved"></textarea>
 				</p>
 				<p>
 					<span>Category: </span>
-					{{ form.category }}
+					<select id="id_category" name="category" v-model="category" required @change="set_unsaved">
+					  <option disabled value="">Select category</option>
+					  <option value="1">Music</option>
+					  <option value="2">Entertainment</option>
+					  <option value="3">Sports</option>
+					  <option value="4">Film &amp; Animation</option>
+					  <option value="5">News &amp; Politics</option>
+					  <option value="6">Comedy</option>
+					  <option value="7">People &amp; Blogs</option>
+					  <option value="8">Science &amp; Technology</option>
+					  <option value="9">Gaming</option>
+					  <option value="10">Howto &amp; Style</option>
+					  <option value="11">Education</option>
+					  <option value="12">Pets &amp; Animals</option>
+					  <option value="13">Auto &amp; Vehicles</option>
+					  <option value="14">Travel &amp; Events</option>
+					  <option value="15">Nonprofits &amp; Activism</option>
+					</select>
 				</p>
 			</form>
+			<div class="thumbnail-selector">
+				<img :src="this.thumbnail_url(video.auto_thumbnails[0])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[0]">
+				<img :src="this.thumbnail_url(video.auto_thumbnails[1])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[1]">
+				<img :src="this.thumbnail_url(video.auto_thumbnails[2])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[2]">
+			</div>
 		</div>
 		<div class="dashboard__right">
 			<div class="thumbnail">
-				<img src="{{ video.get_thumbnail }}">
+				<img :src="this.thumbnail_url(video.thumbnail)">
 			</div>
 		</div>
 	</div>
 {% endblock %}
 
 {% block script %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script type="text/javascript">
-	function save_form() {
-		const csrftoken = $("[name=csrfmiddlewaretoken").val();
-		const watch_id = $('#watch_id').val();
-
-		$.post('/dashboard/videos/' + watch_id, $('#video-form').serialize())
-			.done(function(data) {
-				console.log(data)
-				if (data.success) {
-					console.log('SAVED');
+	var app = new Vue({
+		delimiters: ['[[', ']]'],
+		el: '#app',
+		data: {
+			category: '{{ video.category.id }}',
+			video: {
+				watch_id: '{{ video.watch_id }}',
+				title: '{{ video.title }}',
+				description: '{{ video.description }}',
+				thumbnail: '{{ video.thumbnail }}',
+				auto_thumbnails: ['thumbnail_0.png', 'thumbnail_1.png', 'thumbnail_2.png']
+			},
+			success_message: '',
+			error_message: '',
+			unsaved_changes: false
+		},
+		computed: {
+			confirm_button_text: function () {
+				if (this.unsaved_changes) {
+					return 'Save changes';
+				} else {
+					return 'Done';
+				}
+			}
+		},
+		methods: {
+			thumbnail_url(thumb) {
+				return '/media/{{ video.channel.channel_id }}/{{video.watch_id }}/' + thumb;
+			},
+			select_thumbnail(event) {
+				this.video.thumbnail = event.target.dataset['thumbnail'];
+				this.set_unsaved();
+			},
+			set_unsaved() {
+				this.unsaved_changes = true;
+			},
+			save_form() {
+				if (this.unsaved_changes) {
+					data = new FormData(document.getElementById('video-form'));
+					axios.post('/dashboard/videos/{{ video.watch_id }}', data).then(response => {
+						this.success_message = 'Changes have been saved.';
+						this.unsaved_changes = false;
+					})
+					.catch(error => {
+						this.error_message = 'Something went wrong.';
+					});
+				} else {
 					location.href='/dashboard/videos';
 				}
-		});
-	}
+			}
+		}
+	})
 </script>
 {% endblock %}

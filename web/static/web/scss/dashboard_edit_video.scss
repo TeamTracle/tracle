@@ -15,10 +15,37 @@
 		grid-area: head;
 		justify-content: space-between;
 		align-items: center;
+
+		&__right {
+			display: flex;
+			align-items: center;
+
+			& > .message {
+
+				& > .error {
+					color: red;
+				}
+
+				& > .success {
+					color: green;
+				}
+			}
+
+			& > button {
+				margin-left: 1em;
+			}
+		}
 	}
 
 	&__left {
 		grid-area: left; 
+		border: 1px solid #aaa;
+		padding: 1em;
+
+		& > .thumbnail-selector img {
+			width: 150px;
+			height: auto;
+		}
 	}
 
 	&__right {
@@ -26,14 +53,13 @@
 
 		& > .thumbnail img {
 			max-width: 100%;
+			height: auto;
 		}
 	}
 }
 
 
 .video-form {
-	padding: 1em;
-	border: 1px solid #aaa;
 
 	& label {
 		display: block;
@@ -43,4 +69,8 @@
 	& input, & textarea {
 		width: 100%;
 	}
+}
+
+[v-cloak] {
+	display: none;
 }
