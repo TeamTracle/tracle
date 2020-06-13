@@ -37,6 +37,9 @@ class UserAdmin(BaseUserAdmin):
 
     inlines = [ChannelsInline]
 
+class VideoAdmin(admin.ModelAdmin):
+    fields = ('watch_id', 'thumbnail', 'title', 'description', 'visibility', 'views', 'created', 'uploaded_file', 'job_id', 'category', 'channel')
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Channel)
 admin.site.register(Category)

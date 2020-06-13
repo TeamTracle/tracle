@@ -37,23 +37,28 @@
 		  methods: {
 		  	open_details: function () {
 		  		location.href='/dashboard/videos/' + this.video.watch_id;
-		  	}
+		  	},
 		  },
 		  template: `
 			  <div class="video">
-			  	<img class="video__thumbnail" :src="video.thumbnail">
+			  	<img v-if="video.thumbnail" class="video__thumbnail" :src="video.thumbnail">
+			  	<div v-else style="width: 150px;">NO THUMBNAIL</div>
 			  	<div class="video__details">
 			  		<div>
 			  			<div class="video__details__title">[[video.title]]</div>
 			  			<div class="video__details__created">[[video.created]]</div>
-			  			<button class="btn btn-gray" v-on:click="open_details">Edit</button>
+			  			<button v-if="video.status != 'failed'" class="btn btn-gray" v-on:click="open_details">Edit</button>
 			  		</div>
 			  	</div>
-			  	<div class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
-			  	<div class="video__stats">
+			  	<div v-if="video.status != 'failed'" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
+			  	<div class="video__stats" v-if="video.status == 'finished'">
 			  		<div><i class="fa fa-chart-bar"></i> [[video.views]]</div>
 			  		<div><i class="fas fa-thumbs-up"></i> [[video.likes.length]]</div>
 			  		<div><i class="fas fa-thumbs-down"></i> [[video.dislikes.length]]</div>
+			  	</div>
+			  	<div v-else>
+			  		<span>[[ video.status ]]</span>
+			  		<button v-if="video.status == 'failed' "class="btn btn-gray"><i class="fa fa-trash"></i></button>
 			  	</div>
 			  </div>`
 		})
@@ -66,7 +71,9 @@
 					}
 			},
 			mounted () {
-				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => (this.videos = response['data']));
+				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => {
+					this.videos = response['data'];
+				});
 			},
 			template: `
 				<div class="video-table">

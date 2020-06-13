@@ -131,9 +131,8 @@ def video_transcode_task(video):
     p = _run(cmd)
     if p.returncode != 0:
         video.refresh_from_db()
-        video.processed = False
-        video.status = 'failed'
-        video.save(update_fields=['processed', 'status'])
+        video.video_status = video.VideoStatus.ERROR
+        video.save(update_fields=['video_status'])
         p.check_returncode()
       # -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 5000k -maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename beach/1080p_%03d.ts beach/1080p.m3u8
     master_playlist = '''
@@ -150,8 +149,7 @@ def video_transcode_task(video):
         f.write(master_playlist)
 
     video.refresh_from_db()
-    video.processed = True
-    video.status = 'finished'
-    video.save(update_fields=['processed', 'status'])
+    video.video_status = video.VideoStatus.DONE
+    video.save(update_fields=['video_status'])
     print('encoding done')
 

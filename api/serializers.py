@@ -7,10 +7,11 @@ from backend.models import Video
 class VideoSerializer(serializers.ModelSerializer):
 	created = serializers.DateTimeField(format='%c')
 	thumbnail = serializers.CharField(source='get_thumbnail')
+	status = serializers.CharField(source='get_video_status')
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'created', 'thumbnail', 'views', 'likes', 'dislikes', 'visibility']
+		fields = ['pk', 'watch_id', 'title', 'created', 'thumbnail', 'views', 'likes', 'dislikes', 'visibility', 'status']
 
 class VideoUploadSerializer(serializers.ModelSerializer):
 

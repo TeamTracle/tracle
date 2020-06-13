@@ -111,6 +111,13 @@ class Video(models.Model):
         PUBLIC = 'PUBLIC', 'Public'
         UNLISTED = 'UNLISTED', 'Unlisted'
 
+    class VideoStatus(models.TextChoices):
+        QUEUED = 'queued', 'Queued'
+        DRAFT = 'draft', 'Draft'
+        PROCESSING = 'started', 'Processing'
+        DONE = 'finished', 'Done'
+        ERROR = 'failed', 'Error'
+
     title = models.CharField(max_length=100, default='UNTITLED VIDEO')
     description = models.TextField(blank=True, null=True)
     watch_id = models.CharField(max_length=11, blank=True, null=True)
@@ -119,8 +126,7 @@ class Video(models.Model):
     created = models.DateTimeField(default=timezone.now)
     uploaded_file = models.FileField(upload_to=get_upload_location, storage=upload_fs, null=True)
     thumbnail = models.CharField(max_length=255, null=True)
-    processed = models.BooleanField(default=False)
-    status = models.CharField(max_length=255, default='queued')
+    video_status = models.CharField(max_length=255, choices=VideoStatus.choices, default=VideoStatus.DRAFT, db_column='video_status')
     job_id = models.CharField(max_length=255, null=True, blank=True)
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
@@ -136,6 +142,27 @@ class Video(models.Model):
         else:
             return ''
 
+    def get_video_status(self):
+        status = self.video_status
+        try:
+            job = Job.fetch(self.job_id, django_rq.get_connection())
+            status = job.get_status()
+            if status == 'queued':
+                status = self.VideoStatus.QUEUED
+            elif status == 'started':
+                status = self.VideoStatus.PROCESSING
+            elif status == 'finished':
+                status == self.VideoStatus.DONE
+            elif status == 'failed':
+                status == self.VideoStatus.ERROR
+        except:
+            pass
+
+        if not self.thumbnail:
+            status = self.VideoStatus.DRAFT
+
+        return status
+
     def get_url(self):
         fsmedia = FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
         return fsmedia.url(os.path.join(self.channel.channel_id, self.watch_id, 'playlist.m3u8'))
@@ -145,16 +172,6 @@ class Video(models.Model):
 
     def get_upload_fs(self):
         return FileSystemStorage(location=get_upload_location())
-
-    def get_status(self):
-        status = self.status
-        try:
-            job = Job.fetch(self.job_id, django_rq.get_connection())
-            status = job.get_status()
-        except:
-            pass
-            
-        return status
 
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

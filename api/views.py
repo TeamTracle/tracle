@@ -159,5 +159,5 @@ class VideoView(APIView):
 class VideoStatusView(View):
 	def get(self, request, watch_id):
 		video = get_video(watch_id)
-		status = video.get_status()
+		status = video.get_video_status()
 		return JsonResponse({'status' : status})
