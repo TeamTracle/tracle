@@ -164,8 +164,7 @@ class Video(models.Model):
         return status
 
     def get_url(self):
-        fsmedia = FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
-        return fsmedia.url(os.path.join(self.channel.channel_id, self.watch_id, 'playlist.m3u8'))
+        return 'https://auxzil.b-cdn.net/{}/{}/playlist.m3u8'.format(self.channel.channel_id, self.watch_id)
 
     def get_media_fs(self):
         return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))

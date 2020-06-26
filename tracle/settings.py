@@ -223,6 +223,11 @@ LOGGING = {
     },
 }
 
+BUNNYCDN = {
+    'token' : os.environ.get('BUNNYCDN_TOKEN', None),
+    'base_url' : os.environ.get('BUNNYCDN_BASE_URL', None)
+}
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
