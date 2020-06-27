@@ -18,6 +18,11 @@
 	align-items: center;
 }
 
+.upload-hints, .upload-hints ul {
+	list-style: none;
+	color: #333;
+}
+
 .error-container {
 	color: red;
 	font-size: 2rem;

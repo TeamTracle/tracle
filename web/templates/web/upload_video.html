@@ -19,8 +19,19 @@
 		<div id="app" v-cloak>
 			<div class="initial-upload" v-bind:style="{ display: displayInitialUpload }">
 				<div class="file-container">
-					<h4>Click the button below to upload a video file to your channel.</h4>
+					<h4>Click the button below to upload a video to your channel.</h4>
 					<button type="button" class="btn btn-gray" @click="selectFile()">Select Video</button>
+					<ul class="upload-hints">
+						<li>Max files size is <strong>1GB</strong></li>
+						<li>Recommended encoding settings:
+							<ul>
+								<li>Container: <strong>MP4</strong></li>
+								<li>Audio Codec: <strong>AAC-LC</strong></li>
+								<li>Video Codec: <strong>H.264</strong></li>
+								<li><strong>720p @ 5 Mbps</strong></li>
+							</ul>
+						</li>
+					</ul>
 					<form id="upload_form" method="POST" enctype="multipart/form-data">
 						{% csrf_token %}
 						<input id="id_file" name="uploaded_file" ref="file" type="file" accept="video/*" style="display: none;" @change="fileSelected()">
