@@ -13,3 +13,4 @@ django-libsass
 django-compressor-autoprefixer
 djangorestframework
 django-rq
+requests
