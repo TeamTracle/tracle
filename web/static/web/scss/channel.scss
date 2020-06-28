@@ -160,11 +160,12 @@
 	&__container {
 		display: flex;
 		flex-flow: wrap;
-		gap: 2em;
+		// gap: 2em;
 
 	}
 
 	&__video {
+		padding: 0 0.5em;
 
 		&__details {
 			font-size: 11px;
