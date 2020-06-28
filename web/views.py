@@ -164,7 +164,8 @@ class ChannelView(View):
         subscribed = False
         if request.user.is_authenticated:
             subscribed = is_subscribed(channel, get_channel(request.user))
-        return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views})
+        videos = get_videos_from_channel(channel)
+        return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos})
 
 class UploadVideoView(LoginRequiredMixin, View):
     login_url = '/signin'
