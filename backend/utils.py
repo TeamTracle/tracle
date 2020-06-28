@@ -6,6 +6,8 @@ import random
 import json
 import requests
 
+from django.conf import settings
+
 from backend import bunnycdn
 
 from backend.models import get_media_location
@@ -70,7 +72,7 @@ def video_transcode_task(video):
     cmd += [
         '-i', in_file,
         '-vf',
-        'scale=w=640:h=360:force_original_aspect_ratio=decrease',
+        'scale=w=640:h=360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2',
         '-c:a', 'aac',
         '-ar', '48000',
         '-c:v', 'h264',
@@ -90,7 +92,7 @@ def video_transcode_task(video):
     ]
     cmd += [
         '-vf',
-        'scale=w=842:h=480:force_original_aspect_ratio=decrease',
+        'scale=w=854:h=480:force_original_aspect_ratio=decrease,pad=854:480:(ow-iw)/2:(oh-ih)/2',
         '-c:a', 'aac',
         '-ar', '48000',
         '-c:v', 'h264',
@@ -111,7 +113,7 @@ def video_transcode_task(video):
     ]
     cmd += [
         '-vf',
-        'scale=w=1280:h=720:force_original_aspect_ratio=decrease',
+        'scale=w=1280:h=720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
         '-c:a', 'aac',
         '-ar', '48000',
         '-c:v', 'h264',
@@ -151,11 +153,12 @@ def video_transcode_task(video):
     with open(os.path.join(out_folder, 'playlist.m3u8'), 'w') as f:
         f.write(master_playlist)
 
-    local_files = [ f for f in os.listdir(out_folder) if f.endswith('.m3u8') or f.endswith('.ts') ]
-    for local_file in local_files:
-        bunnycdn.upload_file(os.path.join(out_folder, local_file), '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, local_file))
-        os.remove(os.path.join(out_folder, local_file))
-    bunnycdn.upload_file(video.uploaded_file.path, '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, os.path.basename(video.uploaded_file.name)))
+    if not settings.DEBUG:
+        local_files = [ f for f in os.listdir(out_folder) if f.endswith('.m3u8') or f.endswith('.ts') ]
+        for local_file in local_files:
+            bunnycdn.upload_file(os.path.join(out_folder, local_file), '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, local_file))
+            os.remove(os.path.join(out_folder, local_file))
+        bunnycdn.upload_file(video.uploaded_file.path, '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, os.path.basename(video.uploaded_file.name)))
     video.refresh_from_db()
     video.video_status = video.VideoStatus.DONE
     video.save(update_fields=['video_status'])
