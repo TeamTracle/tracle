@@ -12,7 +12,7 @@ def get_video(watch_id):
 	return Video.objects.get(watch_id__exact=watch_id)
 
 def get_videos_from_channel(channel):
-	return Video.objects.filter(channel__exact=channel)
+	return Video.objects.filter(channel__exact=channel, visibility__exact='PUBLIC', video_status=Video.VideoStatus.DONE)
 
 def get_all_categories():
 	return Category.objects.all()
