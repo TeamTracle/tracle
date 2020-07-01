@@ -53,7 +53,6 @@
     border-color: #304ea6 #304ea6 #000;
     text-shadow: 0 1px 0 rgba(0,0,0,.45);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
-    // filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#6891e7,EndColorStr=#304ea6);
     background-image: linear-gradient(to bottom,#6891e7 0,#304ea6 100%);
 
     &:hover {
@@ -72,6 +71,16 @@
 
     &:hover {
         background-color: #333;
+        background-image: linear-gradient(to top,#333 0,#333 100%);
+    }
+}
+
+.btn-red {
+    color: #efefef;
+    background-image: linear-gradient(to bottom, #fe6969 0, #f00 100%);
+    text-shadow: 0 1px #333;
+
+    &:hover {
         background-image: linear-gradient(to top,#333 0,#333 100%);
     }
 }

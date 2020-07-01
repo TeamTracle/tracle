@@ -27,6 +27,7 @@ def upload_file(local_file, remote_path):
 def delete_file(remote_path):
 	token = settings.BUNNYCDN['token']
 	url = '{}/{}'.format(settings.BUNNYCDN['base_url'], remote_path)
+	print(url)
 	r = requests.delete(
 		url,
 		headers={'AccessKey' : token})

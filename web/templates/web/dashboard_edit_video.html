@@ -22,6 +22,7 @@
 					<span class="success">[[ success_message ]]</span>
 					<span class="error">[[ error_message ]]</span>
 				</div>
+				<button class="btn btn-red" @click="delete_video()">Delete</button>
 				<button class="btn btn-gray" onclick="location.href='/dashboard/videos';">Cancel</button>
 				<button class="btn btn-blue" @click="save_form()">[[ confirm_button_text ]]</button>
 			</div>
@@ -30,7 +31,7 @@
 			<form id="video-form" class="video-form">
 				<h4>Video Information</h4>
 				{% csrf_token %}
-				<input id="watch_id" type="hidden" :value="video.watch_id">
+				<input id="watch_id" type="hidden" name="watch_id" :value="video.watch_id">
 				<input id="id_thumbnail" type="hidden" name="thumbnail" :value="video.thumbnail">
 				<p>
 					<label for="id_title">Title</label>
@@ -129,6 +130,22 @@
 				} else {
 					location.href='/dashboard/videos';
 				}
+			},
+			delete_video() {
+				console.log('HALLLOOO??')
+				data = new FormData(document.getElementById('video-form'));
+				csrftoken = data.get('csrfmiddlewaretoken');
+				axiosConfig = {
+					headers: {
+						'X-CSRFToken': csrftoken
+					}
+				}
+				axios.delete('/dashboard/videos/{{ video.watch_id }}', axiosConfig).then(response => {
+					console.log(response);
+				})
+				.catch(error => {
+					console.log(error.response)
+				});
 			}
 		}
 	})

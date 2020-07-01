@@ -153,7 +153,7 @@ def video_transcode_task(video):
     with open(os.path.join(out_folder, 'playlist.m3u8'), 'w') as f:
         f.write(master_playlist)
 
-    if not settings.DEBUG:
+    if settings.BUNNYCDN.get('enabled'):
         local_files = [ f for f in os.listdir(out_folder) if f.endswith('.m3u8') or f.endswith('.ts') ]
         for local_file in local_files:
             bunnycdn.upload_file(os.path.join(out_folder, local_file), '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, local_file))

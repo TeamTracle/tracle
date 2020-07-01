@@ -157,6 +157,15 @@ class DashboardEditVideoView(DashboardBaseView):
 
         return JsonResponse({'success' : False})
 
+    def delete(self, request, watch_id):
+        video = get_video(watch_id)
+        channel = get_channel(request.user)
+        if not video.channel == channel:
+            return JsonResponse({'success' : False}, status=400)
+        video.delete_files()
+        video.delete()
+        return JsonResponse({'success' : True})
+
 class ChannelView(View):
     def get(self, request, channel_id):
         channel = get_channel_by_id(channel_id)

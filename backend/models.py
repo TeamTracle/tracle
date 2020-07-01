@@ -1,4 +1,4 @@
-import os, string, random, magic, base64, fixedint, json
+import os, string, random, magic, base64, fixedint, json, shutil
 
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
@@ -10,6 +10,8 @@ from django.db import models
 
 import django_rq
 from django_rq.jobs import Job
+
+from backend import bunnycdn
 
 upload_fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
 
@@ -164,13 +166,19 @@ class Video(models.Model):
         return status
 
     def get_url(self):
-        return 'https://auxzil.b-cdn.net/{}/{}/playlist.m3u8'.format(self.channel.channel_id, self.watch_id)
+        return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
 
     def get_media_fs(self):
         return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
 
     def get_upload_fs(self):
         return FileSystemStorage(location=get_upload_location())
+
+    def delete_files(self):
+        bunnycdn.delete_file('{}/{}/'.format(self.channel.channel_id, self.watch_id))
+        fs = self.get_media_fs()
+        shutil.rmtree(fs.location)
+        self.uploaded_file.delete()
 
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
