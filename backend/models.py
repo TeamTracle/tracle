@@ -166,7 +166,10 @@ class Video(models.Model):
         return status
 
     def get_url(self):
-        return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
+        if settings.BUNNYCDN.get('enabled'):
+            return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
+        else:
+            return os.path.join(settings.MEDIA_URL, self.channel.channel_id, self.watch_id, 'playlist.m3u8')
 
     def get_media_fs(self):
         return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
