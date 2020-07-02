@@ -146,6 +146,13 @@ function updateLikebar(likes, dislikes) {
 // PANEL DETAILS EXPANDER
 function toggleExpander() {
 	$('#panel-details').toggleClass('panel__details--collapsed');
+	text = $('#panel_expander_text').html();
+	if (text === 'Show more') {
+		text = 'Show less';
+	} else {
+		text = 'Show more';
+	}
+	$('#panel_expander_text').html(text);
 }
 
 // SUBSCRIBE
