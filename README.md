@@ -40,6 +40,7 @@ Create a file called `.env` with the following content:
 
 ```
 export DEBUG=1
+export BUNNYCDN_ENABLED=0
 export INSTALLED_APPS="debug_toolbar" # optional
 ```
 
@@ -56,22 +57,11 @@ You can run a local development server using the following command:
 ./manage.py runserver
 ```
 
-Autoprefixer is run only on deployment or when DEBUG is set to false. You'll npm to install these node modules:
+Autoprefixer is run only on deployment or when DEBUG is set to false. You'll need npm to install these node modules:
 
 ```
 npm install -g postcss-cli autoprefixer
 ```
-
-### Loading dummy data for testing
-
-The folder backend/fixtures/ contains dummy data that can be loaded into the database, to get some more content to play around with.
-You can load it with the following command:
-
-```
-./manage.py loaddata backend/fixtures/dummy/*.json
-``` 
-
-This also includes a user with the email `user@mail.com` and password `password`
 
 ### Project structure
 
