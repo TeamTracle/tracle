@@ -103,6 +103,7 @@
 	& progress {
 		grid-area: progress;
 		height: 32px;
+		width: auto;
 	}
 
 	& > .btn {
