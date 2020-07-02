@@ -224,7 +224,7 @@ LOGGING = {
 }
 
 BUNNYCDN = {
-    'enabled' : os.environ.get('DEBUG', '0') == '1',
+    'enabled' : os.environ.get('BUNNYCDN_ENABLED', '0') == '1',
     'token' : os.environ.get('BUNNYCDN_TOKEN', None),
     'base_url' : os.environ.get('BUNNYCDN_BASE_URL', None),
     'pullzone' : os.environ.get('BUNNYCDN_PULLZONE', None)

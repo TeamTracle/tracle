@@ -16,7 +16,7 @@
 {% block dashboard_body %}
 	<div id="app" v-cloak class="dashboard__body">
 		<div class="dashboard__head">
-			<h2>{{ video.title }}</h2>
+			<h2>[[ video.title ]]</h2>
 			<div class="dashboard__head__right">
 				<div class="message">
 					<span class="success">[[ success_message ]]</span>
@@ -88,8 +88,8 @@
 			category: '{{ video.category.id }}',
 			video: {
 				watch_id: '{{ video.watch_id }}',
-				title: '{{ video.title }}',
-				description: '{{ video.description }}',
+				title: '{{ video.title|escapejs }}',
+				description: '{{ video.description|escapejs }}',
 				thumbnail: '{{ video.thumbnail }}',
 				auto_thumbnails: ['thumbnail_0.png', 'thumbnail_1.png', 'thumbnail_2.png']
 			},
