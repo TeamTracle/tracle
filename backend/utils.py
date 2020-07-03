@@ -27,10 +27,10 @@ def get_video_duration(in_file):
 def get_random_timestamp(duration, offset=1):
     return random.randint(offset, duration)
 
-def create_thumbnail(in_file, timestamp, size='1280x720', out_file=None):
+def create_thumbnail(in_file, timestamp, size=('1280','720'), out_file=None):
     if not out_file:
         _, out_file = tempfile.mkstemp(suffix='.png')
-    cmd = ['ffmpeg', '-ss', str(timestamp), '-i', in_file, '-vframes', '1', '-s', size, '-y', out_file]
+    cmd = ['ffmpeg', '-ss', str(timestamp), '-i', in_file, '-vframes', '1', '-filter:v', 'scale=w={w}:h={h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2'.format(w=size[0], h=size[1]), '-y', out_file]
     p = _run(cmd)
     return out_file
 
@@ -40,7 +40,7 @@ def get_preview_thumbnails(file_path):
     thumbnails = []
     for i in range(3):
         timestamp = get_random_timestamp(duration)
-        image_path = create_thumbnail(file_path, timestamp, size='256x144')
+        image_path = create_thumbnail(file_path, timestamp, size=('256', '144'))
         with open(image_path, 'rb') as f:
             blob = base64.b64encode(f.read())
         thumbnails.append({'timestamp' : timestamp, 'file' : 'data:image/png;base64,' + blob.decode('utf-8')})
@@ -52,7 +52,7 @@ def get_thumbnails(instance, timestamps, selected_timestamp):
     fsmedia = instance.get_media_fs()
     for i in range(3):
         timestamp = timestamps[i]
-        tmp_image_path = create_thumbnail(instance.uploaded_file.path, timestamp)
+        tmp_image_path = create_thumbnail(instance.uploaded_file.path, timestamp, size=('320', '180'))
         with open(tmp_image_path, 'rb') as f:
             image_path = fsmedia.save('thumbnail_{}.png'.format(i), f)
         if str(timestamp) == str(selected_timestamp):
