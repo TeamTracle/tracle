@@ -130,6 +130,7 @@ class Video(models.Model):
     thumbnail = models.CharField(max_length=255, null=True)
     video_status = models.CharField(max_length=255, choices=VideoStatus.choices, default=VideoStatus.DRAFT, db_column='video_status')
     job_id = models.CharField(max_length=255, null=True, blank=True)
+    is_local = models.BooleanField(default=False)
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
@@ -166,10 +167,10 @@ class Video(models.Model):
         return status
 
     def get_url(self):
-        if settings.BUNNYCDN.get('enabled'):
-            return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
-        else:
+        if self.is_local:
             return os.path.join(settings.MEDIA_URL, self.channel.channel_id, self.watch_id, 'playlist.m3u8')
+        else:
+            return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
 
     def get_media_fs(self):
         return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))

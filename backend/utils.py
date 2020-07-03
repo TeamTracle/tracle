@@ -153,13 +153,16 @@ def video_transcode_task(video):
     with open(os.path.join(out_folder, 'playlist.m3u8'), 'w') as f:
         f.write(master_playlist)
 
+    video.refresh_from_db()
     if settings.BUNNYCDN.get('enabled'):
+        video.is_local = False
         local_files = [ f for f in os.listdir(out_folder) if f.endswith('.m3u8') or f.endswith('.ts') ]
         for local_file in local_files:
             bunnycdn.upload_file(os.path.join(out_folder, local_file), '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, local_file))
             os.remove(os.path.join(out_folder, local_file))
         bunnycdn.upload_file(video.uploaded_file.path, '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, os.path.basename(video.uploaded_file.name)))
-    video.refresh_from_db()
+    else:
+        video.is_local = True
     video.video_status = video.VideoStatus.DONE
-    video.save(update_fields=['video_status'])
+    video.save(update_fields=['video_status', 'is_local'])
     print('encoding done')
