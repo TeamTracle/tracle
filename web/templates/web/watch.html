@@ -70,6 +70,7 @@
 		<div class="secondary">
 			{% include 'web/includes/secondary-feed.html' %}
 		</div>
+		{% include 'web/includes/footer.html' %}
 	</div>
 	{% csrf_token %}
 	<input id="channel_id" type="hidden" value="{{ video.channel.channel_id }}">
