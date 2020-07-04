@@ -10,6 +10,7 @@
 
 	&__content {
 		display: flex;
+		justify-content: space-between;
 		margin-top: 2em;
 		padding-bottom: 10em;
 
@@ -27,7 +28,6 @@
 		&__right {
 			display: flex;
 			justify-content: end;
-			width: 100%;
 			color: #333;
 
 			& a {
