@@ -32,6 +32,9 @@
 		  			case 'UNLISTED':
 		  				return 'fas fa-eye-slash';
 		  		}
+		  	},
+		  	get_url: function () {
+		  		return '/watch?v=' + this.video.watch_id;
 		  	}
 		  },
 		  methods: {
@@ -41,8 +44,10 @@
 		  },
 		  template: `
 			  <div class="video">
-			  	<img v-if="video.thumbnail" class="video__thumbnail" :src="video.thumbnail">
-			  	<div v-else style="width: 150px;">NO THUMBNAIL</div>
+			  	<a :href="get_url">
+			  		<img v-if="video.thumbnail" class="video__thumbnail" :src="video.thumbnail">
+			  		<div v-else style="width: 150px;">NO THUMBNAIL</div>
+		  		</a>
 			  	<div class="video__details">
 			  		<div>
 			  			<div class="video__details__title">[[video.title]]</div>
