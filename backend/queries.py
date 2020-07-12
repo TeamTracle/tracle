@@ -20,6 +20,9 @@ def get_all_categories():
 def get_category(slug):
 	return Category.objects.get(slug=slug)
 
+def get_all_channels():
+	return Channel.objects.all()
+
 def get_channel(from_user):
 	return Channel.objects.filter(user__exact=from_user)[0]
 

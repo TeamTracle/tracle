@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
-from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views
+from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views, get_all_channels
 from .tokens import account_activation_token
 
 class HomeView(View):
@@ -175,6 +175,11 @@ class ChannelView(View):
             subscribed = is_subscribed(channel, get_channel(request.user))
         videos = get_videos_from_channel(channel)
         return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos})
+
+class ChannelsView(View):
+    def get(self, request):
+        channels = get_all_channels()
+        return render(request, 'web/channels.html', {'channels' : channels})
 
 class UploadVideoView(LoginRequiredMixin, View):
     login_url = '/signin'

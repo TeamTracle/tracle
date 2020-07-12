@@ -3,7 +3,7 @@
 <nav class="sidebar">
 	{% if request.user.is_authenticated %}
 		<div class="sidebar__header">
-			<button class="btn btn-blue sidebar__header__button"><i class="fas fa-plus-circle"></i> Browse channels</button>
+			<a style="text-decoration: none" href="{% url 'web_channels' %}"><button class="btn btn-blue sidebar__header__button"><i class="fas fa-plus-circle"></i> Browse channels</button></a>
 		</div>
 		<div class="sidebar__profile">
             <img class="sidebar__profile__avatar" src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">

@@ -9,6 +9,7 @@ urlpatterns = [
 	path('signout', views.SignoutView.as_view(), name='web_signout'),
 	path('watch', views.WatchView.as_view(), name='web_watch'),
 	path('channel/<channel_id>', views.ChannelView.as_view(), name='web_channel'),
+	path('channels', views.ChannelsView.as_view(), name='web_channels'),
 	path('upload', views.UploadVideoView.as_view(), name='web_upload_video'),
 	path('dashboard', views.DashboardBaseView.as_view(), name='web_dashboard'),
 	path('dashboard/settings', views.DashboardSettingsView.as_view(), name='web_dashboard_settings'),
