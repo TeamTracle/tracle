@@ -179,9 +179,11 @@ class Video(models.Model):
         return FileSystemStorage(location=get_upload_location())
 
     def delete_files(self):
-        bunnycdn.delete_file('{}/{}/'.format(self.channel.channel_id, self.watch_id))
+        if not self.is_local:
+            bunnycdn.delete_file('{}/{}/'.format(self.channel.channel_id, self.watch_id))
         fs = self.get_media_fs()
-        shutil.rmtree(fs.location)
+        if os.path.exists(fs.location):
+            shutil.rmtree(fs.location)
         self.uploaded_file.delete()
 
 class Likes(models.Model):
