@@ -15,8 +15,11 @@
 
 .channels-container {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
 	grid-gap: 1em;
+
+	@media only screen and (min-width: 768px) {
+		grid-template-columns: 1fr 1fr;
+	}
 }
 
 .channel {
@@ -50,7 +53,10 @@
 
 	&__name {
 		grid-area: name;
-		font-size: 3rem;
+		font-size: 2em;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&__details {
