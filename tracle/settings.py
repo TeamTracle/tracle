@@ -182,6 +182,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.example.com')
 EMAIL_PORT = 587
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'mail@example.com')
 
 LOGGING = {
     'version' : 1,
