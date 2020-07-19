@@ -37,40 +37,36 @@ html {
 
 .footer {
 	grid-area: footer;
-	display: none;
-
-	@media only screen and (min-width: 1280px) {
-		display: block;
-	}
+	display: block;
 }
 
 // ######################################
 
-.bottom-nav {
-	position: fixed;
-	width: 100vw;
-	bottom: 0;
-	display: flex;
-	background-color: #333;
-	justify-content: space-evenly;
-	padding: 8px;
-	background-image: linear-gradient(to bottom, #333333 0, #262626 100%);
+// .bottom-nav {
+// 	position: fixed;
+// 	width: 100vw;
+// 	bottom: 0;
+// 	display: flex;
+// 	background-color: #333;
+// 	justify-content: space-evenly;
+// 	padding: 8px;
+// 	background-image: linear-gradient(to bottom, #333333 0, #262626 100%);
 
-	@media only screen and (min-width: 768px) {
-		display: none;
-	}
+// 	@media only screen and (min-width: 768px) {
+// 		display: none;
+// 	}
 
-	&__item {
-		color: hsla(0,0%,93.3%,.6);
-		font-size: 2rem;
-		width: 100%;
-		text-align: center;
-	}
+// 	&__item {
+// 		color: hsla(0,0%,93.3%,.6);
+// 		font-size: 2rem;
+// 		width: 100%;
+// 		text-align: center;
+// 	}
 
-	&__item.active {
-		color: white;
-	}
-}
+// 	&__item.active {
+// 		color: white;
+// 	}
+// }
 
 @media only screen and (min-width: 768px) {
 	#header-drop {
