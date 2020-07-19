@@ -28,6 +28,9 @@
 					<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="#">{{ category.title }}</a></li>
 				{% endfor %}
 			</ul>
+			{% if not videos %}
+				<p style="margin: 2em auto; text-align: center">We couldn't find any videos, sorry.</p>
+			{% else %}
 			<div class="feed__container">
 				{% for video in videos %}
 				<div class="feed__video">
@@ -42,6 +45,7 @@
 				</div>
 				{% endfor %}
 			</div>
+			{% endif %}
 		</div>
 	</div>
 	<div class="secondary">

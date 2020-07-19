@@ -23,9 +23,9 @@
 		</div>
 	{% endif %}
 	<ul class="sidebar__guide">
-		<li class="sidebar__guide__item"><i class="fas fa-list sidebar__guide__item__icon"></i><a href="#">From Tracle</a></li>
-		<li class="sidebar__guide__item"><i class="fas fa-chart-bar sidebar__guide__item__icon"></i><a href="#">Trending</a></li>
-		<li class="sidebar__guide__item"><i class="fas fa-star sidebar__guide__item__icon"></i><a href="#">Popular</a></li>
+		<li class="sidebar__guide__item"><i class="fas fa-list sidebar__guide__item__icon"></i><a href="{% url 'web_home' %}">From Tracle</a></li>
+		<!-- <li class="sidebar__guide__item"><i class="fas fa-chart-bar sidebar__guide__item__icon"></i><a href="#">Trending</a></li> -->
+		<!-- <li class="sidebar__guide__item"><i class="fas fa-star sidebar__guide__item__icon"></i><a href="#">Popular</a></li> -->
 		{% for category in categories %}
 			<li id="{{ category.slug }}" class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="/?c={{ category.slug }}">{{ category.title }}</a></li>
 		{% endfor %}
