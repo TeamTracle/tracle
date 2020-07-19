@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django_rq',
     'compressor',
     'rest_framework',
+    'cacheops',
 ] 
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 
@@ -237,4 +238,18 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     # ]
+}
+
+CACHEOPS_REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 1,
+}
+
+CACHEOPS_DEFAULTS = {
+    'timeout': 60*60
+}
+CACHEOPS = {
+    'backend.*': {'ops': {'get', 'fetch'}},
+    '*.*': {},
 }

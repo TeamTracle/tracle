@@ -14,3 +14,4 @@ django-compressor-autoprefixer
 djangorestframework
 django-rq
 requests
+django-cacheops

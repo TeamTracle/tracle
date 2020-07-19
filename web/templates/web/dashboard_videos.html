@@ -83,7 +83,12 @@
 			template: `
 				<div class="video-table">
 					<h2 class="dashboard__primary__heading">Uploads</h2>
-					<video-entry v-for="video in videos" v-bind:key="video.pk" v-bind:video="video"></video-entry>
+					<div v-if="videos.length">
+						<video-entry v-for="video in videos" v-bind:key="video.pk" v-bind:video="video"></video-entry>
+					</div>
+					<p v-else>
+						You haven't uploaded any videos yet.
+					</p>
 				</div>`
 		})
 
