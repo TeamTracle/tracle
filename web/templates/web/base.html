@@ -32,8 +32,8 @@
           <a href="{% url 'web_dashboard_settings' %}">Manage your Tracle Account</a>
         </div>
       </div>
-      <a class="item" href="#">Browse</a>
-      <a class="item" href="#">Upload</a>
+      <a class="item" href="{% url 'web_channels' %}">Browse</a>
+      <a class="item" href="{% url 'web_upload_video' %}">Upload</a>
       <a class="item" href="{% url 'web_signout' %}">Sign Out</a>
     {% else %}
       <a class="item" href="{% url 'web_signup' %}">Create Account</a>
