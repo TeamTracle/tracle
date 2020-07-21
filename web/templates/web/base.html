@@ -13,11 +13,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% compress css %}
     <link rel="stylesheet" type="text/css" href="{% static 'web/css/normalize.css' %}">
+    <script src="https://kit.fontawesome.com/f471545931.js" crossorigin="anonymous"></script>
+    {% block css %}
+    {% endblock %}
   {% endcompress %}
-  <script src="https://kit.fontawesome.com/f471545931.js" crossorigin="anonymous"></script>
-  {% block css %}
-  {% endblock %}
-
 </head>
 
 <body>
@@ -43,9 +42,10 @@
   {% block body %}
   {% endblock %}
 
-  <script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>
-  <script src="{% static 'web/js/main.js' %}"></script>
-  
+  {% compress js %}
+    <script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'web/js/main.js' %}"></script>
+  {% endcompress %}
   {% block script %}
   {% endblock %}
 </body>

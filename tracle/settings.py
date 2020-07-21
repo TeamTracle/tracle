@@ -114,11 +114,12 @@ STATICFILES_FINDERS = [
     'compressor.finders.CompressorFinder',
 ]
 COMPRESS_PRECOMPILERS = (('text/x-scss', 'django_libsass.SassCompiler'),)
-LIBSASS_OUTPUT_STYLE = 'expanded'
+LIBSASS_OUTPUT_STYLE = 'nested'
 COMPRESS_FILTERS = {
     'css': [
         'compressor.filters.css_default.CssAbsoluteFilter',
-        'django_compressor_autoprefixer.AutoprefixerFilter'],
+        'django_compressor_autoprefixer.AutoprefixerFilter',
+        'compressor.filters.cssmin.rCSSMinFilter'],
     'js': [
         'compressor.filters.jsmin.JSMinFilter'
     ]
@@ -126,8 +127,8 @@ COMPRESS_FILTERS = {
 COMPRESS_STORAGE = STATICFILES_STORAGE
 COMPRESS_URL = STATIC_URL
 COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_ENABLED = not DEBUG
-COMPRESS_OFFLINE = not DEBUG
+COMPRESS_ENABLED = True #not DEBUG
+COMPRESS_OFFLINE = True #not DEBUG
 
 
 # for video_encoding

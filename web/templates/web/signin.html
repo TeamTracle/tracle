@@ -7,11 +7,9 @@
 {% endblock %}
 
 {% block css %}
-	{% compress css %}
-		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/signin.scss' %}">
-	{% endcompress %}
-	<script type="text/javascript" src="{% static 'web/js/main.js' %}"></script>
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/signin.scss' %}">
 {% endblock css %}
+<script type="text/javascript" src="{% static 'web/js/main.js' %}"></script>
 
 {% block body %}
 <div class="container">

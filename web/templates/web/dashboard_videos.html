@@ -3,9 +3,7 @@
 {% load compress %}
 
 {% block css %}
-	{% compress css %}
-		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/dashboard_videos.scss' %}">
-	{% endcompress %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/dashboard_videos.scss' %}">
 {% endblock css %}
 
 {% block dashboard_body %}

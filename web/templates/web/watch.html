@@ -7,10 +7,8 @@
 {% endblock %}
 
 {% block css %}
-	<link href="https://vjs.zencdn.net/7.6.6/video-js.css" rel="stylesheet" />
-	{% compress css %}
-		<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/watch.scss' %}">
-	{% endcompress %}
+	<link href="{% static 'web/css/video-js.css' %}" rel="stylesheet" />
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/watch.scss' %}">
 {% endblock css %}
 
 {% block body %}
@@ -78,7 +76,8 @@
 {% endblock %}
 
 {% block script %}
-	<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
+	{% compress js %}
+	<script src="{% static 'web/js/vendor/video.js' %}"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 	<script>
 
@@ -137,4 +136,5 @@
 		player.one('ended', handleEnded);
 
 	</script>
+	{% endcompress %}
 {% endblock %}
