@@ -76,7 +76,6 @@
 {% endblock %}
 
 {% block script %}
-	{% compress js %}
 	<script src="{% static 'web/js/vendor/video.js' %}"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 	<script>
@@ -136,5 +135,4 @@
 		player.one('ended', handleEnded);
 
 	</script>
-	{% endcompress %}
 {% endblock %}
