@@ -24,6 +24,15 @@ class HomeView(View):
         categories = get_all_categories()
         return render(request, 'web/home.html', {'videos' : videos, 'categories' : categories})
 
+
+class TermsView(View):
+    def get(self, request):
+        return render(request, 'web/terms.html')
+
+class GuidelinesView(View):
+    def get(self, request):
+        return render(request, 'web/guidelines.html')
+
 class SignupView(View):
     def get(self, request):
         form = SignupForm()
