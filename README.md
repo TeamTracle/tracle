@@ -5,7 +5,7 @@ This repository contains the source code for the website.
 ## Contributing
 Feel free to fork and make a pull request for small changes. If you're planning to change more than a couple of lines it's probably better to open an issue first.
 
-Join our [discord server](https://discord.gg/3uSAWTZ)
+Join our [discord server](https://discord.gg/gKatcJ8)
 
 ### Installation (for development)
 
