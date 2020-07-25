@@ -80,6 +80,9 @@ class SubscribeView(View):
 			return JsonResponse({'success' : False, 'error' : 'Missing channel_id.'})
 		to_channel = get_channel_by_id(channel_id) 
 
+		if from_channel.id == to_channel.id:
+			return JsonResponse({'success' : False, 'error' : 'Can not subscribe to self.'})
+
 		subscriber_count = toggle_subscription(to_channel, from_channel)
 
 		return JsonResponse({'success' : True, 'subscriber_count' : subscriber_count})
