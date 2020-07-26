@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.core.cache import cache
 
 import django_rq
 from django_rq.jobs import Job
@@ -95,7 +96,13 @@ class IncrementViewsView(View):
 		watch_id = request.POST.get('watch_id', None)
 		if not watch_id:
 			return JsonResponse({'success' : False, 'error' : 'Missing watch_id.'})
-		view_count = increment_view_count(watch_id)
+		cache_key = f"{request.META.get('REMOTE_ADDR')}_{watch_id}"
+		cache_result = cache.get(cache_key)
+		if not cache_result:
+			view_count = increment_view_count(watch_id)
+			cache.set(cache_key, True)
+		else:
+			return JsonResponse({'success' : False, 'error' : 'Something went wrong!'})
 
 		return JsonResponse({'success' : True, 'view_count' : view_count})
 
