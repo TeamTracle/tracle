@@ -23,7 +23,7 @@
 			</div>
 			<ul id="cat-list" class="sidebar__guide sidebar__guide__closed">
 				{% for category in categories %}
-					<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="#">{{ category.title }}</a></li>
+					<li class="sidebar__guide__item"><i class="fas {{ category.icon }} sidebar__guide__item__icon"></i><a href="/?c={{ category.slug }}">{{ category.title }}</a></li>
 				{% endfor %}
 			</ul>
 			{% if not videos %}
