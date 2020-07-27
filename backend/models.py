@@ -57,6 +57,7 @@ class User(AbstractBaseUser):
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
+    banned = models.BooleanField(default=False)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
 

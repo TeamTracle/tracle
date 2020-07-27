@@ -43,7 +43,7 @@ class UserAdminChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'active', 'admin')
+        fields = ('email', 'password', 'email_confirmed', 'admin', 'staff', 'banned')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -99,7 +99,7 @@ class SigninForm(forms.Form):
 
         if email is not None and password:
             user_cache = authenticate(username=email, password=password)
-            if user_cache is None:
+            if user_cache is None or user_cache.banned:
                 raise forms.ValidationError('Invalid username or password.', code='invalid')
             if not user_cache.email_confirmed:
                 raise forms.ValidationError('email address not confirmed, boi!')
