@@ -50,7 +50,7 @@
 			  		<div>
 			  			<div class="video__details__title">[[video.title]]</div>
 			  			<div class="video__details__created">[[video.created]]</div>
-			  			<button v-if="video.status != 'failed'" class="btn btn-gray" v-on:click="open_details">Edit</button>
+			  			<button class="btn btn-gray" v-on:click="open_details">Edit</button>
 			  		</div>
 			  	</div>
 			  	<div v-if="video.status != 'failed'" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
@@ -61,7 +61,6 @@
 			  	</div>
 			  	<div v-else>
 			  		<span>[[ video.status ]]</span>
-			  		<button v-if="video.status == 'failed' "class="btn btn-gray"><i class="fa fa-trash"></i></button>
 			  	</div>
 			  </div>`
 		})
