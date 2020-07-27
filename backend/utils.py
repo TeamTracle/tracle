@@ -68,70 +68,75 @@ def video_transcode_task(video):
     print(in_file)
     out_folder = get_media_location(video.channel.channel_id, video.watch_id)
     os.makedirs(out_folder, exist_ok=True)
+    available_output_formats = {
+        '360p' : [
+            '-i', in_file,
+            '-vf',
+            'scale=w=640:h=360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2',
+            '-c:a', 'aac',
+            '-ar', '48000',
+            '-c:v', 'h264',
+            '-profile:v', 'main',
+            '-crf', '20',
+            '-sc_threshold', '0',
+            '-g', '48',
+            '-keyint_min', '48',
+            '-hls_time', '4',
+            '-hls_playlist_type', 'vod',
+            '-b:v', '800k',
+            '-maxrate', '856k',
+            '-bufsize', '1200k',
+            '-b:a', '96k',
+            '-hls_segment_filename', '{}/360p_%03d.ts'.format(out_folder),
+            '{}/360p.m3u8'.format(out_folder)
+        ],
+        '480p' : [
+            '-vf',
+            'scale=w=854:h=480:force_original_aspect_ratio=decrease,pad=854:480:(ow-iw)/2:(oh-ih)/2',
+            '-c:a', 'aac',
+            '-ar', '48000',
+            '-c:v', 'h264',
+            '-profile:v', 'main',
+            '-pix_fmt', 'yuv420p',
+            '-crf', '20',
+            '-sc_threshold', '0',
+            '-g', '48',
+            '-keyint_min', '48',
+            '-hls_time', '4',
+            '-hls_playlist_type', 'vod',
+            '-b:v', '1400k',
+            '-maxrate', '1498k',
+            '-bufsize', '2100k',
+            '-b:a', '128k',
+            '-hls_segment_filename', '{}/480p_%03d.ts'.format(out_folder),
+            '{}/480p.m3u8'.format(out_folder)
+        ],
+        '720p': [
+            '-vf',
+            'scale=w=1280:h=720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
+            '-c:a', 'aac',
+            '-ar', '48000',
+            '-c:v', 'h264',
+            '-profile:v', 'main',
+            '-pix_fmt', 'yuv420p',
+            '-crf', '20',
+            '-sc_threshold', '0',
+            '-g', '48',
+            '-keyint_min', '48',
+            '-hls_time', '4',
+            '-hls_playlist_type', 'vod',
+            '-b:v', '2800k',
+            '-maxrate', '2996k',
+            '-bufsize', '4200k',
+            '-b:a', '128k',
+            '-hls_segment_filename', '{}/720p_%03d.ts'.format(out_folder),
+            '{}/720p.m3u8'.format(out_folder)
+        ] 
+    }
     cmd = ['ffmpeg', '-hide_banner', '-y']
-    cmd += [
-        '-i', in_file,
-        '-vf',
-        'scale=w=640:h=360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2',
-        '-c:a', 'aac',
-        '-ar', '48000',
-        '-c:v', 'h264',
-        '-profile:v', 'main',
-        '-crf', '20',
-        '-sc_threshold', '0',
-        '-g', '48',
-        '-keyint_min', '48',
-        '-hls_time', '4',
-        '-hls_playlist_type', 'vod',
-        '-b:v', '800k',
-        '-maxrate', '856k',
-        '-bufsize', '1200k',
-        '-b:a', '96k',
-        '-hls_segment_filename', '{}/360p_%03d.ts'.format(out_folder),
-        '{}/360p.m3u8'.format(out_folder)
-    ]
-    cmd += [
-        '-vf',
-        'scale=w=854:h=480:force_original_aspect_ratio=decrease,pad=854:480:(ow-iw)/2:(oh-ih)/2',
-        '-c:a', 'aac',
-        '-ar', '48000',
-        '-c:v', 'h264',
-        '-profile:v', 'main',
-        '-pix_fmt', 'yuv420p',
-        '-crf', '20',
-        '-sc_threshold', '0',
-        '-g', '48',
-        '-keyint_min', '48',
-        '-hls_time', '4',
-        '-hls_playlist_type', 'vod',
-        '-b:v', '1400k',
-        '-maxrate', '1498k',
-        '-bufsize', '2100k',
-        '-b:a', '128k',
-        '-hls_segment_filename', '{}/480p_%03d.ts'.format(out_folder),
-        '{}/480p.m3u8'.format(out_folder)
-    ]
-    cmd += [
-        '-vf',
-        'scale=w=1280:h=720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
-        '-c:a', 'aac',
-        '-ar', '48000',
-        '-c:v', 'h264',
-        '-profile:v', 'main',
-        '-pix_fmt', 'yuv420p',
-        '-crf', '20',
-        '-sc_threshold', '0',
-        '-g', '48',
-        '-keyint_min', '48',
-        '-hls_time', '4',
-        '-hls_playlist_type', 'vod',
-        '-b:v', '2800k',
-        '-maxrate', '2996k',
-        '-bufsize', '4200k',
-        '-b:a', '128k',
-        '-hls_segment_filename', '{}/720p_%03d.ts'.format(out_folder),
-        '{}/720p.m3u8'.format(out_folder)
-    ]
+    selected_output_formats = ['360p', '480p']
+    for output_format in selected_output_formats:
+        cmd += available_output_formats[output_format]
 
     p = _run(cmd)
     if p.returncode != 0:
@@ -139,7 +144,6 @@ def video_transcode_task(video):
         video.video_status = video.VideoStatus.ERROR
         video.save(update_fields=['video_status'])
         p.check_returncode()
-      # -vf scale=w=1920:h=1080:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type vod -b:v 5000k -maxrate 5350k -bufsize 7500k -b:a 192k -hls_segment_filename beach/1080p_%03d.ts beach/1080p.m3u8
     master_playlist = '''
 #EXTM3U
 #EXT-X-VERSION:3
