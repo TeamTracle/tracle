@@ -18,7 +18,15 @@
 	<div class="primary">
 		<div class="feed">
 			<div class="feed__header" onclick="toggleCategories()">
-				<h2>From Tracle</h2>
+				<h2>
+					{% if selected_category %}
+						<i class="fas {{ selected_category.icon }}"></i>
+						{{ selected_category.title }}
+					{% else %}
+						<i class="fas fa-list"></i>
+						From Tracle
+					{% endif %}
+				</h2>
 				<div><i id="header-drop" class="fas fa-angle-down"></i></div>
 			</div>
 			<ul id="cat-list" class="sidebar__guide sidebar__guide__closed">
@@ -90,7 +98,7 @@
 			$('#' + selected_catetory).addClass('selected');
 
 		} else {
-			console.log('NONE');
+			$('#from_tracle').addClass('selected');
 		}
 	});
 </script>

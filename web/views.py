@@ -17,12 +17,16 @@ from .tokens import account_activation_token
 class HomeView(View):
     def get(self, request):
         videos = get_latest_videos()
+        categories = get_all_categories()
+        context = {'videos' : videos, 'categories' : categories, 'selected_category' : None}
+
         category_slug = request.GET.get('c', None)
         if category_slug:
             category = get_category(category_slug)
             videos = videos.filter(category__exact=category)
-        categories = get_all_categories()
-        return render(request, 'web/home.html', {'videos' : videos, 'categories' : categories})
+            context['selected_category'] = category
+            context['videos'] = videos
+        return render(request, 'web/home.html', context)
 
 
 class TermsView(View):
