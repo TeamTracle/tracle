@@ -24,7 +24,7 @@ def get_video_duration(in_file):
     data = json.loads(p.stdout)
     return int(float(data['format']['duration']))
 
-def get_random_timestamp(duration, offset=1):
+def get_random_timestamp(duration, offset=0):
     return random.randint(offset, duration)
 
 def create_thumbnail(in_file, timestamp, size=('1280','720'), out_file=None):
