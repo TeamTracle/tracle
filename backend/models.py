@@ -87,6 +87,10 @@ class User(AbstractBaseUser):
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def update_last_login(self):
+        self.last_login = timezone.now()
+        self.save()
+
 class Channel(models.Model):
     name = models.CharField(max_length=20)
     channel_id = models.CharField(max_length=11, editable=False, blank=True)
@@ -98,6 +102,10 @@ class Channel(models.Model):
 
     def __str__(self):
         return self.name
+
+    def update_last_login(self):
+        self.last_login = timezone.now()
+        self.save()
 
 class Category(models.Model):
     title = models.CharField(max_length=100)
