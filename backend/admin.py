@@ -40,7 +40,12 @@ class UserAdmin(BaseUserAdmin):
 class VideoAdmin(admin.ModelAdmin):
     fields = ('watch_id', 'thumbnail', 'title', 'description', 'visibility', 'views', 'created', 'uploaded_file', 'job_id', 'category', 'channel')
 
+class ChannelAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
 admin.site.register(User, UserAdmin)
-admin.site.register(Channel)
+admin.site.register(Channel, ChannelAdmin)
 admin.site.register(Category)
 admin.site.register(Video)
