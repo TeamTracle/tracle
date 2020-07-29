@@ -26,8 +26,12 @@ class HomeView(View):
             videos = videos.filter(category__exact=category)
             context['selected_category'] = category
             context['videos'] = videos
-        return render(request, 'web/home.html', context)
 
+        search_terms = request.GET.get('q', None)
+        if search_terms:
+            context['videos'] = context['videos'].filter(title__icontains=search_terms)
+
+        return render(request, 'web/home.html', context)
 
 class TermsView(View):
     def get(self, request):
