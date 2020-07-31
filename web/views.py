@@ -30,6 +30,7 @@ class HomeView(View):
         search_terms = request.GET.get('q', None)
         if search_terms:
             context['videos'] = context['videos'].filter(title__icontains=search_terms)
+            context['search_term'] = search_terms
 
         return render(request, 'web/home.html', context)
 

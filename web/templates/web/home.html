@@ -19,7 +19,10 @@
 		<div class="feed">
 			<div class="feed__header" onclick="toggleCategories()">
 				<h2>
-					{% if selected_category %}
+					{% if search_term %}
+						<i class="fas fa-search"></i>
+						Results for: {{ search_term }}
+					{% elif selected_category %}
 						<i class="fas {{ selected_category.icon }}"></i>
 						{{ selected_category.title }}
 					{% else %}
@@ -90,11 +93,11 @@
 {% endblock %}
 
 {% block script %}
+{% if not search_term %}
 <script>
 	$(function() { 
 		var selected_catetory = getUrlParameter('c');
 		if (selected_catetory) {
-			console.log(selected_catetory);
 			$('#' + selected_catetory).addClass('selected');
 
 		} else {
@@ -102,4 +105,5 @@
 		}
 	});
 </script>
+{% endif %}
 {% endblock %}
