@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load static %}
 {% load compress %}
+{% load humanize %}
 
 {% block title %}
 	<title>Home - Tracle</title>
@@ -49,7 +50,7 @@
 						<div class="feed__video__details__description">{{ video.description }}</div>
 						<div class="feed__video__details__views">{{ video.views }} views</div>
 						<a href="{% url 'web_channel' video.channel.channel_id %}" class="feed__video__details__channel">{{ video.channel.name }} </a>
-						<div class="feed__video__details__timestamp">{{ video.created|date:'Y-m-d'}}</div>
+						<div class="feed__video__details__timestamp">{{ video.created|naturaltime}}</div>
 					</div>
 				</div>
 				{% endfor %}

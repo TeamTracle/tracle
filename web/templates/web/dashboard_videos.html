@@ -14,8 +14,12 @@
 {% block script %}
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="{% static 'web/js/vendor/humanized_time_span.js' %}"></script>
 	<script type="text/javascript">
 
+		Vue.filter('humanTime', function (value) {
+			return humanized_time_span(value);
+		})
 
 		Vue.component('video-entry', {
 		  delimiters: ['[[', ']]'],
@@ -49,7 +53,7 @@
 			  	<div class="video__details">
 			  		<div>
 			  			<div class="video__details__title">[[video.title]]</div>
-			  			<div class="video__details__created">[[video.created]]</div>
+			  			<div class="video__details__created">[[video.created|humanTime]]</div>
 			  			<button class="btn btn-gray" v-on:click="open_details">Edit</button>
 			  		</div>
 			  	</div>

@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load static %}
 {% load compress %}
+{% load humanize %}
 
 {% block title %}
 	<title>{{ video.title }} - Tracle</title>
@@ -46,7 +47,7 @@
 				</div>
 				<div id="panel-details" class="panel__details panel__details--collapsed">
 					<div class="panel__details__left">
-						<div class="panel__details__uploader">Uploaded by <a href="{% url 'web_channel' video.channel.channel_id %}">{{ video.channel.name }}</a> on {{ video.created }}</div>
+						<div class="panel__details__uploader">Uploaded by <a href="{% url 'web_channel' video.channel.channel_id %}">{{ video.channel.name }}</a> on {{ video.created|naturaltime }}</div>
 						<div class="panel__details__description">{{ video.description|linebreaks }}</div>
 						<div class="panel__details__minor">
 							<strong>Category:</strong><br>
