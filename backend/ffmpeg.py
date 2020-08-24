@@ -93,7 +93,7 @@ def on_message_handler(percent, frame_count, total_frames, elapsed):
 	sys.stdout.flush()
 
 def start_transcoding(video_instance):
-	out_folder = os.path.join(video_instance.playlist_file.storage.local.location, str(video_instance.channel), str(video_instance.pk))
+	out_folder = os.path.join(video_instance.playlist_file.storage.local.location, str(video_instance.channel.channel_id), str(video_instance.watch_id))
 	ffmpegprogress.start(video_instance.uploaded_file.path, out_folder, ffmpeg_callback, on_message=on_message_handler)
 	master_playlist = '''
 #EXTM3U
