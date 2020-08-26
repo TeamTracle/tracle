@@ -1,172 +1,23 @@
-import os
-import subprocess
-import tempfile
-import base64
 import random
-import json
-import requests
 
-from django.conf import settings
+from backend import ffmpeg
 
-from backend import bunnycdn
+def get_random_timestamps(duration):
+    offset = 0.1
+    timestamps = []
+    for x in range(3):
+        timestamps.append(abs(((x+1)-0.5)* duration/3))
+    return timestamps
 
-from backend.models import get_media_location
+def get_video_duration(video):
+    media_info = ffmpeg.ffprobe(video.uploaded_file.storage.local.path(video.uploaded_file.name))
+    return float(media_info['format']['duration'])
 
-def _run(cmd):
-    p = subprocess.run(cmd, capture_output=True, universal_newlines=True)
-    if p.returncode != 0:
-        print(p.stderr)
-    return p
-
-def get_video_duration(in_file):
-    cmd = ['ffprobe', '-i', in_file, '-v', 'quiet', '-print_format', 'json', '-show_format']
-    p = _run(cmd)
-    data = json.loads(p.stdout)
-    return int(float(data['format']['duration']))
-
-def get_random_timestamp(duration, offset=0):
-    return random.randint(offset, duration)
-
-def create_thumbnail(in_file, timestamp, size=('1280','720'), out_file=None):
-    if not out_file:
-        _, out_file = tempfile.mkstemp(suffix='.png')
-    cmd = ['ffmpeg', '-ss', str(timestamp), '-i', in_file, '-vframes', '1', '-filter:v', 'scale=w={w}:h={h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2'.format(w=size[0], h=size[1]), '-y', out_file]
-    p = _run(cmd)
-    return out_file
-
-
-def get_preview_thumbnails(file_path):
-    duration = get_video_duration(file_path)
-    thumbnails = []
-    for i in range(3):
-        timestamp = get_random_timestamp(duration)
-        image_path = create_thumbnail(file_path, timestamp, size=('256', '144'))
-        with open(image_path, 'rb') as f:
-            blob = base64.b64encode(f.read())
-        thumbnails.append({'timestamp' : timestamp, 'file' : 'data:image/png;base64,' + blob.decode('utf-8')})
-
-    return thumbnails
-
-def get_thumbnails(instance, timestamps, selected_timestamp):
-    thumbnails = []
-    fsmedia = instance.get_media_fs()
-    for i in range(3):
-        timestamp = timestamps[i]
-        tmp_image_path = create_thumbnail(instance.uploaded_file.path, timestamp, size=('320', '180'))
-        with open(tmp_image_path, 'rb') as f:
-            image_path = fsmedia.save('thumbnail_{}.png'.format(i), f)
-        if str(timestamp) == str(selected_timestamp):
-            instance.thumbnail = image_path
-            instance.save()
-
-    return thumbnails
-
-def video_transcode_task(video):
-    print('Start encoding')
-    print(video.watch_id)
-    in_file = video.uploaded_file.path
-    print(in_file)
-    out_folder = get_media_location(video.channel.channel_id, video.watch_id)
-    os.makedirs(out_folder, exist_ok=True)
-    available_output_formats = {
-        '360p' : [
-            '-i', in_file,
-            '-vf',
-            'scale=w=640:h=360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2',
-            '-c:a', 'aac',
-            '-ar', '48000',
-            '-c:v', 'h264',
-            '-profile:v', 'main',
-            '-crf', '20',
-            '-sc_threshold', '0',
-            '-g', '48',
-            '-keyint_min', '48',
-            '-hls_time', '4',
-            '-hls_playlist_type', 'vod',
-            '-b:v', '800k',
-            '-maxrate', '856k',
-            '-bufsize', '1200k',
-            '-b:a', '96k',
-            '-hls_segment_filename', '{}/360p_%03d.ts'.format(out_folder),
-            '{}/360p.m3u8'.format(out_folder)
-        ],
-        '480p' : [
-            '-vf',
-            'scale=w=854:h=480:force_original_aspect_ratio=decrease,pad=854:480:(ow-iw)/2:(oh-ih)/2',
-            '-c:a', 'aac',
-            '-ar', '48000',
-            '-c:v', 'h264',
-            '-profile:v', 'main',
-            '-pix_fmt', 'yuv420p',
-            '-crf', '20',
-            '-sc_threshold', '0',
-            '-g', '48',
-            '-keyint_min', '48',
-            '-hls_time', '4',
-            '-hls_playlist_type', 'vod',
-            '-b:v', '1400k',
-            '-maxrate', '1498k',
-            '-bufsize', '2100k',
-            '-b:a', '128k',
-            '-hls_segment_filename', '{}/480p_%03d.ts'.format(out_folder),
-            '{}/480p.m3u8'.format(out_folder)
-        ],
-        '720p': [
-            '-vf',
-            'scale=w=1280:h=720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2',
-            '-c:a', 'aac',
-            '-ar', '48000',
-            '-c:v', 'h264',
-            '-profile:v', 'main',
-            '-pix_fmt', 'yuv420p',
-            '-crf', '20',
-            '-sc_threshold', '0',
-            '-g', '48',
-            '-keyint_min', '48',
-            '-hls_time', '4',
-            '-hls_playlist_type', 'vod',
-            '-b:v', '2800k',
-            '-maxrate', '2996k',
-            '-bufsize', '4200k',
-            '-b:a', '128k',
-            '-hls_segment_filename', '{}/720p_%03d.ts'.format(out_folder),
-            '{}/720p.m3u8'.format(out_folder)
-        ] 
-    }
-    cmd = ['ffmpeg', '-hide_banner', '-y']
-    selected_output_formats = ['360p', '480p']
-    for output_format in selected_output_formats:
-        cmd += available_output_formats[output_format]
-
-    p = _run(cmd)
-    if p.returncode != 0:
-        video.refresh_from_db()
-        video.video_status = video.VideoStatus.ERROR
-        video.save(update_fields=['video_status'])
-        p.check_returncode()
-    master_playlist = '''
-#EXTM3U
-#EXT-X-VERSION:3
-#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360
-360p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=842x480
-480p.m3u8
-#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
-720p.m3u8
-'''
-    with open(os.path.join(out_folder, 'playlist.m3u8'), 'w') as f:
-        f.write(master_playlist)
-
-    video.refresh_from_db()
-    if settings.BUNNYCDN.get('enabled'):
-        video.is_local = False
-        local_files = [ f for f in os.listdir(out_folder) if f.endswith('.m3u8') or f.endswith('.ts') ]
-        for local_file in local_files:
-            bunnycdn.upload_file(os.path.join(out_folder, local_file), '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, local_file))
-            os.remove(os.path.join(out_folder, local_file))
-        bunnycdn.upload_file(video.uploaded_file.path, '{}/{}/{}'.format(video.channel.channel_id, video.watch_id, os.path.basename(video.uploaded_file.name)))
-    else:
-        video.is_local = True
-    video.video_status = video.VideoStatus.DONE
-    video.save(update_fields=['video_status', 'is_local'])
-    print('encoding done')
+def create_posters(video):
+    duration  = get_video_duration(video)
+    timestamps = get_random_timestamps(duration)
+    print(timestamps)
+    posters = []
+    for timestamp in timestamps:
+        posters.append(ffmpeg.create_poster(video.uploaded_file.storage.local.path(video.uploaded_file.name), timestamp))
+    return posters
