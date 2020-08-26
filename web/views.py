@@ -166,26 +166,25 @@ class DashboardVideosView(DashboardBaseView):
 
 class DashboardEditVideoView(DashboardBaseView):
     def get(self, request, watch_id):
-        video = get_video(watch_id)
-        return render(request, 'web/dashboard_edit_video.html', {'video' : video})
+        return render(request, 'web/dashboard_edit_video.html', {'watch_id' : watch_id})
 
-    def post(self, request, watch_id):
-        video = get_video(watch_id)
-        form = VideoDetailsForm(request.POST, instance=video)
-        if form.is_valid():
-            form.save()
-            return JsonResponse({'success' : True})
+    # def post(self, request, watch_id):
+    #     video = get_video(watch_id)
+    #     form = VideoDetailsForm(request.POST, instance=video)
+    #     if form.is_valid():
+    #         form.save()
+    #         return JsonResponse({'success' : True})
 
-        return JsonResponse({'success' : False})
+    #     return JsonResponse({'success' : False})
 
-    def delete(self, request, watch_id):
-        video = get_video(watch_id)
-        channel = get_channel(request.user)
-        if not video.channel == channel:
-            return JsonResponse({'success' : False}, status=400)
-        video.delete_files()
-        video.delete()
-        return JsonResponse({'success' : True})
+    # def delete(self, request, watch_id):
+    #     video = get_video(watch_id)
+    #     channel = get_channel(request.user)
+    #     if not video.channel == channel:
+    #         return JsonResponse({'success' : False}, status=400)
+    #     video.delete_files()
+    #     video.delete()
+    #     return JsonResponse({'success' : True})
 
 class ChannelView(View):
     def get(self, request, channel_id):

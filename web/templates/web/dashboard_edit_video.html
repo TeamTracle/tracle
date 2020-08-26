@@ -12,6 +12,7 @@
 
 
 {% block dashboard_body %}
+	<h1>{{ video.image_set.image_data }}</h1>
 	<div id="app" v-cloak class="dashboard__body">
 		<div class="dashboard__head">
 			<h2>[[ video.title ]]</h2>
@@ -30,7 +31,8 @@
 				<h4>Video Information</h4>
 				{% csrf_token %}
 				<input id="watch_id" type="hidden" name="watch_id" :value="video.watch_id">
-				<input id="id_thumbnail" type="hidden" name="thumbnail" :value="video.thumbnail">
+				<input id="selectedThumbnail" type="hidden" name="selectedThumbnail" :value="video.selectedThumbnailPk">
+				<input type="hidden" name="channel" :value="video.channel">
 				<p>
 					<label for="id_title">Title</label>
 					<input id="id_title" type="text" name="title" v-model="video.title" @input="set_unsaved">
@@ -41,7 +43,7 @@
 				</p>
 				<p>
 					<span>Category: </span>
-					<select id="id_category" name="category" v-model="category" required @change="set_unsaved">
+					<select id="id_category" name="category" v-model="video.category" required @change="set_unsaved">
 					  <option disabled value="">Select category</option>
 					  <option value="1">Music</option>
 					  <option value="2">Entertainment</option>
@@ -62,14 +64,14 @@
 				</p>
 			</form>
 			<div class="thumbnail-selector">
-				<img :src="this.thumbnail_url(video.auto_thumbnails[0])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[0]">
-				<img :src="this.thumbnail_url(video.auto_thumbnails[1])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[1]">
-				<img :src="this.thumbnail_url(video.auto_thumbnails[2])" @click="select_thumbnail($event)" :data-thumbnail="video.auto_thumbnails[2]">
+				<img :src="this.video.thumbnails.images[0].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[0].pk">
+				<img :src="this.video.thumbnails.images[1].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
+				<img :src="this.video.thumbnails.images[2].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[2].pk">
 			</div>
 		</div>
 		<div class="dashboard__right">
 			<div class="thumbnail">
-				<img :src="this.thumbnail_url(video.thumbnail)">
+				<img :src="this.video.selectedThumbnailSrc" :data-pk="this.video.selectedThumbnailPk">
 			</div>
 		</div>
 		<modal v-if="showModal" @close="showModal = false" @confirm-delete="delete_video_confirmed">
@@ -109,13 +111,15 @@
 		delimiters: ['[[', ']]'],
 		el: '#app',
 		data: {
-			category: '{{ video.category.id }}',
 			video: {
-				watch_id: '{{ video.watch_id }}',
-				title: '{{ video.title|escapejs }}',
-				description: '{{ video.description|escapejs }}',
-				thumbnail: '{{ video.thumbnail }}',
-				auto_thumbnails: ['thumbnail_0.png', 'thumbnail_1.png', 'thumbnail_2.png']
+				category: 0,
+				watch_id: '',
+				title: '',
+				description: '',
+				thumbnails: {images:[{},{},{}], primaryImage:{}},
+				selectedThumbnailSrc: '',
+				selectedThumbnailPk: 0,
+				channel: 0
 			},
 			success_message: '',
 			error_message: '',
@@ -131,12 +135,23 @@
 				}
 			}
 		},
+		mounted () {
+			axios.get('/api/videos/edit/{{ watch_id }}').then(response => {
+				console.log(response);
+				this.video.watch_id = response.data.watch_id;
+				this.video.title = response.data.title;
+				this.video.description = response.data.description;
+				this.video.thumbnails = response.data.thumbnails;
+				this.video.selectedThumbnailSrc = response.data.thumbnails.primaryImage.thumbnail;
+				this.video.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
+				this.video.category = response.data.category;
+				this.video.channel = response.data.channel;
+			});
+		},
 		methods: {
-			thumbnail_url(thumb) {
-				return '/media/{{ video.channel.channel_id }}/{{video.watch_id }}/' + thumb;
-			},
 			select_thumbnail(event) {
-				this.video.thumbnail = event.target.dataset['thumbnail'];
+				this.video.selectedThumbnailSrc = event.target.src;
+				this.video.selectedThumbnailPk = event.target.dataset['pk'];
 				this.set_unsaved();
 			},
 			set_unsaved() {
@@ -144,13 +159,20 @@
 			},
 			save_form() {
 				if (this.unsaved_changes) {
+					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 					data = new FormData(document.getElementById('video-form'));
-					axios.post('/dashboard/videos/{{ video.watch_id }}', data).then(response => {
+					axios.put('/api/videos/edit/{{ watch_id }}',
+						data,
+						{
+							headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}
+						}
+						).then(response => {
 						this.success_message = 'Changes have been saved.';
 						this.unsaved_changes = false;
 					})
 					.catch(error => {
 						this.error_message = 'Something went wrong.';
+						console.log(error)
 					});
 				} else {
 					location.href='/dashboard/videos';

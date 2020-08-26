@@ -24,7 +24,7 @@
 		</div>
 		<div class="primary">
 			<div class="video__container">
-				<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.get_thumbnail }}">
+				<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.get_poster }}">
 					<p class="vjs-no-js">
 						To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
 					</p>
@@ -112,7 +112,7 @@
 		});
 
 		player.src({
-			src: '{{ video.get_url }}',
+			src: '{{ video.playlist_file.url }}',
 			type: 'application/x-mpegURL'
 		});
 
