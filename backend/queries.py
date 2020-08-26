@@ -1,18 +1,18 @@
 from django.db.models import Sum
 
-from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User
+from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image
 
 def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	return Video.objects.filter(visibility__exact='PUBLIC', video_status=Video.VideoStatus.DONE)
+	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_video(watch_id):
 	return Video.objects.get(watch_id__exact=watch_id)
 
 def get_videos_from_channel(channel):
-	return Video.objects.filter(channel__exact=channel, visibility__exact='PUBLIC', video_status=Video.VideoStatus.DONE)
+	return Video.published_objects.filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_all_categories():
 	return Category.objects.all()
@@ -95,3 +95,6 @@ def increment_view_count(watch_id):
 	video.views += 1
 	video.save()
 	return video.views
+
+def get_image_by_pk(pk):
+	return Image.objects.get(pk=pk)

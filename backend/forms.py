@@ -145,4 +145,4 @@ class ChangeAvatarForm(forms.ModelForm):
 class VideoDetailsForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ('title', 'description', 'category', 'thumbnail')
+        fields = ('title', 'description', 'category')

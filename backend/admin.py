@@ -38,7 +38,7 @@ class UserAdmin(BaseUserAdmin):
     inlines = [ChannelsInline]
 
 class VideoAdmin(admin.ModelAdmin):
-    fields = ('watch_id', 'thumbnail', 'title', 'description', 'visibility', 'views', 'created', 'uploaded_file', 'job_id', 'category', 'channel')
+    fields = ('watch_id', 'title', 'description', 'visibility', 'views', 'created', 'uploaded_file', 'job_id', 'category', 'channel')
 
 class ChannelAdmin(admin.ModelAdmin):
     list_display = ('name',)
