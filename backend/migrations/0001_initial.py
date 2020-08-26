@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('visibility', models.CharField(choices=[('PRIVATE', 'Private'), ('PUBLIC', 'Public'), ('UNLISTED', 'Unlisted')], default='PUBLIC', max_length=8)),
                 ('views', models.BigIntegerField(default=0)),
                 ('created', models.DateTimeField(default=django.utils.timezone.now)),
-                ('uploaded_file', models.FileField(null=True, storage=django.core.files.storage.FileSystemStorage(location='/home/danjo/Projects/tracle/uploads'), upload_to=backend.models.get_upload_location)),
+                ('uploaded_file', models.FileField(null=True, storage=django.core.files.storage.FileSystemStorage(location='/home/danjo/Projects/tracle/uploads'), upload_to=backend.models.get_video_location)),
                 ('thumbnail', models.CharField(max_length=255, null=True)),
                 ('video_status', models.CharField(choices=[('queued', 'Queued'), ('draft', 'Draft'), ('started', 'Processing'), ('finished', 'Done'), ('failed', 'Error')], db_column='video_status', default='draft', max_length=255)),
                 ('job_id', models.CharField(blank=True, max_length=255, null=True)),

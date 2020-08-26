@@ -1,6 +1,8 @@
 import os, string, random, magic, base64, fixedint, json, shutil
 
+from django.core.exceptions import FieldError
 from django.core.files.storage import FileSystemStorage
+from django.core.files.base import File
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
@@ -11,15 +13,43 @@ from django.db import models
 import django_rq
 from django_rq.jobs import Job
 
-from backend import bunnycdn
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
-upload_fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
+from .storage import WrappedBCDNStorage
+from .fields import WrappedFileField, WrappedImageField
+from . import tasks, utils
 
-def get_media_location(channel_id, watch_id):
-    return os.path.join(settings.MEDIA_ROOT, channel_id, watch_id)
+class PublishedVideoManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True)
 
-def get_upload_location(instance, filename):
-    return os.path.join(instance.channel.channel_id, filename)
+def get_video_location(instance, filename=None):
+    if instance.pk is None:
+        raise FieldError('Model instance does not have a pk.')
+
+    if filename:
+        return f'{instance.channel.channel_id}/{instance.watch_id}/{filename}'
+    else:
+        return f'{instance.channel.channel_id}/{instance.watch_id}/'
+
+def get_image_location(instance, filename=None):
+    if filename:
+        return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/{filename}'
+    else:
+        return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/'
+
+def get_poster_media_url():
+    return os.path.join(settings.MEDIA_URL, 'posters')
+
+def get_poster_base_location():
+    return os.path.join(settings.MEDIA_ROOT, 'posters')
+
+def get_video_base_location():
+    return os.path.join(settings.MEDIA_ROOT, 'videos')
+
+def get_video_media_url():
+    return os.path.join(settings.MEDIA_URL, 'videos')
 
 class UserManager(BaseUserManager):
 
@@ -115,16 +145,51 @@ class Category(models.Model):
     def __str__(self):
         return str(self.title)
 
+class ImageSet(models.Model):
+    primary_image = models.ForeignKey('Image', null=True, blank=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def image_data(self):
+        return {
+            "pk": self.pk,
+            "primaryImage": self.primary_image.data() if self.primary_image else {},
+            "images": [image.data() for image in self.images.all()],
+        }
+
+
+class Image(models.Model):
+    image = WrappedImageField(storage=WrappedBCDNStorage(local_options={'location' : get_poster_base_location, 'base_url' : get_poster_media_url}), upload_to=get_image_location)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    image_set = models.ForeignKey(ImageSet, related_name="images", on_delete=models.CASCADE)
+    video = models.ForeignKey('Video', related_name="images", on_delete=models.CASCADE)
+
+    thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(320, 180)], format='PNG')
+
+    def toggle_primary(self):
+        if self.image_set.primary_image == self:
+            return
+        else:
+            self.image_set.primary_image = self
+        self.image_set.save()
+
+    def data(self):
+        return {
+            "pk": self.pk,
+            "is_primary": self == self.image_set.primary_image,
+            "thumbnail": self.thumbnail.url,
+        }
+
 class Video(models.Model):
 
-    class Visibility(models.TextChoices):
+    class VisibilityStatus(models.TextChoices):
         PRIVATE = 'PRIVATE', 'Private'
         PUBLIC = 'PUBLIC', 'Public'
         UNLISTED = 'UNLISTED', 'Unlisted'
-
-    class VideoStatus(models.TextChoices):
-        QUEUED = 'queued', 'Queued'
         DRAFT = 'draft', 'Draft'
+
+    class TranscodeStatus(models.TextChoices):
+        QUEUED = 'queued', 'Queued'
         PROCESSING = 'started', 'Processing'
         DONE = 'finished', 'Done'
         ERROR = 'failed', 'Error'
@@ -132,68 +197,72 @@ class Video(models.Model):
     title = models.CharField(max_length=100, default='UNTITLED VIDEO')
     description = models.TextField(blank=True, null=True)
     watch_id = models.CharField(max_length=11, blank=True, null=True)
-    visibility = models.CharField(max_length=8, choices=Visibility.choices, default=Visibility.PUBLIC)
-    views = models.BigIntegerField(default=0)
     created = models.DateTimeField(default=timezone.now)
-    uploaded_file = models.FileField(upload_to=get_upload_location, storage=upload_fs, null=True)
-    thumbnail = models.CharField(max_length=255, null=True)
-    video_status = models.CharField(max_length=255, choices=VideoStatus.choices, default=VideoStatus.DRAFT, db_column='video_status')
+
+    uploaded_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location, blank=True)
+    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location)
+    image_set = models.OneToOneField(ImageSet, on_delete=models.CASCADE, null=True)
+
+    visibility = models.CharField(max_length=8, choices=VisibilityStatus.choices, default=VisibilityStatus.PRIVATE)
+    transcode_status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED, db_column='video_status')
+    published = models.BooleanField(default=False)
+    
+    views = models.BigIntegerField(default=0)
+    
     job_id = models.CharField(max_length=255, null=True, blank=True)
-    is_local = models.BooleanField(default=False)
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 
+    objects = models.Manager()
+    published_objects = PublishedVideoManager()
+
     def __str__(self):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
-    def get_thumbnail(self):
-        if self.thumbnail:
-            fsmedia = FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
-            return fsmedia.url(os.path.join(self.channel.channel_id, self.watch_id, self.thumbnail))
+    def transcode(self):
+        django_rq.enqueue(tasks.video_transcode_task, video=self)
+
+    def create_posters(self):
+        if self.image_set:
+            for img in self.image_set.images.all():
+                img.delete()
+        else:
+            self.image_set = ImageSet.objects.create()
+            self.save()
+        poster_files = utils.create_posters(self)
+        for f in poster_files:
+            img = Image.objects.create(image_set=self.image_set, video=self)
+            img.image.save('poster.png', File(open(f, 'rb')))
+        img.toggle_primary()
+
+    def get_poster(self):
+        if self.image_set:
+            return os.path.join(settings.MEDIA_URL, 'posters', self.image_set.primary_image.image.name)
         else:
             return ''
 
-    def get_video_status(self):
-        status = self.video_status
-        try:
-            job = Job.fetch(self.job_id, django_rq.get_connection())
-            status = job.get_status()
-            if status == 'queued':
-                status = self.VideoStatus.QUEUED
-            elif status == 'started':
-                status = self.VideoStatus.PROCESSING
-            elif status == 'finished':
-                status == self.VideoStatus.DONE
-            elif status == 'failed':
-                status == self.VideoStatus.ERROR
-        except:
-            pass
-
-        if not self.thumbnail:
-            status = self.VideoStatus.DRAFT
-
-        return status
-
-    def get_url(self):
-        if self.is_local:
-            return os.path.join(settings.MEDIA_URL, self.channel.channel_id, self.watch_id, 'playlist.m3u8')
+    def get_thumbnail(self):
+        if self.image_set and self.image_set.primary_image:
+            return self.image_set.primary_image.thumbnail.url
         else:
-            return '{}/{}/{}/playlist.m3u8'.format(settings.BUNNYCDN['pullzone'], self.channel.channel_id, self.watch_id)
+            return 'csacdsf'
 
-    def get_media_fs(self):
-        return FileSystemStorage(location=get_media_location(self.channel.channel_id, self.watch_id))
+    def transfer_files(self):
+        folder = os.path.join(get_video_base_location(), get_video_location(self))
+        for f in os.listdir(folder):
+            f = get_video_location(self, filename=f)
+            self.uploaded_file.storage.transfer(f)
+        self.delete_local_files()
 
-    def get_upload_fs(self):
-        return FileSystemStorage(location=get_upload_location())
+    def delete_local_files(self):
+        folder = os.path.join(get_video_base_location(), get_video_location(self))
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
 
-    def delete_files(self):
-        if not self.is_local:
-            bunnycdn.delete_file('{}/{}/'.format(self.channel.channel_id, self.watch_id))
-        fs = self.get_media_fs()
-        if os.path.exists(fs.location):
-            shutil.rmtree(fs.location)
-        self.uploaded_file.delete()
+    def delete_remote_files(self):
+        folder = get_video_location(self)
+        self.playlist_file.storage.remote.delete(folder)
 
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
