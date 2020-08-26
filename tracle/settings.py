@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'compressor',
     'rest_framework',
     'cacheops',
+    'imagekit',
 ] 
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 
@@ -229,9 +230,10 @@ LOGGING = {
 
 BUNNYCDN = {
     'enabled' : os.environ.get('BUNNYCDN_ENABLED', '0') == '1',
-    'token' : os.environ.get('BUNNYCDN_TOKEN', None),
-    'base_url' : os.environ.get('BUNNYCDN_BASE_URL', None),
-    'pullzone' : os.environ.get('BUNNYCDN_PULLZONE', None)
+    'storage_zone_name' : os.environ.get('STORAGE_ZONE_NAME', None),
+    'access_token' : os.environ.get('BUNNYCDN_ACCESS_TOKEN', None),
+    'pullzone_url' : os.environ.get('BUNNYCDN_PULLZONE_URL', None),
+    'account_token' : os.environ.get('BUNNYCDN_ACCOUNT_TOKEN', None)
 }
 
 REST_FRAMEWORK = {
