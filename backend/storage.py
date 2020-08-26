@@ -132,6 +132,14 @@ class CustomFileSystemStorage(FileSystemStorage):
         else:
             return os.path.abspath(self.base_location)
 
+    @cached_property
+    def base_url(self):
+        if callable(self._base_url):
+            self._base_url = self._base_url()
+        if self._base_url is not None and not self._base_url.endswith('/'):
+            self._base_url += '/'
+        return self._value_or_setting(self._base_url, settings.MEDIA_URL)
+
 @deconstructible
 class BCDNStorage(Storage):
     def __init__(self, storage_zone_name=None, access_token=None, account_token=None, pullzone_url=None, debug=False):
