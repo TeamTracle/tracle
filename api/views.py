@@ -1,6 +1,6 @@
 import json
-import os
-
+# video.image_set.image_data() os
+# 
 from PIL import Image
 from io import BytesIO
 
@@ -20,11 +20,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import VideoSerializer, VideoUploadSerializer
+from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count
-from backend.utils import video_transcode_task, get_thumbnails, get_preview_thumbnails
+from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk
 from backend.models import Video
 from backend.forms import VideoDetailsForm
 
@@ -126,42 +125,69 @@ class UploadAvatarView(View):
 		result = {'success' : 'idk'}
 		return JsonResponse(result)
 
-class VideoView(APIView):
+class VideoEditView(APIView):
 	permission_classes = [IsAuthenticated|ReadOnly]
 
 	def get(self, request, watch_id):
 		video = get_video(watch_id)
 		serializer = VideoSerializer(video)
-		return Response(serializer.data)
+		serialized_data = serializer.data
+		serialized_data['thumbnails'] = video.image_set.image_data()
+		serialized_data['category'] = video.category_id
+		serialized_data['channel'] = video.channel_id
+		return Response(serialized_data)
+
+	def put(sefl, request, watch_id):
+		video = get_video(watch_id)
+		if not request.channel == video.channel:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		serializer = VideoEditSerializer(data=request.data, instance=video)
+		if serializer.is_valid():
+			video = serializer.save()
+			selectedThumbnail = request.data.get('selectedThumbnail', None)
+			if selectedThumbnail: 
+				img = get_image_by_pk(selectedThumbnail)
+				img.toggle_primary()
+			return Response(serializer.data)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class VideoUploadView(APIView):
+	permission_classes = [IsAuthenticated|ReadOnly]
 
 	def post(self, request):
 		request.data.update({'channel' : request.channel.pk})
 		serializer = VideoUploadSerializer(data=request.data)
 		if serializer.is_valid():
 			video = serializer.save()
-			job = django_rq.enqueue(video_transcode_task, video=video)
-			video.job_id = job.id
-			video.status = job.get_status()
+			# job = django_rq.enqueue(video_transcode_task, video=video)
+			# video.job_id = job.id
+			# video.status = job.get_status()
 			video.save()
-			thumbnails = get_preview_thumbnails(video.uploaded_file.path)
+			video.create_posters()
+			video.transcode()
 			serialized_data = serializer.data
-			serialized_data['thumbnails'] = thumbnails
+			serialized_data['thumbnails'] = video.image_set.image_data()
 			serialized_data['watch_id'] = video.watch_id
-			serialized_data['channel'] = request.channel.pk
-			serialized_data['status'] = video.status
-			serialized_data['job_id'] = job.id
 			return Response(serialized_data)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 	def put(self, request):
+		print(request.data)
 		instance = Video.objects.get(watch_id=request.data.get('watch_id'))
 		if not request.channel == instance.channel:
 			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
 		serializer = VideoUploadSerializer(data=request.data, instance=instance)
 		if serializer.is_valid():
 			instance = serializer.save()
-			thumbnails = get_thumbnails(instance, [request.data.get('thumbnail_0'), request.data.get('thumbnail_1'), request.data.get('thumbnail_2')], request.data.get('thumbnail_timestamp'))
+			instance.published = True
+			instance.visibility = instance.VisibilityStatus.PUBLIC
+			selectedThumbnail = request.data.get('selectedThumbnail', None)
+			if selectedThumbnail: 
+				img = get_image_by_pk(selectedThumbnail)
+				img.toggle_primary()
+			instance.save(update_fields=['published', 'visibility'])
 			return Response(serializer.data)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -169,5 +195,5 @@ class VideoView(APIView):
 class VideoStatusView(View):
 	def get(self, request, watch_id):
 		video = get_video(watch_id)
-		status = video.get_video_status()
+		status = video.transcode_status
 		return JsonResponse({'status' : status})
