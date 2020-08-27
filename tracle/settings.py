@@ -174,7 +174,6 @@ VIDEO_ENCODING_FORMATS = {
 
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
-UPLOAD_ROOT = os.environ.get('UPLOAD_ROOT', os.path.join(BASE_DIR, 'uploads'))
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
 
 CSRF_COOKIE_DOMAIN = os.environ.get('CSRF_COOKIE_DOMAIN', 'localhost')
@@ -230,7 +229,7 @@ LOGGING = {
 
 BUNNYCDN = {
     'enabled' : os.environ.get('BUNNYCDN_ENABLED', '0') == '1',
-    'storage_zone_name' : os.environ.get('STORAGE_ZONE_NAME', None),
+    'storage_zone_name' : os.environ.get('BUNNYCDN_STORAGE_ZONE_NAME', None),
     'access_token' : os.environ.get('BUNNYCDN_ACCESS_TOKEN', None),
     'pullzone_url' : os.environ.get('BUNNYCDN_PULLZONE_URL', None),
     'account_token' : os.environ.get('BUNNYCDN_ACCOUNT_TOKEN', None)
