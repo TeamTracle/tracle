@@ -199,7 +199,7 @@ class Video(models.Model):
     watch_id = models.CharField(max_length=11, blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
 
-    uploaded_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location, blank=True)
+    uploaded_file = WrappedFileField(max_length=255, storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location, blank=True)
     playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location)
     image_set = models.OneToOneField(ImageSet, on_delete=models.CASCADE, null=True)
 
@@ -246,7 +246,7 @@ class Video(models.Model):
         if self.image_set and self.image_set.primary_image:
             return self.image_set.primary_image.thumbnail.url
         else:
-            return 'csacdsf'
+            return ''
 
     def transfer_files(self):
         folder = os.path.join(get_video_base_location(), get_video_location(self))
