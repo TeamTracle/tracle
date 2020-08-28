@@ -137,7 +137,7 @@ class VideoEditView(APIView):
 		serialized_data['channel'] = video.channel_id
 		return Response(serialized_data)
 
-	def put(sefl, request, watch_id):
+	def put(self, request, watch_id):
 		video = get_video(watch_id)
 		if not request.channel == video.channel:
 			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
@@ -151,6 +151,15 @@ class VideoEditView(APIView):
 			return Response(serializer.data)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request, watch_id):
+		video = get_video(watch_id)
+		if not video:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		if not request.channel == video.channel:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		res = video.delete()
+		return Response(res)
 
 class VideoUploadView(APIView):
 	permission_classes = [IsAuthenticated|ReadOnly]
