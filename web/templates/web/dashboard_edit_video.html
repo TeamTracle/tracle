@@ -119,7 +119,8 @@
 				thumbnails: {images:[{},{},{}], primaryImage:{}},
 				selectedThumbnailSrc: '',
 				selectedThumbnailPk: 0,
-				channel: 0
+				channel: 0,
+				published: false
 			},
 			success_message: '',
 			error_message: '',
@@ -130,6 +131,8 @@
 			confirm_button_text: function () {
 				if (this.unsaved_changes) {
 					return 'Save changes';
+				} else if (!this.video.published) {
+					return 'Publish';
 				} else {
 					return 'Done';
 				}
@@ -137,7 +140,6 @@
 		},
 		mounted () {
 			axios.get('/api/videos/edit/{{ watch_id }}').then(response => {
-				console.log(response);
 				this.video.watch_id = response.data.watch_id;
 				this.video.title = response.data.title;
 				this.video.description = response.data.description;
@@ -146,6 +148,7 @@
 				this.video.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
 				this.video.category = response.data.category;
 				this.video.channel = response.data.channel;
+				this.video.published = response.data.published;
 			});
 		},
 		methods: {
@@ -158,7 +161,7 @@
 				this.unsaved_changes = true;
 			},
 			save_form() {
-				if (this.unsaved_changes) {
+				if (this.unsaved_changes || !this.video.published) {
 					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 					data = new FormData(document.getElementById('video-form'));
 					axios.put('/api/videos/edit/{{ watch_id }}',
@@ -169,6 +172,7 @@
 						).then(response => {
 						this.success_message = 'Changes have been saved.';
 						this.unsaved_changes = false;
+						this.video.published = true;
 					})
 					.catch(error => {
 						this.error_message = 'Something went wrong.';

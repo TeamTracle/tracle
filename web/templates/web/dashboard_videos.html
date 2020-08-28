@@ -37,6 +37,16 @@
 		  	},
 		  	get_url: function () {
 		  		return '/watch?v=' + this.video.watch_id;
+		  	},
+		  	status: function () {
+		  		switch (this.video.transcode_status) {
+		  			case 'queued':
+		  				return 'Queued for processing';
+		  			case 'started':
+		  				return 'Processing started';
+		  			case 'failed':
+		  				return 'Upload failed! :(';
+		  		}
 		  	}
 		  },
 		  methods: {
@@ -57,14 +67,17 @@
 			  			<button class="btn btn-gray" v-on:click="open_details">Edit</button>
 			  		</div>
 			  	</div>
-			  	<div v-if="video.status != 'failed'" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
-			  	<div class="video__stats" v-if="video.status == 'finished'">
+			  	<div v-if="video.published" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
+			  	<div v-else>
+			  		<span style="color: red;"><strong>DRAFT</strong></span>
+			  	</div>
+			  	<div class="video__stats" v-if="video.transcode_status == 'finished'">
 			  		<div><i class="fa fa-chart-bar"></i> [[video.views]]</div>
 			  		<div><i class="fas fa-thumbs-up"></i> [[video.likes.length]]</div>
 			  		<div><i class="fas fa-thumbs-down"></i> [[video.dislikes.length]]</div>
 			  	</div>
 			  	<div v-else>
-			  		<span>[[ video.status ]]</span>
+			  		<span>[[ status ]]</span>
 			  	</div>
 			  </div>`
 		})
@@ -79,6 +92,7 @@
 			mounted () {
 				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => {
 					this.videos = response['data'];
+					console.log(this.videos);
 				});
 			},
 			template: `

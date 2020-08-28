@@ -148,6 +148,8 @@ class VideoEditView(APIView):
 			if selectedThumbnail: 
 				img = get_image_by_pk(selectedThumbnail)
 				img.toggle_primary()
+			video.published = True
+			video.save()
 			return Response(serializer.data)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
