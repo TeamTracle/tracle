@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
 from django.views import View
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
@@ -8,21 +7,20 @@ from django.conf import settings
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-from django.core.files.base import ContentFile
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
-from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views, get_all_channels, get_published_video_or_none
+from backend import queries
 from .tokens import account_activation_token
 
 class HomeView(View):
     def get(self, request):
-        videos = get_latest_videos()
-        categories = get_all_categories()
+        videos = queries.get_latest_videos()
+        categories = queries.get_all_categories()
         context = {'videos' : videos, 'categories' : categories, 'selected_category' : None}
 
         category_slug = request.GET.get('c', None)
         if category_slug:
-            category = get_category(category_slug)
+            category = queries.get_category(category_slug)
             videos = videos.filter(category__exact=category)
             context['selected_category'] = category
             context['videos'] = videos
@@ -68,7 +66,7 @@ class ActivateView(View):
     def get(self, request, key, token):
         try:
             uid = force_text(urlsafe_base64_decode(key))
-            user = get_user(pk=uid)
+            user = queries.get_user(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
@@ -93,7 +91,7 @@ class SigninView(View):
             if user is not None:
                 login(request, user)
                 user.update_last_login()
-                channel = get_channel(user)
+                channel = queries.get_channel(user)
                 channel.update_last_login()
                 return redirect('web_home')
         return render(request, 'web/signin.html', {'form' : form})
@@ -117,19 +115,19 @@ class ResetPasswordConfirmView(PasswordResetConfirmView):
 
 class WatchView(View):
     def get(self, request):
-        videos = get_latest_videos()
+        videos = queries.get_latest_videos()
         watch_id = request.GET.get('v', None)
-        video = get_published_video_or_none(watch_id)
+        video = queries.get_published_video_or_none(watch_id)
         if not video:
             return render(request, 'web/watch.html', {'videos' : videos})
         is_liked = False
         is_disliked = False
         subscribed = False
         if request.user.is_authenticated:
-            channel = get_channel(request.user)
-            is_liked = is_video_liked(video, channel)
-            is_disliked = is_video_disliked(video, channel)
-            subscribed = is_subscribed(video.channel, channel)
+            channel = queries.get_channel(request.user)
+            is_liked = queries.is_video_liked(video, channel)
+            is_disliked = queries.is_video_disliked(video, channel)
+            subscribed = queries.is_subscribed(video.channel, channel)
 
         rating = video.likes.count() + video.dislikes.count()
         if rating > 0:
@@ -149,12 +147,12 @@ class DashboardBaseView(LoginRequiredMixin, View):
 class DashboardSettingsView(DashboardBaseView):
 
     def get(self, request):
-        channel = get_channel(request.user)
+        channel = queries.get_channel(request.user)
         form = ChangeUserForm({'email' : request.user.email, 'channel_name' : channel.name})
         return render(request, 'web/dashboard_account.html', {'form' : form, 'channel' : channel})
 
     def post(self, request):
-        channel = get_channel(request.user)
+        channel = queries.get_channel(request.user)
         form = ChangeUserForm({'email' : request.user.email, 'channel_name' : request.POST.get('channel_name')})
         context = {'form' : form, 'channel' : channel}
         if form.is_valid():
@@ -170,37 +168,19 @@ class DashboardEditVideoView(DashboardBaseView):
     def get(self, request, watch_id):
         return render(request, 'web/dashboard_edit_video.html', {'watch_id' : watch_id})
 
-    # def post(self, request, watch_id):
-    #     video = get_video(watch_id)
-    #     form = VideoDetailsForm(request.POST, instance=video)
-    #     if form.is_valid():
-    #         form.save()
-    #         return JsonResponse({'success' : True})
-
-    #     return JsonResponse({'success' : False})
-
-    # def delete(self, request, watch_id):
-    #     video = get_video(watch_id)
-    #     channel = get_channel(request.user)
-    #     if not video.channel == channel:
-    #         return JsonResponse({'success' : False}, status=400)
-    #     video.delete_files()
-    #     video.delete()
-    #     return JsonResponse({'success' : True})
-
 class ChannelView(View):
     def get(self, request, channel_id):
-        channel = get_channel_by_id(channel_id)
-        total_views = get_total_views(channel)
+        channel = queries.get_channel_by_id(channel_id)
+        total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:
-            subscribed = is_subscribed(channel, get_channel(request.user))
-        videos = get_videos_from_channel(channel)
+            subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
+        videos = queries.get_videos_from_channel(channel)
         return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos})
 
 class ChannelsView(View):
     def get(self, request):
-        channels = get_all_channels()
+        channels = queries.get_all_channels()
         return render(request, 'web/channels.html', {'channels' : channels})
 
 class UploadVideoView(LoginRequiredMixin, View):
