@@ -15,6 +15,11 @@
 {% block body %}
 	<div class="container">
 		{% include 'web/includes/nav.html' %}
+		{% if not video %}
+			<div class="primary">
+				<h2 style="text-align: center;margin-top: 10em;">Video not found</h2>
+			</div>
+		{% else %}
 		<div class="header">
 			<h2>{{ video.title }}
 			{% if user.is_admin %}<a href="/admin/backend/video/{{ video.id }}/change/" style="font-size: 1rem; color: #333"><i class="far fa-edit"></i></a>{% endif %}
@@ -68,6 +73,7 @@
 				</div>
 			</div>
 		</div>
+		{% endif %}
 		<div class="secondary">
 			{% include 'web/includes/secondary-feed.html' %}
 		</div>

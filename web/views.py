@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
-from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views, get_all_channels
+from backend.queries import get_latest_videos, get_all_categories, get_category, get_channel, get_video, is_video_liked, is_video_disliked, is_subscribed, get_user, get_videos_from_channel, get_channel_by_id, get_total_views, get_all_channels, get_published_video_or_none
 from .tokens import account_activation_token
 
 class HomeView(View):
@@ -117,9 +117,11 @@ class ResetPasswordConfirmView(PasswordResetConfirmView):
 
 class WatchView(View):
     def get(self, request):
-        watch_id = request.GET.get('v', None)
-        video = get_video(watch_id)
         videos = get_latest_videos()
+        watch_id = request.GET.get('v', None)
+        video = get_published_video_or_none(watch_id)
+        if not video:
+            return render(request, 'web/watch.html', {'videos' : videos})
         is_liked = False
         is_disliked = False
         subscribed = False

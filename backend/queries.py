@@ -9,7 +9,16 @@ def get_latest_videos():
 	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_video(watch_id):
-	return Video.objects.get(watch_id__exact=watch_id)
+	try:
+		return Video.objects.get(watch_id__exact=watch_id)
+	except Video.DoesNotExist:
+		return None
+
+def get_published_video_or_none(watch_id):
+	try:
+		return Video.published_objects.get(watch_id__exact=watch_id)
+	except Video.DoesNotExist:
+		return None
 
 def get_videos_from_channel(channel):
 	return Video.published_objects.filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
