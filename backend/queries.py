@@ -1,6 +1,6 @@
 import random
 
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image
 
@@ -8,7 +8,7 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_recommended_videos():
 	videos = get_latest_videos()

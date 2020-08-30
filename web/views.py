@@ -1,3 +1,6 @@
+import itertools
+import functools
+
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import login, authenticate, logout
@@ -34,6 +37,9 @@ class HomeView(View):
         page_number = request.GET.get('p', 1)
         paginator = Paginator(context['videos'], 20)
         context['videos'] = paginator.get_page(page_number)
+
+        context['new_videos'] = videos.order_by('-created')
+        context['counter'] = functools.partial(next, itertools.count())
 
         context['recommended_videos'] = recommended_videos = queries.get_recommended_videos()
 

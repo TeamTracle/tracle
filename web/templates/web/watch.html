@@ -124,7 +124,7 @@
 
 		player.landscapeFullscreen();
 
-		function handleEnded() {
+		function handlePlay() {
 			const view_count = $('#view_count');
 			const watch_id = $('#watch_id').val();
 			const csrftoken = $("[name=csrfmiddlewaretoken").val();
@@ -141,7 +141,7 @@
 			});
 		}
 
-		player.one('ended', handleEnded);
+		player.one('play', handlePlay);
 
 	</script>
 {% endblock %}
