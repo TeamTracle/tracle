@@ -126,7 +126,7 @@ class WatchView(View):
         watch_id = request.GET.get('v', None)
         video = queries.get_published_video_or_none(watch_id)
         if not video:
-            return render(request, 'web/watch.html', {'videos' : videos})
+            return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
         is_liked = False
         is_disliked = False
         subscribed = False
