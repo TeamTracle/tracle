@@ -1,6 +1,6 @@
 <div class="secodary-feed">
 	<div class="secondary-feed__container">
-		{% for video in videos %}
+		{% for video in recommended_videos %}
 		<a href="/watch?v={{ video.watch_id }}" class="secondary-feed__video">
 			<img class="secondary-feed__video__thumbnail" src="{{ video.get_thumbnail }}">
 			<div class="secondary-feed__video__details">

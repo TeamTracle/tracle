@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
 from backend import queries
@@ -29,6 +30,12 @@ class HomeView(View):
         if search_terms:
             context['videos'] = context['videos'].filter(title__icontains=search_terms)
             context['search_term'] = search_terms
+
+        page_number = request.GET.get('p', 1)
+        paginator = Paginator(context['videos'], 20)
+        context['videos'] = paginator.get_page(page_number)
+
+        context['recommended_videos'] = recommended_videos = queries.get_recommended_videos()
 
         return render(request, 'web/home.html', context)
 
@@ -115,7 +122,7 @@ class ResetPasswordConfirmView(PasswordResetConfirmView):
 
 class WatchView(View):
     def get(self, request):
-        videos = queries.get_latest_videos()
+        recommended_videos = queries.get_recommended_videos()
         watch_id = request.GET.get('v', None)
         video = queries.get_published_video_or_none(watch_id)
         if not video:
@@ -135,7 +142,7 @@ class WatchView(View):
         else:
             likebar_value = 50
 
-        return render(request, 'web/watch.html', {'video' : video, 'is_liked' : is_liked, 'is_disliked': is_disliked, 'likebar_value' : likebar_value, 'is_subscribed' : subscribed, 'videos' : videos})
+        return render(request, 'web/watch.html', {'video' : video, 'is_liked' : is_liked, 'is_disliked': is_disliked, 'likebar_value' : likebar_value, 'is_subscribed' : subscribed, 'recommended_videos' : recommended_videos})
 
 class DashboardBaseView(LoginRequiredMixin, View):
     login_url = '/signin'

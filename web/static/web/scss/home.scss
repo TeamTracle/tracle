@@ -261,3 +261,13 @@
 
 	}
 }
+
+.pagination {
+	color: #333;
+	margin: 1em;
+	text-align: center;
+	
+	&__step-links > a {
+		padding: 1em;
+	}
+}

@@ -1,3 +1,5 @@
+import random
+
 from django.db.models import Sum
 
 from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image
@@ -7,6 +9,12 @@ def get_user(pk):
 
 def get_latest_videos():
 	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+
+def get_recommended_videos():
+	videos = get_latest_videos()
+	start = random.randint(0, videos.count()-21)
+	return videos[start:start+20]
+	
 
 def get_video(watch_id):
 	try:

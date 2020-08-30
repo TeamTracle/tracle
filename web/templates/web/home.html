@@ -54,6 +54,23 @@
 					</div>
 				</div>
 				{% endfor %}
+				<div class="pagination">
+				    <div class="pagination__step-links">
+				        {% if videos.has_previous %}
+				            <a class="btn btn-gray" href="?p=1">&laquo;</a>
+				            <a class="btn btn-gray" href="?p={{ videos.previous_page_number }}">&lt;</a>
+				        {% endif %}
+
+				        <span class="pagination__current">
+				            Page {{ videos.number }} of {{ videos.paginator.num_pages }}
+				        </span>
+
+				        {% if videos.has_next %}
+				            <a class="btn btn-gray" href="?p={{ videos.next_page_number }}">&gt;</a>
+				            <a class="btn btn-gray" href="?p={{ videos.paginator.num_pages }}">&raquo;</a>
+				        {% endif %}
+				    </div>
+				</div>
 			</div>
 			{% endif %}
 		</div>
