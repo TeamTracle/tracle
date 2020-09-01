@@ -90,6 +90,8 @@ class User(AbstractBaseUser):
     banned = models.BooleanField(default=False)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
+    notes = models.TextField(default='', blank=True)
+    ipadress = models.GenericIPAddressField(null=True, blank=True)
 
     objects = UserManager()
 
