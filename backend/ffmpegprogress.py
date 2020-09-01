@@ -89,6 +89,9 @@ def start(infile,
           wait_time=1.0,
           initial_wait_time=2.0):
     probe = ffprobe(infile)
+    for s in probe['streams']:
+        if s['codec_type'] == 'video':
+            index = s['index']
     try:
         probe['streams'][index]
     except (IndexError, KeyError):
