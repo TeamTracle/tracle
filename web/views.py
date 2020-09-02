@@ -16,8 +16,11 @@ from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPassword
 from backend import queries
 from .tokens import account_activation_token
 
+import logging
+logger = logging.getLogger()
 class HomeView(View):
     def get(self, request):
+        logger.info(request.META['REMOTE_ADDR'])
         videos = queries.get_latest_videos()
         categories = queries.get_all_categories()
         context = {'videos' : videos, 'categories' : categories, 'selected_category' : None}

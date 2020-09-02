@@ -30,14 +30,14 @@
 
 .video-details {
 	display: grid;
-	grid-template-areas: "progress btn" "form form" "thumbnails thumbnails";
+	grid-template-areas: "progress progress btn" "form form form" "thumbnails thumbnails customthumbnail";
 	grid-template-columns: 1fr 0fr;
 
 	@media only screen and (min-width: 1280px) {
 		grid-template-areas:
 			"preview progress btn"
 			"preview form ."
-			"status thumbnails thumbnails";
+			"status thumbnails customthumbnail";
 		grid-template-columns: auto 1fr auto;
 	}
 
@@ -97,6 +97,12 @@
 				width: 100%;
 				height: auto;
 			}
+		}
+	}
+
+	&__customthumbnail { 
+		&__container {
+			grid-area: customthumbnail;
 		}
 	}
 

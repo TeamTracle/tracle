@@ -46,7 +46,7 @@
 			<div class="video-details__status">[[ status ]]</div>
 			<progress max="100" :value.prop="uploadPercentage"></progress>
 			<button class="btn btn-blue" @click="publishVideo($event)">Publish</button>
-			<form id="video_form" method='POST'>
+			<form id="video_form" method='POST' enctype="multipart/form-data">
 					{% csrf_token %}
 					<input type="hidden" name="watch_id" :value="this.watch_id">
 					<input type="hidden" name="channel" :value="this.channel">
@@ -70,7 +70,16 @@
 					<span class="selected" @click="selectThumbnail($event)"><img :src="this.thumbnails.images[0].thumbnail" :data-pk="this.thumbnails.images[0].pk"></span>
 					<span @click="selectThumbnail($event)"><img :src="this.thumbnails.images[1].thumbnail" :data-pk="this.thumbnails.images[1].pk"></span>
 					<span @click="selectThumbnail($event)"><img :src="this.thumbnails.images[2].thumbnail" :data-pk="this.thumbnails.images[2].pk"></span>
+					<span @click="selectThumbnail($event)"><img :src="this.customThumbnail" :data-pk="-1"></span>
 				</div>
+			</div>
+			<div class="video-details__customthumbnail__container">
+				<p>CUSTOM THUMBNAIL</p>
+				<button class="customthumbnail__container__button" @click="openFileDialog">Select</button>
+				<form id="thumbnail_form" method="POST">
+					<input id="id_customthumbnail" style="display: none;" name="custom_thumbnail" ref="custom_thumbnail" type="file" accept="image/*" @change="customThumbnailSelected()">
+				</form>
+
 			</div>
 		</div>	
 		</div>
@@ -89,8 +98,10 @@
 			data: {
 				watch_id: null,
 				thumbnails: {images: [{},{},{}]},
-				selectedThumbnail: {},
+				selectedThumbnail: '',
 				selectedThumbnailPk: 0,
+				customThumbnail: '/static/web/img/video_thumb_placeholder.png',
+				hasCustomThumbnail: false,
 				uploadPercentage: 0,
 				error_message: '',
 				displayVideoDetails: 'none',
@@ -108,8 +119,6 @@
 			},
 			methods: {
 				selectThumbnail(event) {
-					console.log(event.target.src);
-					console.log(event.target.dataset.pk)
 					this.selectedThumbnail = event.target.src
 					this.selectedThumbnailPk = event.target.dataset.pk;
 					[].forEach.call(event.target.parentElement.parentElement.children,
@@ -127,6 +136,9 @@
 					event.preventDefault();
 					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 					data = new FormData(document.getElementById('video_form'));
+					if (this.hasCustomThumbnail) {
+						data.append('customThumbnail', document.getElementById('id_customthumbnail').files[0]);
+					}
 					axios.put('api/videos',
 						data,
 						{
@@ -147,6 +159,19 @@
 				fileSelected() {
 					this.$refs.upload.click();
 				},
+				openFileDialog() {
+					this.$refs.custom_thumbnail.click();
+				},
+				customThumbnailSelected() {
+					var reader = new FileReader();
+					reader.onload = (e) => {
+						this.customThumbnail = e.target.result;
+						this.selectedThumbnail = this.customThumbnail;
+						this.selectedThumbnailPk = -1;
+						this.hasCustomThumbnail = true;
+					}
+					reader.readAsDataURL(this.$refs.custom_thumbnail.files[0]);
+				},
 				uploadVideo(event) {
 					event.preventDefault();
 
@@ -166,7 +191,7 @@
 							this.watch_id = response.data.watch_id;
 							this.thumbnails = response.data.thumbnails;
 							this.selectedThumbnail = response.data.thumbnails.primaryImage.thumbnail;
-							this.selectedThumbnailPk = this.selectedThumbnail.pk
+							this.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
 							this.channel = response.data.channel;
 							this.status = this.statuses[response.data.status];
 							// setInterval(function () { this.pollStatus(); }.bind(this), 3000);
