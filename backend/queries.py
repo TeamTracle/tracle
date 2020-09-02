@@ -12,9 +12,13 @@ def get_latest_videos():
 
 def get_recommended_videos():
 	videos = get_latest_videos()
-	start = random.randint(0, videos.count()-21)
-	return videos[start:start+20]
-	
+	if videos:
+		if videos.count() > 25:
+			start = random.randint(0, videos.count()-21)
+			return videos[start:start+20]
+		else:
+			return videos
+	return None
 
 def get_video(watch_id):
 	try:
