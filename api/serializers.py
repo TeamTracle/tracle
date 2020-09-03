@@ -32,7 +32,7 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Video
-		fields = ['uploaded_file', 'channel', 'title', 'description', 'category']
+		fields = ['uploaded_file', 'channel', 'title', 'description', 'category', 'visibility']
 
 	def create(self, validated_data):
 		print(validated_data)
@@ -48,7 +48,8 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		instance.category = validated_data.get('category', instance.category)
 		instance.description = validated_data.get('description', instance.description)
 		instance.title = validated_data.get('title', instance.title)
-		instance.save(update_fields=['category', 'title', 'description'])
+		instance.visibility = validated_data.get('visibility', instance.visibility)
+		instance.save(update_fields=['category', 'title', 'description', 'visibility'])
 		return instance
 
 	def validate_uploaded_file(self, value):
