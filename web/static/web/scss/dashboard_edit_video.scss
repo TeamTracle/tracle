@@ -5,9 +5,13 @@
 	
 	&__body {
 		display: grid;
-		grid-template-areas: "head head" "left right";
+		grid-template-areas: "head" "left" "right";
 		grid-template-columns: 1fr 1fr;
 		grid-column-gap: 1em;
+
+		@media only screen and (min-width: 768px) {
+			grid-template-areas: "head head" "left right";
+		}
 	}
 
 	&__head {
@@ -42,17 +46,29 @@
 		border: 1px solid #aaa;
 		padding: 1em;
 
-		& > .thumbnail-selector img {
-			width: 150px;
-			height: auto;
+		& > .thumbnail-selector {
+			display: grid;
+			gap: 1em;
+
+			@media only screen and (min-width: 1280px) {
+				grid-template-columns: 1fr 1fr 1fr 1fr;
+			}
+
+			& > img {
+				width: 150px;
+				height: auto;
+			}
 		}
 	}
 
 	&__right {
 		grid-area: right;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 
 		& > .thumbnail img {
-			max-width: 100%;
+			max-width: 320px;
 			height: auto;
 		}
 	}

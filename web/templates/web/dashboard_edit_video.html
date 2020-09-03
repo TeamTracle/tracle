@@ -64,14 +64,22 @@
 				</p>
 			</form>
 			<div class="thumbnail-selector">
-				<img :src="this.video.thumbnails.images[0].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[0].pk">
+				<img :src="this.video.thumbnails.images[0].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
 				<img :src="this.video.thumbnails.images[1].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
-				<img :src="this.video.thumbnails.images[2].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[2].pk">
+				<img :src="this.video.thumbnails.images[2].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
+				<img :src="this.video.customThumbnail" @click="select_thumbnail($event)" :data-pk="-1">
 			</div>
 		</div>
 		<div class="dashboard__right">
 			<div class="thumbnail">
 				<img :src="this.video.selectedThumbnailSrc" :data-pk="this.video.selectedThumbnailPk">
+			</div>
+			<div class="video-details__customthumbnail__container">
+				<p>CUSTOM THUMBNAIL</p>
+				<button class="customthumbnail__container__button" @click="openFileDialog">Select</button>
+				<form id="thumbnail_form" method="POST">
+					<input id="id_customthumbnail" style="display: none;" name="custom_thumbnail" ref="custom_thumbnail" type="file" accept="image/*" @change="customThumbnailSelected()">
+				</form>
 			</div>
 		</div>
 		<modal v-if="showModal" @close="showModal = false" @confirm-delete="delete_video_confirmed">
@@ -119,6 +127,8 @@
 				thumbnails: {images:[{},{},{}], primaryImage:{}},
 				selectedThumbnailSrc: '',
 				selectedThumbnailPk: 0,
+				customThumbnail: '/static/web/img/video_thumb_placeholder.png',
+				hasCustomThumbnail: false,
 				channel: 0,
 				published: false
 			},
@@ -146,6 +156,8 @@
 				this.video.thumbnails = response.data.thumbnails;
 				this.video.selectedThumbnailSrc = response.data.thumbnails.primaryImage.thumbnail;
 				this.video.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
+				this.video.customThumbnail = '/static/web/img/video_thumb_placeholder.png';
+				this.video.hasCustomThumbnail = false;
 				this.video.category = response.data.category;
 				this.video.channel = response.data.channel;
 				this.video.published = response.data.published;
@@ -157,6 +169,20 @@
 				this.video.selectedThumbnailPk = event.target.dataset['pk'];
 				this.set_unsaved();
 			},
+			openFileDialog() {
+				this.$refs.custom_thumbnail.click();
+			},
+			customThumbnailSelected() {
+				var reader = new FileReader();
+				reader.onload = (e) => {
+					this.video.customThumbnail = e.target.result;
+					this.video.selectedThumbnailSrc = this.video.customThumbnail;
+					this.video.selectedThumbnailPk = -1;
+					this.video.hasCustomThumbnail = true;
+					this.unsaved_changes = true;
+				}
+				reader.readAsDataURL(this.$refs.custom_thumbnail.files[0]);
+			},
 			set_unsaved() {
 				this.unsaved_changes = true;
 			},
@@ -164,6 +190,9 @@
 				if (this.unsaved_changes || !this.video.published) {
 					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 					data = new FormData(document.getElementById('video-form'));
+					if (this.video.hasCustomThumbnail) {
+						data.append('customThumbnail', document.getElementById('id_customthumbnail').files[0]);
+					}
 					axios.put('/api/videos/edit/{{ watch_id }}',
 						data,
 						{

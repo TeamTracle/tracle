@@ -146,9 +146,31 @@ class VideoEditView(APIView):
 		if serializer.is_valid():
 			video = serializer.save()
 			selectedThumbnail = request.data.get('selectedThumbnail', None)
-			if selectedThumbnail: 
+			if selectedThumbnail and selectedThumbnail != '-1':
+				print(selectedThumbnail)
 				img = get_image_by_pk(selectedThumbnail)
 				img.toggle_primary()
+
+			customthumbnail = request.FILES.get('customThumbnail', None)
+			if customthumbnail:
+				try:
+					in_image = Image.open(customthumbnail.temporary_file_path())
+					out_file = BytesIO()
+					in_image.thumbnail((854, 480))
+					old_size = in_image.size
+					new_size = (854,480)
+					new_image = Image.new('RGB', new_size)
+					new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
+					new_image.save(out_file, 'PNG')
+					in_image.close()
+
+					image = ImageModel.objects.create(image_set=video.image_set, video=video)
+					image.image.save('poster.png', ContentFile(out_file.getvalue()))
+					image.toggle_primary()
+
+				except IOError:
+					return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+
 			video.published = True
 			video.save()
 			return Response(serializer.data)
