@@ -21,7 +21,7 @@ def video_transcode_task(video=None):
 		video.delete_local_files()
 		print(e)
 		print('TRANSCODING FAILED!')
-		return
+		raise e
 
 	if settings.BUNNYCDN.get('enabled'):
 		print('UPLOADING FILES...')
