@@ -147,7 +147,6 @@ class VideoEditView(APIView):
 			video = serializer.save()
 			selectedThumbnail = request.data.get('selectedThumbnail', None)
 			if selectedThumbnail and selectedThumbnail != '-1':
-				print(selectedThumbnail)
 				img = get_image_by_pk(selectedThumbnail)
 				img.toggle_primary()
 

@@ -61,6 +61,13 @@
 					  <option value="14">Travel &amp; Events</option>
 					  <option value="15">Nonprofits &amp; Activism</option>
 					</select>
+					<span>Visibility: </span>
+					<select id="id_visibility" name="visibility" v-model="video.visibility" required @change="set_unsaved">
+						<option disabled value="">Select visibility</option>
+						<option value="PUBLIC">Public</option>
+						<option value="UNLISTED">Unlisted</option>
+						<option value="PRIVATE">Private</option>
+					</select>
 				</p>
 			</form>
 			<div class="thumbnail-selector">
@@ -161,6 +168,7 @@
 				this.video.category = response.data.category;
 				this.video.channel = response.data.channel;
 				this.video.published = response.data.published;
+				this.video.visibility = response.data.visibility;
 			});
 		},
 		methods: {

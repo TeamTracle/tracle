@@ -17,13 +17,15 @@ class VideoSerializer(serializers.ModelSerializer):
 class VideoEditSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Video
-		fields = ['title', 'description', 'category']
+		fields = ['title', 'description', 'category', 'visibility']
 
 	def update(self, instance, validated_data):
+		print(validated_data.get('visibility'))
 		instance.category = validated_data.get('category', instance.category)
 		instance.description = validated_data.get('description', instance.description)
 		instance.title = validated_data.get('title', instance.title)
-		instance.save(update_fields=['category', 'title', 'description'])
+		instance.visibility = validated_data.get('visibility', instance.visibility)
+		instance.save(update_fields=['category', 'title', 'description', 'visibility'])
 		return instance
 
 class VideoUploadSerializer(serializers.ModelSerializer):
