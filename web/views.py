@@ -134,8 +134,16 @@ class WatchView(View):
         recommended_videos = queries.get_recommended_videos()
         watch_id = request.GET.get('v', None)
         video = queries.get_published_video_or_none(watch_id)
+        
         if not video:
             return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+        if video.visibility == video.VisibilityStatus.PRIVATE:
+            if request.user.is_authenticated:
+                if not request.channel == video.channel:
+                    return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+            else:
+                return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+
         is_liked = False
         is_disliked = False
         subscribed = False
