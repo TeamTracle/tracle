@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Channel, Video, Category
+from .models import Channel, Video, Category, Comment
 
 User = get_user_model()
 
@@ -44,8 +44,8 @@ class ChannelAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Channel, ChannelAdmin)
 admin.site.register(Category)
 admin.site.register(Video)
+admin.site.register(Comment)

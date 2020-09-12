@@ -277,3 +277,19 @@ class Dislikes(models.Model):
 class Subscription(models.Model):
     from_channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     to_channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='subscriptions')
+
+class Comment(models.Model):
+    author = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='comments')
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='comments')
+    parent = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
+    text = models.TextField(max_length=500)
+    created = models.DateTimeField(default=timezone.now)
+
+
+class CommentLike(models.Model):
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
+
+class CommentDislike(models.Model):
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='dislikes')

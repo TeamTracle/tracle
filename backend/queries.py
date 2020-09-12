@@ -2,7 +2,7 @@ import random
 
 from django.db.models import Sum, Count
 
-from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image
+from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image, CommentLike, CommentDislike
 
 def get_user(pk):
 	return User.objects.get(pk=pk)
@@ -119,3 +119,42 @@ def increment_view_count(watch_id):
 
 def get_image_by_pk(pk):
 	return Image.objects.get(pk=pk)
+
+def is_comment_liked(comment, channel):
+	return CommentLike.objects.filter(comment__exact=comment, channel__exact=channel).exists()
+
+def _remove_comment_like(comment, channel):
+	like = CommentLike.objects.get(comment=comment, channel=channel)
+	like.delete()
+
+def is_comment_disliked(comment, channel):
+	return CommentDislike.objects.filter(comment__exact=comment, channel__exact=channel).exists()
+
+def _remove_comment_dislike(comment, channel):
+	dislike = CommentDislike.objects.get(comment=comment, channel=channel)
+	dislike.delete()
+
+def toggle_comment_like(comment, channel):
+	if is_comment_disliked(comment, channel):
+		_remove_comment_dislike(comment, channel)
+
+	like = CommentLike.objects.filter(comment=comment, channel=channel)
+	if like.exists():
+		like[0].delete()
+		return (comment.likes.count(), comment.dislikes.count())
+
+	CommentLike.objects.create(comment=comment, channel=channel)
+	return (comment.likes.count(), comment.dislikes.count())
+
+
+def toggle_comment_dislike(comment, channel):
+	if is_comment_liked(comment, channel):
+		_remove_comment_like(comment, channel)
+
+	dislike = CommentDislike.objects.filter(comment=comment, channel=channel)
+	if dislike.exists():
+		dislike[0].delete()
+		return (comment.likes.count(), comment.dislikes.count())
+
+	CommentDislike.objects.create(comment=comment, channel=channel)
+	return (comment.likes.count(), comment.dislikes.count())
