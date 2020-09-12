@@ -20,11 +20,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer
+from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk
-from backend.models import Video
+from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike
+from backend.models import Video, Comment, CommentLike
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -253,3 +253,55 @@ class VideoStatusView(View):
 		video = get_video(watch_id)
 		status = video.transcode_status
 		return JsonResponse({'status' : status})
+
+class CommentView(APIView):
+	def get(self, request, watch_id):
+		video = get_video(watch_id)
+		if not video:
+			return Response('Video not found.', status=status.HTTP_400_BAD_REQUEST)
+		queryset = Comment.objects.filter(parent_id=None, video=video)
+		serializer = CommentSerializer(queryset, many=True)
+		return Response(serializer.data)
+
+	def post(self, request, watch_id):
+		print(request.data)
+		video = get_video(watch_id)
+		if not video:
+			return Response('Video not found.', status=status.HTTP_400_BAD_REQUEST)
+		text = request.data.get('text', None)
+		if not text:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		if len(text) > 499:
+			return Response('Comment body too long.', status=status.HTTP_400_BAD_REQUEST)
+		parent = None
+		parent_id = request.data.get('parent_id', None)
+		if parent_id:
+			parent = Comment.objects.get(id=parent_id)
+			if parent.parent:
+				parent = parent.parent
+		comment = Comment.objects.create(video=video, author=request.channel, text=text, parent=parent)
+		serializer = CommentSerializer(comment)
+		return Response(serializer.data)
+
+
+class CommentLikeView(APIView):
+	permission_classes = [IsAuthenticated,]
+
+	def post(self, request):
+		comment_id = request.data.get('comment_id', None)
+		if not comment_id:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		comment = Comment.objects.get(pk=comment_id)
+		likes, dislikes = toggle_comment_like(comment, request.channel)
+		return Response({'likes' : likes, 'dislikes' : dislikes})
+
+class CommentDislikeView(APIView):
+	permission_classes = [IsAuthenticated,]
+
+	def post(self, request):
+		comment_id = request.data.get('comment_id', None)
+		if not comment_id:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+		comment = Comment.objects.get(pk=comment_id)
+		likes, dislikes = toggle_comment_dislike(comment, request.channel)
+		return Response({'likes' : likes, 'dislikes' : dislikes})

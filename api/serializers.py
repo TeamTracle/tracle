@@ -2,7 +2,7 @@ import magic
 
 from rest_framework import serializers
 
-from backend.models import Video
+from backend.models import Video, Comment, Channel, CommentLike, CommentDislike
 
 class VideoSerializer(serializers.ModelSerializer):
 	created = serializers.DateTimeField(format='%c')
@@ -58,3 +58,19 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		new_name = "".join(c for c in value.name if c.isalnum() or c in ['_', '-', '.'])
 		value.name = new_name
 		return value
+
+class CommentSerializer(serializers.ModelSerializer):
+	replies = serializers.SerializerMethodField()
+	author_name = serializers.CharField(read_only=True, source='author.name')
+	author_id = serializers.CharField(read_only=True, source='author.channel_id')
+	likes = serializers.IntegerField(source='likes.count', required=False)
+	dislikes = serializers.IntegerField(source='dislikes.count', required=False)
+
+	class Meta:
+		model = Comment
+		exclude = ['author', 'video']
+
+	def get_replies(self, obj):
+		queryset = Comment.objects.filter(parent_id=obj.id)
+		serializer = CommentSerializer(queryset, many=True)
+		return serializer.data

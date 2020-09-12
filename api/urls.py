@@ -12,4 +12,7 @@ urlpatterns = [
 	path('videos/status/<watch_id>', views.VideoStatusView.as_view(), name='api_video_status'),
 	path('videos/<channel_id>', views.VideoViewSet.as_view({'get' : 'list'}), name='api_videos_from_channel'),
 	path('uploadavatar', views.UploadAvatarView.as_view(), name='api_upload_avatar'),
+	path('comments/like', views.CommentLikeView.as_view(), name='api_comment_like'),
+	path('comments/dislike', views.CommentDislikeView.as_view(), name='api_comment_dislike'),
+	path('comments/<watch_id>', views.CommentView.as_view(), name='api_comments'),
 ]
