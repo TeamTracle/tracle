@@ -331,6 +331,13 @@
 				is_authenticated: function () {
 					return this.authenticated === "True";
 				},
+				totalComments: function () {
+					num = this.comments.length;
+					this.comments.forEach(comment => {
+						num += comment.replies.length;
+					})
+					return num;
+				},
 			},
 			mounted () {
 				axios.get('/api/comments/{{ video.watch_id }}'
@@ -359,7 +366,7 @@
 			},
 			template: `
 				<div id="comments" class="comments">
-					<h4>All Comments ([[ comments.length ]])</h4>
+					<h4>All Comments ([[ totalComments ]])</h4>
 					<form v-if="is_authenticated" id="comment-form" class="comment-form">
 						<textarea id="id_text" name="text" class="comment-form__textbox" v-model="commentText"></textarea>
 						<div class="comment-form__actions">
