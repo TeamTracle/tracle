@@ -190,6 +190,9 @@
 				},
 				is_overflowing: function () {
 					return this.el ? this.el.clientHeight < this.el.scrollHeight : false;
+				},
+				authorLink: function () {
+					return '/channel/' + this.comment.author_id;
 				}
 			},
 			mounted() {
@@ -285,7 +288,7 @@
 								Show 
 							</label>
 							<div class="comment__content__meta">
-								<span><a href="#">[[ comment.author_name ]]</a></span>
+								<span><a :href="authorLink">[[ comment.author_name ]]</a></span>
 								<span>[[ comment.created|humanTime ]]</span>
 								<span class="comment__content__meta__likes">[[ comment.likes ]] <i class="fas fa-thumbs-up"></i></span>
 								<span class="comment__content__meta__dislikes">[[ comment.dislikes ]] <i class="fas fa-thumbs-down"></i></span>
