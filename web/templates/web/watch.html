@@ -155,6 +155,11 @@
 			return humanized_time_span(value);
 		})
 
+		Vue.filter('userTags', function (value) {
+			r = /\@\((.+)\)\[(.*)\]/
+			return value.replace(r, '<a style="color: #1c62b9; text-decoration: none;" href="/channel/$2">@$1</a>');
+		})
+
 		Vue.component('comment-entry', {
 			delimiters: ['[[', ']]'],
 			props: ['comment'],
@@ -214,7 +219,7 @@
 					}
 					this.showReply = true;
 					document.getElementById(this.textId).focus();
-					this.commentText = '@' + this.comment.author_name + ' ';
+					this.commentText = '@(' + this.comment.author_name + ')[' + this.comment.author_id + ']';
 				},
 				hideReplyForm() {
 					this.showReply = false;
@@ -282,7 +287,7 @@
 						<div class="comment__content">
 							<input style="display: none;" type="checkbox" :id="comment.id">
 							<div :id="bodyId" class="comment__content__body">
-								<div v-for="line in comment.text.split('\\n')">[[ line ]]</div>
+								<div v-for="line in comment.text.split('\\n')"><div v-html="$options.filters.userTags(line)"></div></div>
 							</div>
 							<label :style="[is_overflowing ? {display: 'inline-block'} : {display: 'none'}]" :for="comment.id" class="comment__content__more">
 								Show 

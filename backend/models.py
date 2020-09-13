@@ -16,6 +16,8 @@ from django_rq.jobs import Job
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+import bleach
+
 from .storage import WrappedBCDNStorage
 from .fields import WrappedFileField, WrappedImageField
 from . import tasks, utils
@@ -285,6 +287,8 @@ class Comment(models.Model):
     text = models.TextField(max_length=500)
     created = models.DateTimeField(default=timezone.now)
 
+    def sanitized_text(self):
+        return bleach.clean(self.text, tags=[])
 
 class CommentLike(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

@@ -19,3 +19,4 @@ requests
 django-cacheops
 python-memcached
 bunnycdn-storage
+bleach

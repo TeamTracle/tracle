@@ -64,6 +64,7 @@ class CommentSerializer(serializers.ModelSerializer):
 	author_id = serializers.CharField(read_only=True, source='author.channel_id')
 	likes = serializers.IntegerField(source='likes.count', required=False)
 	dislikes = serializers.IntegerField(source='dislikes.count', required=False)
+	text = serializers.CharField(source='sanitized_text')
 
 	class Meta:
 		model = Comment
