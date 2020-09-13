@@ -5,7 +5,6 @@ from rest_framework import serializers
 from backend.models import Video, Comment, Channel, CommentLike, CommentDislike
 
 class VideoSerializer(serializers.ModelSerializer):
-	created = serializers.DateTimeField(format='%c')
 	thumbnail = serializers.CharField(source='get_thumbnail')
 	# status = serializers.CharField(source='get_video_status')
 
