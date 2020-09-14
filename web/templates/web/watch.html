@@ -119,10 +119,17 @@
 			}
 		});
 
-		player.src({
-			src: '{{ video.playlist_file.url }}',
-			type: 'application/x-mpegURL'
-		});
+		if (!videojs.browser.IS_ANY_SAFARI) {
+			player.src({
+				src: '{{ video.playlist_file.url }}',
+				type: 'application/x-mpegURL'
+			});
+		} else {
+			player.src({
+				src: '{{ video.uploaded_file.url }}',
+				type: 'video/mp4'
+			});
+		}
 
 		player.landscapeFullscreen();
 
