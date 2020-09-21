@@ -290,6 +290,9 @@ class Comment(models.Model):
     def sanitized_text(self):
         return bleach.clean(self.text, tags=[])
 
+    def __str__(self):
+        return f'Comment from {self.author.name} on {self.video.title}'
+
 class CommentLike(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
@@ -297,3 +300,45 @@ class CommentLike(models.Model):
 class CommentDislike(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='dislikes')
+
+class TicketManager(models.Manager):
+    def is_open(self):
+        return super().get_queryset().filter(status=Ticket.Status.OPEN)
+
+    def is_closed(self):
+        return super().get_queryset().filter(status=Ticket.Status.CLOSED)
+
+class Ticket(models.Model):
+    class Status(models.TextChoices):
+        OPEN = 'OP', 'Open'
+        CLOSED = 'CL', 'Closed'
+
+    class Reason(models.TextChoices):
+        SPAM = 'SP', 'Unwanted commercial content or spam'
+        PORN = 'PO', 'Pornography or sexually explicit material'
+        CHILDE_ABUSE = 'CA', 'Child abuse'
+        HATE_OR_VIOLENCE = 'HV', 'Hate speech or graphic violence'
+        HARASEMENT_OR_BULLYING = 'HB', 'Harassment or bullying'
+
+    status = models.CharField(max_length=2, choices=Status.choices, default=Status.OPEN)
+    reason = models.CharField(max_length=2, choices=Reason.choices)
+
+    objects = TicketManager()
+    
+class CommentTicket(Ticket):
+    channel = models.ForeignKey(Channel, null=True, on_delete=models.SET_NULL)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    body = models.TextField(max_length=500, blank=True)
+    created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.channel} reported Comment {self.comment.pk}'
+
+class VideoTicket(Ticket):
+    channel = models.ForeignKey(Channel, null=True, on_delete=models.SET_NULL)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    body = models.TextField(max_length=500, blank=True)
+    created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.channel} reported Video {self.video.watch_id}'

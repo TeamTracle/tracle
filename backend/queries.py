@@ -2,7 +2,7 @@ import random
 
 from django.db.models import Sum, Count
 
-from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image, CommentLike, CommentDislike
+from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image, CommentLike, CommentDislike, Comment
 
 def get_user(pk):
 	return User.objects.get(pk=pk)
@@ -158,3 +158,6 @@ def toggle_comment_dislike(comment, channel):
 
 	CommentDislike.objects.create(comment=comment, channel=channel)
 	return (comment.likes.count(), comment.dislikes.count())
+
+def get_comment(pk):
+	return Comment.objects.get(pk=pk)
