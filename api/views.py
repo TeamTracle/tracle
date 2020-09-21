@@ -23,8 +23,8 @@ from rest_framework import status
 from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike
-from backend.models import Video, Comment, CommentLike
+from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
+from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -305,3 +305,32 @@ class CommentDislikeView(APIView):
 		comment = Comment.objects.get(pk=comment_id)
 		likes, dislikes = toggle_comment_dislike(comment, request.channel)
 		return Response({'likes' : likes, 'dislikes' : dislikes})
+
+class CommentTicketView(APIView):
+	permission_classes = [IsAuthenticated|ReadOnly]
+
+	def post(self, request):
+		comment = get_comment(request.data.get('comment_id', None))
+		if not comment:
+			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+
+		reason = request.data.get('reason', None)
+		if not reason or reason == 'null':
+			return Response({'message' : 'Please select a reason.'}, status=status.HTTP_400_BAD_REQUEST)
+
+		body = request.data.get('body', '')
+		ct = CommentTicket.objects.create(comment=comment, channel=request.channel, body=body, reason=CommentTicket.Reason(reason))
+		return Response({})
+
+class VideoTicketView(APIView):
+	permission_classes = [IsAuthenticated|ReadOnly]
+
+	def post(self, request):
+		print(request.data)
+		video = get_video(request.data.get('watch_id'))
+		body = request.data.get('body', '')
+		reason = request.data.get('reason', None)
+		if not reason:
+			return Response({'message' : 'Please selet a reason.'}, status=status.HTTP_400_BAD_REQUEST)
+		vt = VideoTicket.objects.create(video=video, body=body, reason=reason, channel=request.channel)
+		return Response({})
