@@ -43,7 +43,48 @@
 						</div>
 						<button class="btn btn-gray btn-addto"><i class="fas fa-plus"></i></button>
 						<button class="btn btn-gray">Share</button>
-						<button class="btn btn-gray"><i class="fas fa-flag"></i></button>
+						<button class="btn btn-gray" onclick="showReport(event)"><i class="fas fa-flag"></i></button>
+						<!-- REPORT MODAL -->
+						<div id="report-modal" style="display: none" class="modal-mask">
+							<div class="modal-wrapper">
+								<div class="modal-container">
+									<form id="video-report-form" class="report-form">
+									  <div>Report video</div>
+									  <fieldset>
+										<div id="reason-error" style="color: red"></div>
+									  	<div>
+										    <input type="radio" id="spam" value="SP" name="reason">
+										    <label for="spam">Unwanted commercial content or spam</label>  
+									    </div>
+									    <div>
+										    <input type="radio" id="porn" value="PO" name="reason">
+										    <label for="porn">Pornography or sexually explicit material</label>
+									    </div>
+									    <div>
+										    <input type="radio" id="ca" value="CA" name="reason">
+										    <label for="ca">Child abuse</label>
+										</div>
+										<div>
+										    <input type="radio" id="hov" value="HV" name="reason">
+										    <label for="hov">Hate speech or graphic violence</label>
+										</div>
+										<div>
+										    <input type="radio" id="hob" value="HB" name="reason">
+										    <label for="hob">Harassment or bullying</label>
+									    </div>
+									  </fieldset>
+									  <label for="body">Additional information</label></br>
+									  <textarea id="body" name="body"></textarea>
+									  <input type="hidden" name="watch_id" value="{{ video.watch_id }}">
+									  <div class="report-form__actions">
+										  <button class="btn btn-gray" onclick="hideReport(event)">Cancel</button>
+										  <button class="btn btn-blue" onclick="sendReport(event)">Send</button>
+									  </div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<!-- END REPORT MODAL -->
 					</div>
 					<div class="panel__actions__right">
 						<div class="panel__actions__views"><span id="view_count">{{ video.views }}</span> views</div>
@@ -90,6 +131,34 @@
 	<script src="{% static 'web/js/vendor/video.js' %}"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 	<script>
+
+		function hideReport(event) {
+			event.preventDefault();
+			var el = document.getElementById('report-modal');
+			el.style.display = "none";
+		}
+
+		function showReport(event) {
+			event.preventDefault();
+			var el = document.getElementById('report-modal');
+			el.style.display = "table";
+
+		}
+
+		function sendReport(event) {
+			event.preventDefault();
+			var csrftoken = $("[name=csrfmiddlewaretoken").val();
+			var data = new FormData(document.getElementById('video-report-form'));
+			axios.post('/api/videos/tickets', data, {headers: {'X-CSRFToken': csrftoken}})
+			.then(response => {
+				var el = document.getElementById('report-modal');
+				el.style.display = "none";
+			})
+			.catch(error => {
+				var el = document.getElementById('reason-error');
+				el.innerHTML = error.response.data.message;
+			});
+		}
 
 		var player = videojs('player', {
 			html5: {
@@ -158,6 +227,78 @@
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script src="{% static 'web/js/vendor/humanized_time_span.js' %}"></script>
 	<script>
+
+		Vue.component('modal', {
+			delimiters: ['[[', ']]'],
+			props: ['comment_id'],
+			data () {
+				return {
+					reason: null,
+					body: '',
+					error_message: null,
+				}
+			},
+			methods: {
+				send() {
+					event.preventDefault();
+					console.log(this.comment_id);
+					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+					var data = new FormData();
+					data.append('comment_id', this.comment_id);
+					data.append('reason', this.reason);
+					data.append('body', this.body);
+					axios.post('/api/comments/tickets', data, {headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}})
+					.then(response => {
+						this.$emit('close');
+					})
+					.catch(error => {
+						console.log(error.response.data.message);
+						this.error_message = error.response.data.message;
+					});
+				}
+			},
+			template: `
+				<div class="modal-mask">
+					<div class="modal-wrapper">
+						<div class="modal-container">
+							<form class="report-form">
+							  <div>Report comment</div>
+							  <fieldset>
+								<div style="color: red">[[ error_message ]]</div>
+							  	<div>
+								    <input type="radio" id="spam" value="SP" v-model="reason">
+								    <label for="spam">Unwanted commercial content or spam</label>  
+							    </div>
+							    <div>
+								    <input type="radio" id="porn" value="PO" v-model="reason">
+								    <label for="porn">Pornography or sexually explicit material</label>
+							    </div>
+							    <div>
+								    <input type="radio" id="ca" value="CA" v-model="reason">
+								    <label for="ca">Child abuse</label>
+								</div>
+								<div>
+								    <input type="radio" id="hov" value="HV" v-model="reason">
+								    <label for="hov">Hate speech or graphic violence</label>
+								</div>
+								<div>
+								    <input type="radio" id="hob" value="HB" v-model="reason">
+								    <label for="hob">Harassment or bullying</label>
+							    </div>
+							  </fieldset>
+							  <label for="body">Additional information</label></br>
+							  <textarea id="body" name="body" v-model="body"></textarea>
+							  <div class="report-form__actions">
+								  <button class="btn btn-gray" @click="$emit('close')">Cancel</button>
+								  <button class="btn btn-blue" @click="send()">Send</button>
+							  </div>
+							</form>
+						</div>
+					</div>
+				</div>
+				`
+		})
+
 		Vue.filter('humanTime', function (value) {
 			return humanized_time_span(value);
 		})
@@ -176,6 +317,7 @@
 					commentText: '',
 					authenticated: "{{ request.user.is_authenticated }}",
 					el: null,
+					showModal: false,
 				}
 			},
 			computed: {
@@ -311,6 +453,7 @@
 								<button v-bind:data-id="comment.id" class="btn btn-gray btn-like" @click="commentLike($event)"><i style="pointer-events:none;" class="fas fa-thumbs-up"></i></button><button v-bind:data-id="comment.id" class="btn btn-gray btn-dislike" @click="commentDislike($event)"><i style="pointer-events:none;" class="fas fa-thumbs-down"></i></button>
 							</div>
 							<button class="btn btn-gray btn-reply" @click="showReplyForm">Reply</button>
+							<button class="btn btn-gray btn-reply" @click="showModal = true;"><i class="fas fa-flag"></i></button>
 						</div>
 					</div>
 					<form v-bind:id="formId" class="reply-form" :style="[showReply ? {display: 'block'} : {display: 'none'}]" >
@@ -320,6 +463,7 @@
 							<div><span @click="hideReplyForm">Cancel</span> or <button class="btn btn-gray" @click="postReply($event)">Post</button></div>
 						</div>
 					</form>
+					<modal v-if="showModal" @close="showModal = false" v-bind:comment_id="this.comment.id"></modal>
 					<div class="reply-container" v-if="comment.replies.length">
 						<input type="checkbox" :id=inputId @click="updateIsOverflowing()">
 						<label :for="inputId">[[ comment.replies.length ]] replies</label>
