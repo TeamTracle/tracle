@@ -106,7 +106,7 @@ class SigninView(View):
             user = authenticate(username=email, password=raw_password)
             if user is not None:
                 login(request, user)
-                user.update_last_login()
+                user.update_last_login(request.META.get('REMOTE_ADDR'))
                 channel = queries.get_channel(user)
                 channel.update_last_login()
                 return redirect('web_home')

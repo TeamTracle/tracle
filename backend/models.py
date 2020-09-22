@@ -121,8 +121,9 @@ class User(AbstractBaseUser):
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def update_last_login(self):
+    def update_last_login(self, ipadress):
         self.last_login = timezone.now()
+        self.ipadress = ipadress
         self.save()
 
 class Channel(models.Model):
