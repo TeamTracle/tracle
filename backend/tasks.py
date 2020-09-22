@@ -18,7 +18,6 @@ def video_transcode_task(video=None):
 		video.refresh_from_db()
 		video.transcode_status = video.TranscodeStatus.ERROR
 		video.save(update_fields=['transcode_status'])
-		video.delete_local_files()
 		print(e)
 		print('TRANSCODING FAILED!')
 		raise e
