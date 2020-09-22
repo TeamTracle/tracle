@@ -21,6 +21,7 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = ('email', 'admin')
     list_filter = ('admin',)
+    readonly_fields = ('ipadress',)
     fieldsets = (
         (None, {'fields': ('email', 'password', 'notes', 'ipadress')}),
         ('Permissions', {'fields': ('active', 'admin', 'staff', 'banned')}),
