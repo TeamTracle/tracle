@@ -20,18 +20,22 @@ import logging
 logger = logging.getLogger()
 class HomeView(View):
     def get(self, request):
-        logger.info(request.META['REMOTE_ADDR'])
-        videos = queries.get_latest_videos()
         categories = queries.get_all_categories()
-        context = {'videos' : videos, 'categories' : categories, 'selected_category' : None}
+        context = {'categories' : categories, 'selected_category' : None}
 
         category_slug = request.GET.get('c', None)
-        if category_slug:
-            category = queries.get_category(category_slug)
-            videos = videos.filter(category__exact=category)
-            context['selected_category'] = category
-            context['videos'] = videos
+        if not category_slug:
+            videos = queries.get_latest_videos()
 
+        else:
+            if category_slug == 'subscriptions':
+                videos = queries.get_sub_feed(request.channel)
+            else:
+                category = queries.get_category(category_slug)
+                videos = queries.get_latest_videos().filter(category__exact=category)
+                context['selected_category'] = category
+
+        context['videos'] = videos
         search_terms = request.GET.get('q', None)
         if search_terms:
             context['videos'] = context['videos'].filter(title__icontains=search_terms)

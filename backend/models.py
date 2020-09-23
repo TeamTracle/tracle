@@ -278,7 +278,7 @@ class Dislikes(models.Model):
     video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='dislikes')
 
 class Subscription(models.Model):
-    from_channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    from_channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='subscribers')
     to_channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='subscriptions')
 
 class Comment(models.Model):
