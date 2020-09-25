@@ -17,6 +17,7 @@ urlpatterns = [
 	path('dashboard/settings', views.DashboardSettingsView.as_view(), name='web_dashboard_settings'),
 	path('dashboard/videos', views.DashboardVideosView.as_view(), name='web_dashboard_videos'),
 	path('dashboard/videos/<watch_id>', views.DashboardEditVideoView.as_view(), name='web_dashboard_edit_video'),
+	path('dashboard/subscriptions', views.SubscriptionsView.as_view(), name='web_dashboard_subscriptions'),
 	path('forgot-password', views.ResetPasswordView.as_view(), name='web_forgot_password'),
 	path('forgot-password-confirm/<uidb64>/<token>/', views.ResetPasswordConfirmView.as_view(), name='web_password_reset_confirm'),
 	re_path(r'^(?P<key>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.ActivateView.as_view(), name='web_activate'),

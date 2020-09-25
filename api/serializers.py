@@ -2,7 +2,7 @@ import magic
 
 from rest_framework import serializers
 
-from backend.models import Video, Comment, Channel, CommentLike, CommentDislike
+from backend.models import Video, Comment, Channel, Subscription
 
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
@@ -74,3 +74,18 @@ class CommentSerializer(serializers.ModelSerializer):
 		queryset = Comment.objects.filter(parent_id=obj.id)
 		serializer = CommentSerializer(queryset, many=True)
 		return serializer.data
+
+class ChannelSerializer(serializers.ModelSerializer):
+	videos = serializers.CharField(source='videos.count')
+	subscriptions = serializers.CharField(source='subscriptions.count')
+
+	class Meta:
+		model = Channel
+		fields = '__all__'
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+	to_channel = ChannelSerializer()
+
+	class Meta:
+		model = Subscription
+		fields = '__all__'

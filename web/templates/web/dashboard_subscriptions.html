@@ -1,0 +1,66 @@
+{% extends 'web/dashboard_base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/dashboard_subscriptions.scss' %}">
+{% endblock css %}
+
+{% block dashboard_body %}
+	<div id='app'>
+	</div>
+{% endblock %}
+
+{% block script %}
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		Vue.component('sub-entry', {
+			delimiters: ['[[', ']]'],
+			props: ['sub'],
+			computed: {
+				channel_link() {
+					return '/channel/' + this.sub.to_channel.channel_id
+				}
+			},
+			template: `
+				<a class="sub" :href="channel_link">
+					<img class="sub__avatar" :src="sub.to_channel.avatar">
+					<div class="sub__details">
+						<div class="sub__details__name">[[ sub.to_channel.name ]]</div>
+						<div class=sub__details__meta>
+							<div class="sub__details__meta__subscribers">Subscribers: [[ sub.to_channel.subscriptions ]]</div>
+							<div class="sub__details__meta__videos">Uploaded Videos: [[ sub.to_channel.videos ]]</div>
+						</div>
+					</div>
+				</a>
+			`
+		});
+
+		var app = new Vue({
+			delimiters: ['[[', ']]'],
+			el: '#app',
+			data: {
+				subs: []
+			},
+			mounted() {
+				axios.get('/api/subscriptions')
+				.then(response => {
+					console.log(response.data);
+					this.subs = response.data;
+				})
+				.catch(error => {
+					console.log(error.response.data)
+				});
+			},
+			template: `
+				<div class="dashboard__body">
+					<div class="dashboard__primary">
+						<div class="sub-list">
+							<sub-entry v-for="sub in subs" v-bind:key="sub.pk" v-bind:sub="sub"></sub-entry>
+						</div>
+					</div>
+				</div>`
+		});
+	</script>
+{% endblock %}

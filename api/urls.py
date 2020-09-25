@@ -17,4 +17,5 @@ urlpatterns = [
 	path('comments/dislike', views.CommentDislikeView.as_view(), name='api_comment_dislike'),
 	path('comments/tickets', views.CommentTicketView.as_view(), name='api_comment_tickets'),
 	path('comments/<watch_id>', views.CommentView.as_view(), name='api_comments'),
+	path('subscriptions', views.SubscriptionsView.as_view(), name='api_subscriptions'),
 ]

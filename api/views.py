@@ -20,11 +20,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer
+from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
 from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
-from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket
+from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -334,3 +334,11 @@ class VideoTicketView(APIView):
 			return Response({'message' : 'Please selet a reason.'}, status=status.HTTP_400_BAD_REQUEST)
 		vt = VideoTicket.objects.create(video=video, body=body, reason=reason, channel=request.channel)
 		return Response({})
+
+class SubscriptionsView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		queryset = Subscription.objects.filter(from_channel=request.channel)
+		serializer =  SubscriptionSerializer(queryset, many=True)
+		return Response(serializer.data)

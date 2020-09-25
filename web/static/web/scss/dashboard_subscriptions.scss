@@ -1,0 +1,43 @@
+@import 'base';
+@import 'dashboard_nav';
+
+.sub-list {
+	display: grid;
+	margin: 1em;
+	gap: 1em;
+}
+
+.sub {
+	display: grid;
+	grid-template-columns: 0fr 1fr;
+	gap: 1em;
+	color: #333;
+	text-decoration: none;
+	padding: 0.3em;
+
+	&:hover {
+		background-color: #fff;
+	}
+
+	&:hover &__details__name {
+		text-decoration: underline;
+		color: blue;
+	}
+
+	&__avatar {
+		max-width: 72px;
+		max-height: auto;
+	}
+
+	&__details {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		&__name {
+			font-size: 1.4rem;
+			text-decoration: none;
+			color: #333;
+		}
+	}
+}

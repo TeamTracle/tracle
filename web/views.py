@@ -30,6 +30,7 @@ class HomeView(View):
         else:
             if category_slug == 'subscriptions':
                 videos = queries.get_sub_feed(request.channel)
+                context['selected_category'] = {'title' : 'Subscriptions', 'icon' : 'fa-list'}
             else:
                 category = queries.get_category(category_slug)
                 videos = queries.get_latest_videos().filter(category__exact=category)
@@ -195,6 +196,10 @@ class DashboardVideosView(DashboardBaseView):
 class DashboardEditVideoView(DashboardBaseView):
     def get(self, request, watch_id):
         return render(request, 'web/dashboard_edit_video.html', {'watch_id' : watch_id})
+
+class SubscriptionsView(DashboardBaseView):
+    def get(self, request):
+        return render(request, 'web/dashboard_subscriptions.html')
 
 class ChannelView(View):
     def get(self, request, channel_id):
