@@ -160,12 +160,16 @@
 	&__container {
 		display: flex;
 		flex-flow: wrap;
-		// gap: 2em;
 
 	}
 
 	&__video {
-		padding: 0 0.5em;
+		flex-basis: 320px;
+		margin: 0.5em 0;
+
+		@media only screen and (min-width: 929px) {
+			margin: 0.5em;
+		}
 
 		&__details {
 			font-size: 11px;
@@ -176,6 +180,10 @@
 				text-decoration: none;
 				font-weight: bold;
 				font-size: 1rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				max-width: 320px;
 			}
 
 			&__views {
@@ -187,10 +195,6 @@
 				padding-left: 1em;
 			}
 
-		}
-
-		&__thumbnail {
-			max-width: 288px;
 		}
 	}
 
