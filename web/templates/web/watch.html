@@ -239,7 +239,7 @@
 				}
 			},
 			methods: {
-				send() {
+				send(event) {
 					event.preventDefault();
 					console.log(this.comment_id);
 					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
@@ -403,7 +403,7 @@
 					})
 					.catch(error => { console.log(error.message); });
 				},
-				postReply() {
+				postReply(event) {
 					event.preventDefault();
 					if (!this.is_authenticated) {
 						location.href='/signin';
@@ -509,8 +509,8 @@
 				);
 			},
 			methods: {
-				postComment() {
-					event.preventDefault()
+				postComment(event) {
+					event.preventDefault();
 					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 					var data = new FormData(document.getElementById('comment-form'))
 					axios.post('/api/comments/{{ video.watch_id }}', data, {headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}})
