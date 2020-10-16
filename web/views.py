@@ -223,3 +223,10 @@ class UploadVideoView(LoginRequiredMixin, View):
     def get(self, request):
         form = VideoDetailsForm()
         return render(request, 'web/upload_video.html', {'form' : form})
+
+class InboxNotifications(LoginRequiredMixin, View):
+    login_url = '/signin'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        return render(request, 'web/inbox_notifications.html')

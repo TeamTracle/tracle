@@ -20,11 +20,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer
+from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
 from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
-from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription
+from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -342,3 +342,37 @@ class SubscriptionsView(APIView):
 		queryset = Subscription.objects.filter(from_channel=request.channel)
 		serializer =  SubscriptionSerializer(queryset, many=True)
 		return Response(serializer.data)
+
+class NotificationsView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		status = request.GET.get('status')
+		if status == 'unread':
+			queryset = request.user.notifications.unread().filter(recipient=request.user)
+		else:
+			queryset = request.user.notifications.all().filter(recipient=request.user) 
+		serializer = NotificationSerializer(queryset, many=True)
+		data = {
+			'unread_count' : queryset.count(),
+			'unread_list' : serializer.data 
+		}
+		return Response(data)
+
+	def post(self, request):
+		try:
+			notification = Notification.objects.get(pk=request.data.get('id'))
+		except Notification.DoesNotExist as e:
+			return Response({}, status=status.HTTP_400_BAD_REQUEST)
+		notification.unread = False
+		notification.save()
+		return Response(request.data)
+
+	def delete(self, request):
+		print(request.GET.get('id'))
+		try:
+			notification = Notification.objects.get(pk=request.GET.get('id'))
+		except Notification.DoesNotExist as e:
+			return Response({}, status=status.HTTP_400_BAD_REQUEST)
+		notification.delete()
+		return Response({})

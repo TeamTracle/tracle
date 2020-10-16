@@ -7,7 +7,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 import django_rq
@@ -222,6 +223,8 @@ class Video(models.Model):
     objects = models.Manager()
     published_objects = PublishedVideoManager()
 
+    subs_notified = models.BooleanField(default=False)
+
     def __str__(self):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
@@ -343,3 +346,33 @@ class VideoTicket(Ticket):
 
     def __str__(self):
         return f'{self.channel} reported Video {self.video.watch_id}'
+
+class NotificationManager(models.Manager):
+    def unread(self):
+        return super().get_queryset().filter(unread=True)
+
+class Notification(models.Model):
+    class Meta:
+        ordering = ('-created',)
+
+    class NotificationType(models.TextChoices):
+        COMMENT = 'CO', 'New Comment'
+        TAG = 'TA', 'Tagged User'
+        VIDEO = 'VI', 'New Video'
+
+    notification_type = models.CharField(max_length=2, choices=NotificationType.choices)
+    created = models.DateTimeField(default=timezone.now)
+    unread = models.BooleanField(default=True)
+
+    actor = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+
+    action_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='actions')
+    action_id = models.PositiveIntegerField()
+    action_object = GenericForeignKey('action_type', 'action_id')
+
+    target_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name='targets')
+    target_id  = models.PositiveIntegerField()
+    target_object = GenericForeignKey('target_type', 'target_id')
+
+    objects = NotificationManager()

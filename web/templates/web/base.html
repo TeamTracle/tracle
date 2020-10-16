@@ -1,5 +1,6 @@
 {% load static %}
 {% load compress %}
+{% load notifications %}
 
 <!doctype html>
 <html class="no-js" lang="en">
@@ -41,6 +42,11 @@
   </div>
   {% block body %}
   {% endblock %}
+
+  {% if request.user.is_authenticated %}
+    <script src="{% static 'web/js/notify.js' %}"></script>
+    {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
+  {% endif %}
 
   {% compress js %}
     <script src="{% static 'web/js/vendor/jquery-3.4.1.min.js' %}"></script>

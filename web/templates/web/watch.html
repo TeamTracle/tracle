@@ -501,12 +501,22 @@
 			mounted () {
 				axios.get('/api/comments/{{ video.watch_id }}'
 					).then(response => {
-						this.comments = response.data
+						this.comments = response.data;
 					}
 					).catch(error => {
 						console.log(error.message);
 					}
 				);
+			},
+			updated() {
+				var el = document.getElementById(location.hash.slice(1));
+				if (el) {
+					if (el.getClientRects().length < 1) {
+						el.parentNode.parentNode.parentNode.getElementsByTagName('input')[0].checked = true;
+					}
+					var rect = el.getBoundingClientRect();
+					window.scrollTo(rect.left, rect.top);
+				}
 			},
 			methods: {
 				postComment(event) {

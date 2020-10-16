@@ -1,4 +1,5 @@
 {% load static %}
+{% load notifications %}
 
 <nav class="nav">
 	<div class="nav__left">
@@ -23,6 +24,32 @@
 	</div>
 
 	<div class="nav__right">
+		{% if request.user.is_authenticated %}
+			<div class="nav__section">
+				<div class="nav__notifications">
+					<label for="notification-list-toggle">
+						<i class="fas fa-bell"></i> 
+						{% if request.user|has_notification %}{% live_notify_badge %}{% endif %}
+					</label>
+					<input id="notification-list-toggle" type="checkbox">
+					<div class="nav__notifications__container">
+						<div class="nav__notifications__header">
+							<div class="nav__notifications__header__title">Notifications</div>
+							<!-- <a href="/inbox/notifications" class="nav__notifications__header__all"><i class="fas fa-cog"></i></a> -->
+							<a href="/inbox/notifications" class="nav__notifications__header__all">Inbox</a>
+						</div>
+						{% if request.user|has_notification %}
+							{% live_notify_list %}
+						{% else %}
+							<div style="padding: 1em;width: max-content;">No unread notifications.</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<div class="nav__mobile-notifications">
+				<a href="/inbox/notifications"><i class="fas fa-bell"></i>{% if request.user|has_notification %}{% live_notify_badge %}{% endif %}</a>
+			</div>
+		{% endif %}
 		<div class="nav__section">
 			{% if request.user.is_authenticated %}
 				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.channel.name }}</div>

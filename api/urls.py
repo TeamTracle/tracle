@@ -18,4 +18,5 @@ urlpatterns = [
 	path('comments/tickets', views.CommentTicketView.as_view(), name='api_comment_tickets'),
 	path('comments/<watch_id>', views.CommentView.as_view(), name='api_comments'),
 	path('subscriptions', views.SubscriptionsView.as_view(), name='api_subscriptions'),
+	path('notifications', views.NotificationsView.as_view(), name='api_notifications_unread'),
 ]

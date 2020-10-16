@@ -1,8 +1,10 @@
 import magic
 
+from django.utils.timesince import timesince
+
 from rest_framework import serializers
 
-from backend.models import Video, Comment, Channel, Subscription
+from backend.models import Video, Comment, Channel, Subscription, Notification
 
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
@@ -89,3 +91,26 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Subscription
 		fields = '__all__'
+
+class GenericNotificationField(serializers.RelatedField):
+	def to_representation(self, value):
+		if isinstance(value, Video):
+			return VideoSerializer(value).data
+		if isinstance(value, Comment):
+			return CommentSerializer(value).data
+		if isinstance(value, Channel):
+			return ChannelSerializer(value).data
+		raise Exception('Unexpected type of object')
+
+class NotificationSerializer(serializers.ModelSerializer):
+	action_object = GenericNotificationField(read_only=True)
+	target_object = GenericNotificationField(read_only=True)
+	actor = GenericNotificationField(read_only=True)
+	created = serializers.SerializerMethodField()
+
+	def get_created(self, obj):
+		return timesince(obj.created)
+
+	class Meta:
+		model = Notification
+		fields = ['id', 'actor', 'action_object', 'target_object', 'created', 'notification_type', 'recipient', 'unread']
