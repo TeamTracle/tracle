@@ -16,7 +16,16 @@
             </div>
         </div>
         <ul class="sidebar__guide">
-        	<li id="subscriptions" style="margin-bottom: 2em" class="sidebar__guide__item"><i class="fas fa-list sidebar__guide__item__icon"></i><a href="/?c=subscriptions">Subscriptions</a></li>
+        	<li id="subscriptions" class="sidebar__guide__item"><i class="fas fa-list sidebar__guide__item__icon"></i><a href="/?c=subscriptions">Subscriptions</a></li>
+        	<div class="subscriptions__container">
+		        <input type="checkbox" id="sub-expander">
+	        	<div class="subscriptions__list">
+		        	{% for sub in request.channel.subscribers.all %}
+		        		<a class="item" href="/channel/{{ sub.to_channel.channel_id }}">{{ sub.to_channel.name }}</a>
+		        	{% endfor %}
+		        </div>
+		        <div class="label"><label for="sub-expander">Show </label></div>
+		    </div>
         </ul>
 	{% else %}
 		<div class="sidebar__header">

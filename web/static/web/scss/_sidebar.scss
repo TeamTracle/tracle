@@ -128,3 +128,52 @@
                 }
         }
 }
+
+.subscriptions__container {
+        padding: 0 0.8em 1em 1em;
+
+        & > .label {
+                width: 100%;
+                text-align: right;
+                font-size: 0.8rem;
+                color: #ebebeb;
+        }
+
+        & label {
+                cursor: pointer;
+
+                &:after {
+                        content: 'all';
+                }
+        }
+
+        & > #sub-expander {
+                display: none;
+        }
+
+        & > #sub-expander:checked ~ .subscriptions__list {
+                max-height: 100%;
+        }
+
+        & > #sub-expander:checked ~ div > label:after {
+                content: 'less'
+        }
+}
+
+.subscriptions__list {
+        display: flex;
+        flex-direction: column;
+        max-height: 97px;
+        overflow: hidden;
+
+        & > .item {
+                color: #9999;
+                text-decoration: none;
+                padding: 0.4em 0 0.6em 0;
+
+                &:hover {
+                        color: #ebebeb;
+                        text-decoration: underline;
+                }
+        }
+}
