@@ -21,7 +21,7 @@
 		        <input type="checkbox" id="sub-expander">
 	        	<div class="subscriptions__list">
 		        	{% for sub in request.channel.subscribers.all %}
-		        		<a class="item" href="/channel/{{ sub.to_channel.channel_id }}">{{ sub.to_channel.name }}</a>
+		        		<a class="item" href="/channel/{{ sub.to_channel.channel_id }}"><img src="{{ sub.to_channel.avatar.url }}">{{ sub.to_channel.name }}</a>
 		        	{% endfor %}
 		        </div>
 		        <div class="label"><label for="sub-expander">Show </label></div>
