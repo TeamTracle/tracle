@@ -119,7 +119,24 @@
 				unread_list: [],
 				all_count: 0,
 				all_list: [],
-				header_text: 'Unread Notifications'
+				header_text: 'Unread Notifications',
+				loading: false,
+			},
+			created() {
+				axios.interceptors.request.use((config) => {
+					this.loading = true;
+					return config;
+				}, (error) => {
+					this.loading = false;
+					return Promise.reject(error);
+				});
+				axios.interceptors.response.use((response) => {
+					this.loading = false;
+					return response;
+				}, (error) => {
+					this.loading = false;
+					return Promise.reject(error);
+				});
 			},
 			mounted () {
 				this.fetch_unread_notifications();
@@ -150,7 +167,18 @@
 					.catch(error => {
 						console.log(error.response.data);
 					});
-				}
+				},
+				clearNotifications() {
+					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+					this.current_list.forEach(notification => {
+						axios.delete('/api/notifications?id=' + notification.id, {headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}})
+						.then(response => {
+							this.current_list = [];
+							this.current_count = 0;
+						})
+						.catch(error => {console.log(error.response.data);});
+					});
+				},
 			},
 			template: `
 				<div class="inbox-container">
@@ -160,12 +188,16 @@
 					</div>
 					<div class="inbox__primary">
 						<h2 class="inbox__primary__header">[[ header_text ]] ([[ current_count ]])</h2>
-						<div class="notification-list">
+						<div v-if="loading">
+							<i class="fas fa-spinner fa-spin"></i>
+						</div>
+						<div v-else class="notification-list">
 							<div v-if="current_count > 0">
+								<button class="btn btn-gray" @click="clearNotifications">Clear</button>
 								<notification-entry v-for="notification in current_list" v-bind:key="notification.id" v-bind:notification="notification" v-on:fetch_unread_notifications="fetch_unread_notifications" v-on:fetch_all_notifications="fetch_all_notifications"></notification-entry>
 							</div>
 							<div v-else>
-								<div>No notifications. :(</div>
+								<div>No notifications</div>
 							</div>
 						</div>
 					</div>
