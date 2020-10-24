@@ -162,7 +162,7 @@ function toggleSubscribe() {
 	const btn_sub_text = $('#btn-subscribe-text');
 	const sub_counter = $('#sub-count');
 	const channel_id = $('#channel_id').val();
-	const csrftoken = $("[name=csrfmiddlewaretoken").val();
+	const csrftoken = $("[name=csrfmiddlewaretoken]").val();
 
 	btn_sub.attr('disabled', true);
 
