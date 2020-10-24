@@ -25,9 +25,9 @@
     <button id="nav-close" class="btn btn-gray" onclick="navMenuClose()"><i class="fas fa-times"></i></button>
     {% if request.user.is_authenticated %}
       <div class="nav__menu__head">
-        <img src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
+        <a href="/channel/{{ request.channel.channel_id }}"><img src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}"></a>
         <div class="nav__menu__head__details">
-          <div>{{ request.channel.name }}</div>
+          <a href="/channel/{{ request.channel.channel_id }}">{{ request.channel.name }}</a>
           <div>{{ request.user.email }}</div>
           <a href="{% url 'web_dashboard_settings' %}">Manage your Tracle Account</a>
         </div>
