@@ -55,9 +55,9 @@
 				<div id="navdesktopmenu-toggle" class="nav__item" onclick="navMenuDesktopToggle()"><i class="fas fa-angle-down"></i> {{ request.channel.name }}</div>
 				<div id="navdesktop-menu" class="nav__desktop-menu">
 					<div class="nav__desktop-menu__head">
-					  <img src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
+					  <a href="/channel/{{ request.channel.channel_id }}"><img src="{% if request.channel.avatar %}{{ request.channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}"></a>
 					  <div class="nav__desktop-menu__head__details">
-					    <div>{{ request.channel.name }}</div>
+					    <a href="/channel/{{ request.channel.channel_id }}">{{ request.channel.name }}</a>
 					    <div>{{ request.user.email }}</div>
 					    <a href="{% url 'web_dashboard_settings' %}">Manage your Tracle Account</a>
 					  </div>
