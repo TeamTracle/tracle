@@ -80,6 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ChannelSerializer(serializers.ModelSerializer):
 	videos = serializers.CharField(source='videos.count')
 	subscriptions = serializers.CharField(source='subscriptions.count')
+	avatar = serializers.CharField(source='get_avatar')
 
 	class Meta:
 		model = Channel

@@ -143,6 +143,11 @@ class Channel(models.Model):
         self.last_login = timezone.now()
         self.save()
 
+    def get_avatar(self):
+        if self.avatar:
+            return self.avatar.url
+        return '/static/web/img/avatar.png'
+
 class Category(models.Model):
     title = models.CharField(max_length=100)
     slug = models.CharField(max_length=100)
