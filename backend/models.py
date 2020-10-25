@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
@@ -224,6 +224,8 @@ class Video(models.Model):
     published_objects = PublishedVideoManager()
 
     subs_notified = models.BooleanField(default=False)
+    action_relations = GenericRelation('Notification', object_id_field='action_id', content_type_field='action_type')
+    target_relations = GenericRelation('Notification', object_id_field='target_id', content_type_field='target_type')
 
     def __str__(self):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
@@ -290,6 +292,9 @@ class Comment(models.Model):
     parent = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     text = models.TextField(max_length=500)
     created = models.DateTimeField(default=timezone.now)
+
+    action_relations = GenericRelation('Notification', object_id_field='action_id', content_type_field='action_type')
+    target_relations = GenericRelation('Notification', object_id_field='target_id', content_type_field='target_type')
 
     def sanitized_text(self):
         return bleach.clean(self.text, tags=[])
