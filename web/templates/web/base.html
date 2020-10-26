@@ -44,6 +44,8 @@
   {% endblock %}
 
   {% if request.user.is_authenticated %}
+    {% csrf_token %}
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{% static 'web/js/notify.js' %}"></script>
     {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
   {% endif %}

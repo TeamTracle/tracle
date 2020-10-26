@@ -38,9 +38,25 @@ function fill_notification_list(data) {
     }
 }
 
+function markReadAndOpen(event, id) {
+    event.preventDefault();
+    let target_url = event.currentTarget.href;
+    let csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    let data = new FormData()
+    data.append('id', id);
+    axios.post('/api/notifications', data, {headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}})
+    .then(response => {
+        document.location = target_url;
+    })
+    .catch(error => {
+        console.log(error.response);
+        document.location = target_url;
+    });
+}
+
 function comment_template(item) {
     message = '';
-    message += '<a class="item" href="/watch?v=' + item.target_object.watch_id  + '#comment-' + item.action_object.id + '">';
+    message += '<a class="item" href="/watch?v=' + item.target_object.watch_id  + '#comment-' + item.action_object.id + '" onclick="markReadAndOpen(event, ' + item.id + ')"' + '>';
     message +=   '<img class="avatar" src="' + item.actor.avatar + '">';
     message +=   '<div class="action">';
     message +=     '<div class="action__text">';
@@ -57,7 +73,7 @@ function comment_template(item) {
 
 function video_template(item) {
     message = '';
-    message += '<a class="item" href="/watch?v=' + item.action_object.watch_id +'">';
+    message += '<a class="item" href="/watch?v=' + item.action_object.watch_id + '" onclick="markReadAndOpen(event, ' + item.id + ')"' + '>';
     message +=   '<img class="avatar" src="' + item.actor.avatar + '">';
     message +=   '<div class="action">';
     message +=     '<div class="action__text">';
@@ -74,7 +90,7 @@ function video_template(item) {
 
 function tag_template(item) {
     message = '';
-    message += '<a class="item" href="/watch?v=' + item.target_object.watch_id  + '#comment-' + item.action_object.id + '">';
+    message += '<a class="item" href="/watch?v=' + item.target_object.watch_id  + '#comment-' + item.action_object.id + '" onclick="markReadAndOpen(event, ' + item.id + ')"' + '>';
     message +=   '<img class="avatar" src="' + item.actor.avatar + '">';
     message +=   '<div class="action">';
     message +=     '<div class="action__text">';
