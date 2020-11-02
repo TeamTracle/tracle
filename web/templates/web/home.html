@@ -58,20 +58,6 @@
 						<div class="feed__video__details__timestamp">{{ video.created|naturaltime}}</div>
 					</div>
 				</div>
-				{% if forloop.counter|divisibleby:3 %}
-					{% with new_video=new_videos|index:counter %}
-					<div class="feed__video">
-						<a href="{% url 'web_watch' %}?v={{ new_video.watch_id }}"><img class="feed__video__thumbnail" src="{{ new_video.get_thumbnail }}"></a>
-						<div class="feed__video__details">
-							<h2 class="feed__video__details__title"><a href="{% url 'web_watch' %}?v={{ new_video.watch_id }}">{{ new_video.title }}</a></h2>
-							<div class="feed__video__details__description">{{ new_video.description }}</div>
-							<div class="feed__video__details__views">{{ new_video.views }} views</div>
-							<a href="{% url 'web_channel' new_video.channel_id %}" class="feed__video__details__channel">{{ new_video.channel.name }} </a>
-							<div class="feed__video__details__timestamp">{{ new_video.created|naturaltime}}</div>
-						</div>
-					</div>
-					{% endwith %}
-				{% endif %}
 				{% endfor %}
 				<div class="pagination">
 				    <div class="pagination__step-links">

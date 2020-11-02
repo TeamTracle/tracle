@@ -1,6 +1,8 @@
 import random
+from datetime import timedelta
 
 from django.db.models import Sum, Count
+from django.utils import timezone
 
 from .models import Video, Category, Channel, Likes, Dislikes, Subscription, User, Image, CommentLike, CommentDislike, Comment
 
@@ -8,10 +10,14 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+	time_threshold = timezone.now() - timedelta(days=7)
+	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-created', '-sub_count', '-views').filter(visibility__exact=Video.VisibilityStatus.PUBLIC, created__gte=time_threshold)
+
+def get_videos_from_category(category):
+	return Video.published_objects.filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
 
 def get_recommended_videos():
-	videos = get_latest_videos()
+	videos = Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 	if videos:
 		if videos.count() > 25:
 			start = random.randint(0, videos.count()-21)

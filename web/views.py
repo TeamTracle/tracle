@@ -33,7 +33,7 @@ class HomeView(View):
                 context['selected_category'] = {'title' : 'Subscriptions', 'icon' : 'fa-list'}
             else:
                 category = queries.get_category(category_slug)
-                videos = queries.get_latest_videos().filter(category__exact=category)
+                videos = queries.get_videos_from_category(category)
                 context['selected_category'] = category
 
         context['videos'] = videos
