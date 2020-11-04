@@ -163,8 +163,7 @@
 		var player = videojs('player', {
 			html5: {
 		        hls: {
-		        	// overrideNative: !videojs.browser.IS_ANY_SAFARI
-		        	overrideNative: true
+					overrideNative: !videojs.browser.IS_ANY_SAFARI
 		      	}  
 		    },
 			aspectRatio: "16:9", 
@@ -188,15 +187,16 @@
 			}
 		});
 
-		if (!videojs.browser.IS_ANY_SAFARI) {
+		if (videojs.browser.IS_ANY_SAFARI) {
+			player.src([
+				{% for url in video.get_all_playlists %}
+					{ src: '{{ url }}', type: 'application/x-mpegURL'},
+				{% endfor %}
+			]);
+		} else {
 			player.src({
 				src: '{{ video.playlist_file.url }}',
 				type: 'application/x-mpegURL'
-			});
-		} else {
-			player.src({
-				src: '{{ video.uploaded_file.url }}',
-				type: 'video/mp4'
 			});
 		}
 

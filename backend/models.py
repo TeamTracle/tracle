@@ -279,6 +279,13 @@ class Video(models.Model):
         folder = get_video_location(self)
         self.playlist_file.storage.remote.delete(folder)
 
+    def get_all_playlists(self):
+        storage = self.playlist_file.storage.get_storage(self.playlist_file.name)
+        return [
+            storage.url(f'{self.channel.channel_id}/{self.watch_id}/480p.m3u8'),
+            storage.url(f'{self.channel.channel_id}/{self.watch_id}/360p.m3u8'),
+        ]
+
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='likes')
