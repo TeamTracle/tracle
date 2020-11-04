@@ -79,7 +79,9 @@ class SubscribeView(View):
 		channel_id = request.POST.get('channel_id', None)
 		if not channel_id:
 			return JsonResponse({'success' : False, 'error' : 'Missing channel_id.'})
-		to_channel = get_channel_by_id(channel_id) 
+		to_channel = get_channel_by_id(channel_id)
+		if not to_channel:
+			return JsonResponse({'success' : False, 'error' : 'Channel not found.'})
 
 		if from_channel.id == to_channel.id:
 			return JsonResponse({'success' : False, 'error' : 'Can not subscribe to self.'})
@@ -109,6 +111,8 @@ class IncrementViewsView(View):
 class VideoViewSet(viewsets.ModelViewSet):
 		def list(self, request, channel_id):
 			channel = get_channel_by_id(channel_id)
+			if not channel:
+				return Response({'message': 'Channel not found.'}, status=status.HTTP_400_BAD_REQUEST)
 			queryset = Video.objects.filter(channel__exact=channel)
 			serializer = VideoSerializer(queryset, many=True)
 			return Response(serializer.data)

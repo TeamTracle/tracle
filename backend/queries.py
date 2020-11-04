@@ -58,7 +58,10 @@ def get_channel(from_user):
 	return Channel.objects.filter(user__exact=from_user)[0]
 
 def get_channel_by_id(channel_id):
-	return Channel.objects.filter(channel_id__exact=channel_id)[0]
+	try:
+		return Channel.objects.get(channel_id=channel_id)
+	except Channel.DoesNotExist:
+		return None
 
 def get_total_views(channel):
 	return channel.videos.all().aggregate(Sum('views'))['views__sum'] or 0

@@ -204,6 +204,8 @@ class SubscriptionsView(DashboardBaseView):
 class ChannelView(View):
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
+        if not channel:
+            return render(request, 'web/channel.html', {})
         total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:

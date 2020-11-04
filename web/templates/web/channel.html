@@ -19,6 +19,7 @@
 
 <div class="channel__container">
 	<div class="container">
+		{% if channel %}
 		<div class="channel__header">
 			<img class="channel__header__thumb" src="{% if channel.avatar %}{{ channel.avatar.url }}{% else %}{% static 'web/img/avatar.png' %}{% endif %}">
 			<h1 class="channel__header__title">{{ channel.name }}</h1>
@@ -58,6 +59,9 @@
 				</div>
 			</div>
 		</div>
+		{% else %}
+		<div>Channel not found.</div>
+		{% endif %}
 	{% include 'web/includes/footer.html' %}
 	</div>
 </div>
