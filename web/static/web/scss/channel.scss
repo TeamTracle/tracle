@@ -28,7 +28,7 @@
 			grid-template-areas:
 				"thumb title subscribe subscribers views"
 				"thumb title subscribe subscribers views";
-			grid-template-columns: 0fr 0fr 7fr 1fr 1fr;
+			grid-template-columns: 0fr 1fr 7fr 1fr 1fr;
 			align-items: center;
 		}
 
@@ -60,6 +60,16 @@
 			grid-area: title;
 			margin: 0;
 			color: #fff;
+			position: relative;
+
+			&__checkmark {
+				font-size: 1rem;
+				padding: 2px;
+				color: green;
+				border: 1px solid green;
+				border-radius: 50%;
+				vertical-align: middle;
+			}
 		}
 
 		&__btn-subscribe {
