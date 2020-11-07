@@ -88,6 +88,8 @@ def start(infile,
           index=0,
           wait_time=1.0,
           initial_wait_time=2.0):
+    call_display = True
+    fps = 0
     probe = ffprobe(infile)
     for s in probe['streams']:
         if s['codec_type'] == 'video':
@@ -95,28 +97,36 @@ def start(infile,
     try:
         probe['streams'][index]
     except (IndexError, KeyError):
-        raise ValueError('Probe failed')
+        # raise ValueError('Probe failed')
+        call_display = False
     try:
         fps = eval(probe['streams'][index]['avg_frame_rate'])
     except ZeroDivisionError:
-        raise ValueError('Cannot use input FPS')
+        # raise ValueError('Cannot use input FPS')
+        call_display = False
     if fps == 0:
-        raise ValueError('Unexpected zero FPS')
-    dur = float(probe['format']['duration'])
-    total_frames = int(dur * fps)
-    if total_frames <= 0:
-        raise ValueError('Unexpected total frames value')
+        # raise ValueError('Unexpected zero FPS')
+        call_display = False
+
+    if call_display:
+        dur = float(probe['format']['duration'])
+        total_frames = int(dur * fps)
+        if total_frames <= 0:
+            raise ValueError('Unexpected total frames value')
+
     prefix = 'ffprog-{}'.format(splitext(basename(infile))[0])
     vstats_fd, vstats_path = mkstemp(suffix='.vstats', prefix=prefix)
     pid = ffmpeg_func(infile, out_folder, vstats_path)
     if not pid:
         raise TypeError('ffmpeg callback must return a valid PID')
-    sleep(initial_wait_time)
-    display(total_frames,
-            vstats_fd,
-            pid,
-            wait_time=wait_time,
-            on_message=on_message)
-    os.close(vstats_fd)
+
+    if call_display:
+        sleep(initial_wait_time)
+        display(total_frames,
+                vstats_fd,
+                pid,
+                wait_time=wait_time,
+                on_message=on_message)
+        os.close(vstats_fd)
     if on_done:
         on_done()
