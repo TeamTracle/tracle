@@ -133,6 +133,7 @@ class Channel(models.Model):
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
     avatar = models.ImageField(blank=True, null=True)
+    verified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)
 
