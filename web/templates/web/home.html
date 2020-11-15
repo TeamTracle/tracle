@@ -21,10 +21,7 @@
 		<div class="feed">
 			<div class="feed__header" onclick="toggleCategories()">
 				<h2>
-					{% if search_term %}
-						<i class="fas fa-search"></i>
-						Results for: {{ search_term }}
-					{% elif selected_category %}
+					{% if selected_category %}
 						<i class="fas {{ selected_category.icon }}"></i>
 						{{ selected_category.title }}
 					{% else %}

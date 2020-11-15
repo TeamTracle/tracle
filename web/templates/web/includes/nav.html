@@ -9,8 +9,8 @@
 
 		<div id="search-form" class="nav__search">
 			<button id="search-close" class="btn btn-gray nav__search__submit nav__search__close" onclick="onCloseSearch()"><i class="fas fa-times"></i></button>
-			<form action="/">
-				<input class="nav__search__input" type="text" name="q" value="{{ search_term }}">
+			<form action="/results">
+				<input class="nav__search__input" type="text" name="search_terms" value="{{ search_terms }}" required>
 				<button class="btn btn-gray nav__search__submit"><i class="fas fa-search"></i></button>
 			</form>
 		</div>

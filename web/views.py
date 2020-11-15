@@ -37,21 +37,21 @@ class HomeView(View):
                 context['selected_category'] = category
 
         context['videos'] = videos
-        search_terms = request.GET.get('q', None)
-        if search_terms:
-            context['videos'] = context['videos'].filter(title__icontains=search_terms)
-            context['search_term'] = search_terms
 
         page_number = request.GET.get('p', 1)
         paginator = Paginator(context['videos'], 20)
         context['videos'] = paginator.get_page(page_number)
 
-        context['new_videos'] = videos.order_by('-created')
-        context['counter'] = functools.partial(next, itertools.count())
-
         context['recommended_videos'] = recommended_videos = queries.get_recommended_videos()
 
         return render(request, 'web/home.html', context)
+
+class ResultsView(View):
+    def get(self, request):
+        categories = queries.get_all_categories()
+        search_terms = request.GET.get('search_terms', '')
+        videos = queries.filter_by_search_terms(search_terms)
+        return render(request, 'web/results.html', {'search_terms' : search_terms, 'categories' : categories, 'videos' : videos})
 
 class TermsView(View):
     def get(self, request):

@@ -41,6 +41,9 @@ def get_published_video_or_none(watch_id):
 def get_videos_from_channel(channel):
 	return Video.published_objects.filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
 
+def filter_by_search_terms(search_terms):
+	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC, title__icontains=search_terms)
+
 def get_sub_feed(channel):
 	subs = channel.subscribers.all()
 	return Video.objects.filter(channel__in=[ sub.to_channel for sub in subs.all() ]).order_by('-created')

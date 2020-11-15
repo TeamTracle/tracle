@@ -1,0 +1,48 @@
+{% extends 'web/base.html' %}
+{% load static %}
+{% load compress %}
+{% load humanize %}
+
+{% block title %}
+	<title>{{ search_terms }} - Tracle</title>
+{% endblock %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/results.scss' %}">
+{% endblock css %}
+
+{% block body %}
+<div class="container">
+	{% include 'web/includes/nav.html' %}
+	{% include 'web/includes/sidebar.html' %}
+
+	<div class="primary">
+		<div class="feed">
+			<div class="feed__header">
+				<h2>
+					<i class="fas fa-search"></i> Results for: {{ search_terms }}
+				</h2>
+			</div>
+			{% if not videos %}
+				<p style="margin: 2em auto; text-align: center">We couldn't find any videos, sorry.</p>
+			{% else %}
+			<div class="feed__container">
+				{% for video in videos %}
+				<div class="feed__video">
+					<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
+					<div class="feed__video__details">
+						<h2 class="feed__video__details__title"><a href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a></h2>
+						<div class="feed__video__details__description">{{ video.description }}</div>
+						<div class="feed__video__details__views">{{ video.views }} views</div>
+						<a href="{% url 'web_channel' video.channel.channel_id %}" class="feed__video__details__channel">{{ video.channel.name }} </a>
+						<div class="feed__video__details__timestamp">{{ video.created|naturaltime}}</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	{% include 'web/includes/footer.html' %}
+</div>
+{% endblock %}
