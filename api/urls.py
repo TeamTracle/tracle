@@ -19,4 +19,5 @@ urlpatterns = [
 	path('comments/<watch_id>', views.CommentView.as_view(), name='api_comments'),
 	path('subscriptions', views.SubscriptionsView.as_view(), name='api_subscriptions'),
 	path('notifications', views.NotificationsView.as_view(), name='api_notifications_unread'),
+	path('admin/ban_user', views.BanUser.as_view(), name='api_ban_user'),
 ]

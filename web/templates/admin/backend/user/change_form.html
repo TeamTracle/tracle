@@ -1,0 +1,31 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+      {% change_form_object_tools %}
+    {% endblock %}
+    <button onclick="ban_user()">
+      {% if original.banned %}Unban user {% else %}Ban user{% endif %}
+    </button>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript">
+      function ban_user() {
+        var pk = '{{ original.pk }}';
+        var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        var data = new FormData();
+        data.append('id', pk);
+        axios.post('/api/admin/ban_user', data, {headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}})
+        .then(response => {
+          document.location = document.location;
+        })
+        .catch(error => {
+          console.log(error.response.data);
+        });
+      }
+    </script>
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}

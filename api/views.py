@@ -11,6 +11,7 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile, File
 from django.core.cache import cache
+from django.utils import timezone
 
 import django_rq
 from django_rq.jobs import Job
@@ -18,12 +19,13 @@ from django_rq.jobs import Job
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser
 from rest_framework import status
 
 from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
 from .permissions import IsAuthenticated, ReadOnly
 
-from backend.queries import toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
+from backend.queries import get_user, toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
 from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
@@ -380,3 +382,17 @@ class NotificationsView(APIView):
 			return Response({}, status=status.HTTP_400_BAD_REQUEST)
 		notification.delete()
 		return Response({})
+
+class BanUser(APIView):
+	permission_classes = [IsAdminUser]
+
+	def post(self, request):
+		pk = request.data.get('id', None)
+		if pk:
+			user = get_user(pk)
+			user.banned = not user.banned
+			user.banned_at = timezone.now()
+			user.save()
+			return Response({})
+		else:
+			return Response({message: 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)

@@ -25,7 +25,7 @@ from . import tasks, utils
 
 class PublishedVideoManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True)
+        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False)
 
 def get_video_location(instance, filename=None):
     if instance.pk is None:
@@ -91,6 +91,7 @@ class User(AbstractBaseUser):
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     banned = models.BooleanField(default=False)
+    banned_at = models.DateTimeField(blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
     notes = models.TextField(default='', blank=True)

@@ -55,14 +55,14 @@ def get_category(slug):
 	return Category.objects.get(slug=slug)
 
 def get_all_channels():
-	return Channel.objects.all()
+	return Channel.objects.filter(user__banned=False)
 
 def get_channel(from_user):
 	return Channel.objects.filter(user__exact=from_user)[0]
 
 def get_channel_by_id(channel_id):
 	try:
-		return Channel.objects.get(channel_id=channel_id)
+		return Channel.objects.get(channel_id=channel_id, user__banned=False)
 	except Channel.DoesNotExist:
 		return None
 
