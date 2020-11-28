@@ -130,6 +130,7 @@ class User(AbstractBaseUser):
 
 class Channel(models.Model):
     name = models.CharField(max_length=20)
+    description = models.TextField(max_length=5000, default="")
     channel_id = models.CharField(max_length=11, editable=False, blank=True)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
