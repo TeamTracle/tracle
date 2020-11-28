@@ -133,9 +133,11 @@ class ChangeUserForm(forms.Form):
 
     email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'disabled' : True}))
     channel_name = forms.CharField()
+    description = forms.CharField(required=False, max_length=5000, widget=forms.Textarea())
 
     def save(self, instance):
         instance.name = self.cleaned_data['channel_name']
+        instance.description = self.cleaned_data['description']
         instance.save()
         return instance
 

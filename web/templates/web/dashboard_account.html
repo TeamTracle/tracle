@@ -22,8 +22,18 @@
 						{% endfor %}
 						</ol>
 					{% endif %}
-					<p>{{ form.email }} {{ form.email.errors }}</p>
-					<p>{{ form.channel_name }} {{ form.channel_name.errros }}</p>
+					<p>
+						<label for="id_email">E-Mail:</label><br/>
+						{{ form.email }} {{ form.email.errors }}
+					</p>
+					<p>
+						<label for="id_channel_name">Channel Name:</label><br/>
+						{{ form.channel_name }} {{ form.channel_name.errros }}
+					</p>
+					<p>
+						<label for="id_description">Description:</label><br/>
+						{{ form.description }} {{ form.description.errors }}
+					</p>
 					<input class="btn btn-blue" type="submit" name="submit" value="Save">
 				</form>
 				<div class="thumb-container">
