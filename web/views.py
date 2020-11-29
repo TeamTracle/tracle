@@ -205,7 +205,7 @@ class ChannelVideosView(View):
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
-            return render(request, 'web/channel.html', {})
+            return render(request, 'web/channel_videos.html', {})
         total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:
@@ -217,7 +217,7 @@ class ChannelFeaturedView(View):
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
-            return render(request, 'web/channel.html', {})
+            return render(request, 'web/channel_featured.html', {})
         total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:
@@ -230,7 +230,7 @@ class ChannelFeedView(View):
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
-            return render(request, 'web/channel.html', {})
+            return render(request, 'web/channel_feed.html', {})
         total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:
