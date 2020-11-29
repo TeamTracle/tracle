@@ -17,7 +17,7 @@
 		border-radius: 5px 5px 0 0;
 		color: #666;
 		grid-template-areas:
-			"thumb title subscribers views"
+			"thumb title title title"
 			"thumb subscribe subscribers views";
 		grid-row-gap: 0.5em;
 		grid-template-columns: 0fr 2fr 1fr 1fr;
@@ -37,6 +37,8 @@
 			align-items: center;
 			flex-direction: column;
 			justify-content: center;
+			width: max-content;
+			margin: 0 auto;
 		}
 
 		&__subscribers {
@@ -61,6 +63,7 @@
 			margin: 0;
 			color: #fff;
 			position: relative;
+			width: max-content;
 
 			&__checkmark {
 				font-size: 1rem;
@@ -92,6 +95,11 @@
 			font-size: 0.8rem;
 			cursor: pointer;
 			max-width: max-content;
+			height: 2.6rem;
+
+			@media only screen and (min-width: 768px) {
+				height: unset;
+			}
 
 			& > .fa-plus-circle {
 				font-size: 1rem;
@@ -99,113 +107,64 @@
 		}
 	}
 
-	&__body {
-		display: grid;
-		grid-template-areas: "sidebar" "head" "primary";
-		grid-column-gap: 1em;
-		padding: 1em;
-		background-color: #f3f3f3;
-
-		@media only screen and (min-width: 768px) {
-			grid-template-areas: ". head" "sidebar primary";
-			grid-template-columns: auto 1fr;
-		}
-
-		&__header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			grid-area: head;
-			position: relative;
-
-			&::after {
-				content: "";
-				display: block;
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				border-top: 1px solid #ddd;
-				border-bottom: 1px solid #fff;
-			}
-
-		}
-
-		&__sidebar {
-			grid-area: sidebar;
-			display: flex;
-
-			@media only screen and (min-width: 768px) {
-				flex-direction: column;
-			}
-
-			&__item {
-				padding: 0.3em 1em;
-			    margin-bottom: 1em;
-			    color: #333;
-			    border-radius: 2px;
-			    cursor: pointer;
-			}
-
-			&__item.selected {
-				color: #fff;
-				background-color: #666;
-				font-weight: bold;
-			}
-		}
-
-		&__primary {
-			grid-area: primary;
-			margin-top: 2em;
-
-			@media only screen and (min-width: 768px) {
-				margin-left: 2em;
-			}
-		}
-	}
-}
-
-.feed {
-
-	&__container {
+	&__nav {
 		display: flex;
-		flex-flow: wrap;
+		justify-content: space-between;
+		align-items: center;
+		background-image: linear-gradient(to bottom, rgb(50, 50, 50) 0px, rgb(79, 79, 79) 70%);
+		background-color: rgb(68, 68, 68);
+		border-top: 1px solid #3b3b3b;
 
-	}
+		& .nav-link {
+			display: inline-block;
+			color: #eaeaea;
+			text-decoration: none;
+			padding: 0.7em 1em;
 
-	&__video {
-		flex-basis: 320px;
-		margin: 0.5em 0;
-
-		@media only screen and (min-width: 929px) {
-			margin: 0.5em;
+			&:hover {
+				box-shadow: 0 1px 2px rgb(34,34,34);
+				background-image: linear-gradient(to top, rgb(58, 58, 58) 0%, rgb(85, 85, 85) 70%);
+			}
 		}
 
-		&__details {
-			font-size: 11px;
+		& .nav-link-selected {
+			display: inline-block;
+			color: #eaeaea;
+			text-decoration: none;
+			padding: 0.7em 1em;
+			background-color: #252525;
+			box-shadow: 1px 0 15px #232323;
+			background-image: linear-gradient(to bottom, #323232 0,#1c1c1c 70%);
+		}
 
-			&__title {
-				display: block;
-				color: #444;
-				text-decoration: none;
-				font-weight: bold;
-				font-size: 1rem;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-				max-width: 320px;
+		& input {
+			background-color: #333;
+			outline: none;
+			border-radius: 3px 0 0 3px;
+			border: 0;
+			border-bottom: 1px solid #626262;
+			color: #fff;
+			padding: 0.4em 1em;
+			box-shadow: inset 0px 2px 3px #151515;
+		}
+
+		& .right {
+			margin-right: 0.5em;
+			@media only screen and (min-width: 768px) {
+				margin-right: 1em;
 			}
+		}
 
-			&__views {
-				color: #666;
-			}
-
-			&__timestamp {
-				color: #999;
-				padding-left: 1em;
-			}
-
+		& button {
+			background-color: #2b2b2b;
+			color: #666;
+			outline: none;
+			border: 0;
+			border-radius: 0 5px 5px 0;
+			background-image: linear-gradient(rgb(50, 50, 50) 0px, rgb(28, 28, 28) 70%);
+			padding: 0.4em;
+			text-align: center;
+			font-size: 1rem;
 		}
 	}
-
 }

@@ -7,16 +7,10 @@
 	<title>{{ channel.name }} - Tracle</title>
 {% endblock %}
 
-{% block css %}
-	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel.scss' %}">
-{% endblock %}
-
 {% block body %}
-
 <div class=container>
 	{% include 'web/includes/nav.html' %}
 </div>
-
 <div class="channel__container">
 	<div class="container">
 		{% if channel %}
@@ -36,43 +30,25 @@
 				<span>{{ total_views }}</span> video views
 			</div>
 		</div>
-		<div class="channel__body">
-			<div class="channel__body__header">
-				<h2>Uploads ({{ videos.count }})</h2>
-				<button class="btn btn-gray channel__body__header__button" disabled>Date added (newest - oldest) <i class="fas fa-caret-down"></i></button>
+		<div class="channel__nav">
+			<div class="left">
+				<a class="{% if selected_tab == 'featured' %}nav-link-selected{% else %}nav-link{% endif %}" href="{% url 'web_channel_featured' channel.channel_id %}">Featured</a><a class="{% if selected_tab == 'feed' %}nav-link-selected{% else %}nav-link{% endif %}" href="{% url 'web_channel_feed' channel.channel_id %}">Feed</a><a class="{% if selected_tab == 'videos' %}nav-link-selected{% else %}nav-link{% endif %}" href="{% url 'web_channel_videos' channel.channel_id %}">Videos</a>
 			</div>
-			<div class="channel__body__sidebar">
-				<div class="channel__body__sidebar__item selected">
-					Uploaded Videos
-				</div>
-				<div class="channel__body__sidebar__item">
-					<!-- Playlists -->
-				</div>
-			</div>
-			<div class="channel__body__primary">
-				<div class="feed__container">
-					{% for video in videos %}
-					<div class="feed__video">
-						<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
-						<div class="feed__video__details">
-							<a class="feed__video__details__title" href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a>
-							<span class="feed__video__details__views">{{ video.views }} views</span><span class="feed__video__details__timestamp">{{ video.created|naturaltime }}</span>
-						</div>
-					</div>
-					{% endfor %}
-				</div>
-			</div>
+			<form class="right">
+				<input /><button type="submit"><i class="fas fa-search"></i></button>
+			</form>
 		</div>
-		{% else %}
-		<div>Channel not found.</div>
+        {% block channel_body %}
+        {% endblock %}
+        {% else %}
+            <div>Channel not found.</div>
 		{% endif %}
-	{% include 'web/includes/footer.html' %}
+        {% include 'web/includes/footer.html' %}
 	</div>
 </div>
 {% csrf_token %}
 <input id="channel_id" type="hidden" value="{{ channel.channel_id }}">
 {% endblock %}
-
 
 {% block script %}
 {% endblock %}

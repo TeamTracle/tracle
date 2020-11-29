@@ -1,0 +1,38 @@
+{% extends 'web/channel_base.html' %}
+{% load static %}
+{% load compress %}
+{% load humanize %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel_videos.scss' %}">
+{% endblock %}
+
+{% block channel_body %}
+<div class="channel__body">
+	<div class="channel__body__header">
+		<h2>Uploads ({{ videos.count }})</h2>
+		<button class="btn btn-gray channel__body__header__button" disabled>Date added (newest - oldest) <i class="fas fa-caret-down"></i></button>
+	</div>
+	<div class="channel__body__sidebar">
+		<div class="channel__body__sidebar__item selected">
+			Uploaded Videos
+		</div>
+		<div class="channel__body__sidebar__item">
+			<!-- Playlists -->
+		</div>
+	</div>
+	<div class="channel__body__primary">
+		<div class="feed__container">
+			{% for video in videos %}
+			<div class="feed__video">
+				<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
+				<div class="feed__video__details">
+					<a class="feed__video__details__title" href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a>
+					<span class="feed__video__details__views">{{ video.views }} views</span><span class="feed__video__details__timestamp">{{ video.created|naturaltime }}</span>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+@import 'channel_base';
+
+.channel {
+    &__body {
+        display: grid;
+        background-color: #e6e6e6;
+        grid-template-areas: "primary" "secondary";
+        
+        @media only screen and (min-width: 768px) {
+            grid-template-areas: "primary secondary";
+            grid-template-columns: 3fr 1fr;
+        }
+
+        & .primary {
+            grid-area: primary;
+            padding: 1em;
+        }
+
+        & .secondary {
+            grid-area: secondary;
+            border-left: 1px solid #d2d2d2;
+            padding: 1em;
+            background-image: linear-gradient(to right, #d2d2d2 0%,#e1e1e1 1em);
+        }
+    }
+}
+
+.channel-featured-video {
+
+    &__details {
+        padding: 1em;
+        color: #666;
+        font-size: 0.9rem;
+        border-radius: 0.3em;
+        box-shadow: 0 1px 1px rgb(204,204,204);
+        background-color: #fff;
+
+        &:hover {
+            box-shadow: 0 1px 1px #888;
+            > a {
+                color: #1c62b9;
+            }
+        }
+
+        & > a {
+            font-size: 1.2rem;
+            color: #333;
+            text-decoration: none;
+            
+            &:hover {
+                color: #1c62b9;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.channel-profile {
+    & > h2 {
+        font-size: 1rem;
+        font-weight: normal;
+    }
+    &__about {
+        max-height: 8rem;
+        overflow: hidden;
+        font-size: 0.9rem;
+        color: #808080;
+    }
+
+    & > input {
+        display: none;
+    }
+    
+    & > input:checked ~ &__about {
+        max-height: 100%;
+    }
+
+    & > input:checked ~ label:after {
+        content: "less";
+    }
+
+    & > label {
+        display: block;
+        text-align: right;
+        font-size: 0.9rem;
+        color: #808080;
+        cursor: pointer;
+
+        &:after {
+            content: "more";
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// ####################
+// VIDEO JS
+// ####################
+
+
+.video-js .vjs-big-play-button {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAnElEQ…p2Utr2tFn/OvT5s5b0BHwJdmZ2Bybg0NmllB5d190kHb5cL8J5WhbWZJeBAAAAAElFTkSuQmCC), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA8CAIAAAAok0etAAAAJUlEQVR42mNKTU1lunnzJtP///+ZGBgYwDQ6xiVOrhw1zSNRPQBu5Zagca3K1AAAAABJRU5ErkJggg==), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAmklEQ…iRMhrXA1Gk0D+uoQH+gIkIRSCrC5gIeOIBkA74+PHjRgDhswBcaL43lQAAAABJRU5ErkJggg==);
+    background-size: 10px 100%, 40px 100%, 10px 100% !important;
+    background-position: left center, center center, right center;
+    border: none;
+}
+
+.video-js .vjs-big-play-button .vjs-icon-placeholder::before {
+	content: '\f04b';
+	font-style: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	font-family: "FA5Free";
+	font-weight: 900;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.video-js .vjs-control-bar {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAaCAIAAAD5ZqGGAAAAJklEQVR42mNKSUlhevToEdPXr1+Z/v37RxH+//8/htjv379BZgMA4j5LOzqaqAsAAAAASUVORK5CYII=) center center repeat-x;
+    background-repeat: repeat-x;
+    background-size: contain;
+    width: 98%;
+	margin: 0 auto;
+	border-radius: 0.5em;
+}
+
+.video-js .vjs-progress-holder {
+	border-radius: 1em;
+	height: 0.9em;
+	background-color: #333;
+	box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.75);
+}
+
+.video-js .vjs-progress-holder .vjs-load-progress {
+	background: black;
+	border-radius: 1em;
+}
+
+.video-js .vjs-progress-holder .vjs-load-progress div {
+	background-color: black;
+    border-radius: 1em;
+}
+
+
+.video-js .vjs-progress-holder .vjs-play-progress {
+	border-radius: 1em;
+}
+
+.video-js .vjs-progress-holder .vjs-play-progress::before {
+	content: unset;
+}
+
+.video-js .vjs-current-time {
+	display: block;
+}
+
+.video-js .vjs-duration {
+	display: block;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress > .vjs-time-tooltip {
+	display: none;
+}
+
+.video-js .vjs-progress-control:hover .vjs-time-tooltip {
+	font-size: 0.8rem;
+}
+
+.video-js .vjs-progress-control:hover .vjs-progress-holder {
+	font-size: inherit;
+}

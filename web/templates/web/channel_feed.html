@@ -1,0 +1,14 @@
+{% extends 'web/channel_base.html' %}
+{% load static %}
+{% load compress %}
+{% load humanize %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel_base.scss' %}">
+{% endblock %}
+
+{% block channel_body %}
+<div class="channel__body">
+	<h5>Coming soon...</h5>
+</div>
+{% endblock %}

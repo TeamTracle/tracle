@@ -201,7 +201,7 @@ class SubscriptionsView(DashboardBaseView):
     def get(self, request):
         return render(request, 'web/dashboard_subscriptions.html')
 
-class ChannelView(View):
+class ChannelVideosView(View):
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
@@ -211,7 +211,31 @@ class ChannelView(View):
         if request.user.is_authenticated:
             subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
         videos = queries.get_videos_from_channel(channel)
-        return render(request, 'web/channel.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos})
+        return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos'})
+
+class ChannelFeaturedView(View):
+    def get(self, request, channel_id):
+        channel = queries.get_channel_by_id(channel_id)
+        if not channel:
+            return render(request, 'web/channel.html', {})
+        total_views = queries.get_total_views(channel)
+        subscribed = False
+        if request.user.is_authenticated:
+            subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
+        qs = queries.get_videos_from_channel(channel)
+        featured_video = qs.order_by('-views')[0]
+        return render(request, 'web/channel_featured.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'featured', 'featured_video' : featured_video})
+
+class ChannelFeedView(View):
+    def get(self, request, channel_id):
+        channel = queries.get_channel_by_id(channel_id)
+        if not channel:
+            return render(request, 'web/channel.html', {})
+        total_views = queries.get_total_views(channel)
+        subscribed = False
+        if request.user.is_authenticated:
+            subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
+        return render(request, 'web/channel_feed.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'feed'})
 
 class ChannelsView(View):
     def get(self, request):

@@ -1,0 +1,113 @@
+@import 'channel_base';
+
+.channel {
+    &__body {
+		display: grid;
+		grid-template-areas: "sidebar" "head" "primary";
+		grid-column-gap: 1em;
+		padding: 1em;
+		background-color: #f3f3f3;
+
+		@media only screen and (min-width: 768px) {
+			grid-template-areas: ". head" "sidebar primary";
+			grid-template-columns: auto 1fr;
+		}
+
+		&__header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			grid-area: head;
+			position: relative;
+
+			&::after {
+				content: "";
+				display: block;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				border-top: 1px solid #ddd;
+				border-bottom: 1px solid #fff;
+			}
+
+		}
+
+		&__sidebar {
+			grid-area: sidebar;
+			display: flex;
+
+			@media only screen and (min-width: 768px) {
+				flex-direction: column;
+			}
+
+			&__item {
+				padding: 0.3em 1em;
+			    margin-bottom: 1em;
+			    color: #333;
+			    border-radius: 2px;
+			    cursor: pointer;
+			}
+
+			&__item.selected {
+				color: #fff;
+				background-color: #666;
+				font-weight: bold;
+			}
+		}
+
+		&__primary {
+			grid-area: primary;
+			margin-top: 2em;
+
+			@media only screen and (min-width: 768px) {
+				margin-left: 2em;
+			}
+		}
+	}
+}
+
+.feed {
+
+	&__container {
+		display: flex;
+		flex-flow: wrap;
+
+	}
+
+	&__video {
+		flex-basis: 320px;
+		margin: 0.5em 0;
+
+		@media only screen and (min-width: 929px) {
+			margin: 0.5em;
+		}
+
+		&__details {
+			font-size: 11px;
+
+			&__title {
+				display: block;
+				color: #444;
+				text-decoration: none;
+				font-weight: bold;
+				font-size: 1rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				max-width: 320px;
+			}
+
+			&__views {
+				color: #666;
+			}
+
+			&__timestamp {
+				color: #999;
+				padding-left: 1em;
+			}
+
+		}
+	}
+
+}

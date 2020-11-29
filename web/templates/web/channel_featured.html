@@ -1,0 +1,85 @@
+{% extends 'web/channel_base.html' %}
+{% load static %}
+{% load compress %}
+{% load humanize %}
+
+{% block css %}
+	<link href="{% static 'web/css/video-js.css' %}" rel="stylesheet" />
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel_featured.scss' %}">
+{% endblock %}
+
+{% block channel_body %}
+<div class="channel__body">
+	<div class="primary">
+		<div class="channel-featured-video">
+			<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ featured_video.get_poster }}">
+				<p class="vjs-no-js">
+					To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+				</p>
+			</video-js>
+			<div class="channel-featured-video__details">
+				<a href="/watch?v={{ featured_video.watch_id }}">{{ featured_video.title }}</a>
+				<div>uploaded {{ featured_video.created|naturaltime }}, {{ featured_video.views }} views</div>
+			</div>
+		</div>
+	</div>
+	<div class="secondary">
+		<div class="channel-profile">
+			<h2>About {{ channel.name }}</h2>
+			<input id="cpa-expander" type="checkbox">
+			<div class="channel-profile__about">
+				{{ channel.description|linebreaks|urlize }}
+			</div>
+			<label for="cpa-expander"></label>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'web/js/vendor/video.js' %}"></script>
+<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
+<script>
+var player = videojs('player', {
+	html5: {
+		hls: {
+			overrideNative: !videojs.browser.IS_ANY_SAFARI
+		}  
+	},
+	aspectRatio: "16:9", 
+	responsive: true,
+	userActions: {
+		doubleClick: true,
+		hotkeys: true
+	},
+	controlBar: {
+		children: [
+			'playToggle',
+			'currentTimeDisplay',
+			'progressControl',
+			'durationDisplay',
+			'volumePanel',
+			'fullscreenToggle'
+		],
+		volumePanel: {
+			inline: false
+		}
+	}
+});
+
+if (videojs.browser.IS_ANY_SAFARI) {
+	player.src([
+		{% for url in featured_video.get_all_playlists %}
+			{ src: '{{ url }}', type: 'application/x-mpegURL'},
+		{% endfor %}
+	]);
+} else {
+	player.src({
+		src: '{{ featured_video.playlist_file.url }}',
+		type: 'application/x-mpegURL'
+	});
+}
+
+player.landscapeFullscreen();
+</script>
+{% endblock %}
