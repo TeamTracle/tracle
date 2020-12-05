@@ -11,6 +11,7 @@
 {% block channel_body %}
 <div class="channel__body">
 	<div class="primary">
+		{% if featured_video %}
 		<div class="channel-featured-video">
 			<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ featured_video.get_poster }}">
 				<p class="vjs-no-js">
@@ -22,6 +23,11 @@
 				<div>uploaded {{ featured_video.created|naturaltime }}, {{ featured_video.views }} views</div>
 			</div>
 		</div>
+		{% else %}
+			<h3>
+				This channel has not uploaded any videos yet.
+			</h3>
+		{% endif %}
 	</div>
 	<div class="secondary">
 		<div class="channel-profile">

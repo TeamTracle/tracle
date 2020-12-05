@@ -223,7 +223,10 @@ class ChannelFeaturedView(View):
         if request.user.is_authenticated:
             subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
         qs = queries.get_videos_from_channel(channel)
-        featured_video = qs.order_by('-views')[0]
+        if qs:
+            featured_video = qs.order_by('-views')[0]
+        else:
+            featured_video = None
         return render(request, 'web/channel_featured.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'featured', 'featured_video' : featured_video})
 
 class ChannelFeedView(View):
