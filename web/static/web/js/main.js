@@ -28,20 +28,20 @@ navMenuClose = () => {
 onOpenSearch = () => {
 	const form = document.getElementById("search-form");
 	const button = document.getElementById("search-open");
-	const menu_toggle = document.getElementById("nav-toggle");
+	const notifications_toggle = document.getElementById("notifications-toggle");
 	form.classList.add("nav__search-opened");
 	button.classList.add("d-none");
-	menu_toggle.classList.add("d-none");
-
+	notifications_toggle.classList.add("d-none");
 }
 
 onCloseSearch = () => {
 	const form = document.getElementById("search-form");
 	const button = document.getElementById("search-open");
-	const menu_toggle = document.getElementById("nav-toggle");
+	const notifications_toggle = document.getElementById("notifications-toggle");
 	form.classList.remove("nav__search-opened");
 	button.classList.remove("d-none");
-	menu_toggle.classList.remove("d-none");
+	notifications_toggle.classList.remove("d-none");
+
 }
 
 navMenuDesktopToggle = () => {

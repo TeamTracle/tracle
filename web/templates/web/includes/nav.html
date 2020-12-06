@@ -46,7 +46,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="nav__mobile-notifications">
+			<div id="notifications-toggle" class="nav__mobile-notifications">
 				<a href="/inbox/notifications"><i class="fas fa-bell"></i>{% if request.user|has_notification %}{% live_notify_badge %}{% endif %}</a>
 			</div>
 		{% endif %}
