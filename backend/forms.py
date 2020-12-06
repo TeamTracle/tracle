@@ -100,11 +100,11 @@ class SigninForm(forms.Form):
         if email is not None and password:
             user_cache = authenticate(username=email, password=password)
             if user_cache is None:
-                raise forms.ValidationError('Invalid username or password.', code='invalid')
+                raise forms.ValidationError('Invalid email or password.', code='invalid')
             if user_cache.banned:
                 raise forms.ValidationError('Your account has been suspended. If you think you’ve been unjustifiably banned, please contact us. Your content will be deleted after 30 days', code='banned')
             if not user_cache.email_confirmed:
-                raise forms.ValidationError('email address not confirmed, boi!')
+                raise forms.ValidationError('email address not confirmed.')
         return self.cleaned_data
 
 class ResetPasswordForm(PasswordResetForm):
