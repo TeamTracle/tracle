@@ -211,7 +211,15 @@ class ChannelVideosView(View):
         if request.user.is_authenticated:
             subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
         videos = queries.get_videos_from_channel(channel)
-        return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos'})
+        ordering = request.GET.get('sort', 'da')
+        if ordering == 'da':
+            videos  = videos.order_by('-created')
+        elif ordering == 'dd':
+            videos  = videos.order_by('created')
+        elif ordering == 'p':
+            videos  =  videos.order_by('-views')
+
+        return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos', 'ordering' : ordering})
 
 class ChannelFeaturedView(View):
     def get(self, request, channel_id):

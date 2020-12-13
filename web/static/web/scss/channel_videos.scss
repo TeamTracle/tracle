@@ -111,3 +111,34 @@
 	}
 
 }
+
+
+.order-dropdown {
+	position: relative;
+}
+
+.order-dropdown-content {
+	display: none;
+	position: absolute;
+	border: 1px solid #ccc;
+	box-shadow: 0 1px 1px rgba(100,100,100,.2);
+	background-color: #fff;
+	z-index: 1;
+	white-space: nowrap;
+	
+	> a {
+		display: block;
+		color: #555;
+		text-decoration: none;
+		padding: 0.5em 1em;
+
+		&:hover {
+			color: #fff;
+			background-color: #555;
+		}
+	}
+
+	&.open {
+		display: block;
+	}
+}
