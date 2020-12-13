@@ -15,9 +15,11 @@ django-cacheops==5.0.1    # via -r requirements.in
 django-compressor-autoprefixer==0.1.0  # via -r requirements.in
 django-compressor==2.4    # via -r requirements.in, django-compressor-autoprefixer, django-libsass
 django-imagekit==4.0.2    # via -r requirements.in
+django-ipware==3.0.2      # via django-qsessions
 django-libsass==0.8       # via -r requirements.in
+django-qsessions==1.1.2   # via -r requirements.in
 django-rq==2.3.2          # via -r requirements.in
-django==3.0.7             # via -r requirements.in, django-appconf, django-cacheops, django-rq, djangorestframework
+django==3.0.7             # via -r requirements.in, django-appconf, django-cacheops, django-qsessions, django-rq, djangorestframework
 djangorestframework==3.11.0  # via -r requirements.in
 fixedint==0.1.5           # via -r requirements.in
 funcy==1.14               # via django-cacheops
@@ -41,6 +43,8 @@ rq==1.4.2                 # via django-rq
 shutilwhich==1.1.0        # via -r requirements.in
 six==1.15.0               # via bleach, django-cacheops, django-compressor, django-imagekit, libsass, packaging, python-memcached
 sqlparse==0.3.1           # via django
+ua-parser==0.10.0         # via user-agents
 urllib3==1.25.9           # via requests
+user-agents==2.2.0        # via django-qsessions
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements.in

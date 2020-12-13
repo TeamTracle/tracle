@@ -392,7 +392,8 @@ class BanUser(APIView):
 			user = get_user(pk)
 			user.banned = not user.banned
 			user.banned_at = timezone.now()
+			user.session_set.all().delete()
 			user.save()
 			return Response({})
 		else:
-			return Response({message: 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'message': 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)

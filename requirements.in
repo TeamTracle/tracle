@@ -20,3 +20,4 @@ django-cacheops
 python-memcached
 bunnycdn-storage
 bleach
+django-qsessions
