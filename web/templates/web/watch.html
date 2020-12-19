@@ -21,6 +21,12 @@
 			</div>
 		{% else %}
 		<div class="header">
+			{% if request.user.is_authenticated and request.channel.channel_id == video.channel.channel_id %}
+				<div class="owner-ribbon">
+					<a href="{% url 'web_dashboard_edit_video' video.watch_id %}">Edit Info</a>
+					<a href="{% url 'web_dashboard_videos' %}">Video Manager</a>
+				</div>
+			{% endif %}
 			<h2>{{ video.title }}
 			{% if user.is_admin %}<a href="/admin/backend/video/{{ video.id }}/change/" style="font-size: 1rem; color: #333"><i class="far fa-edit"></i></a>{% endif %}
 			</h2>
