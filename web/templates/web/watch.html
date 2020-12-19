@@ -94,7 +94,7 @@
 				<div id="panel-details" class="panel__details panel__details--collapsed">
 					<div class="panel__details__left">
 						<div class="panel__details__uploader">Uploaded by <a href="{% url 'web_channel' video.channel.channel_id %}">{{ video.channel.name }}</a> {{ video.created|naturaltime }}</div>
-						<div class="panel__details__description">{{ video.description|linebreaks }}</div>
+						<div class="panel__details__description">{{ video.description|linebreaks|urlize }}</div>
 						<div class="panel__details__minor">
 							<strong>Category:</strong><br>
 							{{ video.category }}<br>
@@ -226,6 +226,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script src="{% static 'web/js/vendor/humanized_time_span.js' %}"></script>
+	<script src="{% static 'web/js/vendor/linkify.min.js' %}"></script>
+	<script src="{% static 'web/js/vendor/linkify-html.min.js' %}"></script>
 	<script>
 
 		Vue.component('modal', {
@@ -304,6 +306,7 @@
 		})
 
 		Vue.filter('userTags', function (value) {
+			value = linkifyHtml(value);
 			r = /\@\((.+)\)\[(.*)\]/
 			return value.replace(r, '<a style="color: #1c62b9; text-decoration: none;" href="/channel/$2">@$1</a>');
 		})
