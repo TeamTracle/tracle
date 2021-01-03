@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
-from .models import Video, Channel
+from .models import Video, Channel, ChannelBackground
 
 User = get_user_model()
 class UserAdminCreationForm(forms.ModelForm):
@@ -150,3 +150,10 @@ class VideoDetailsForm(forms.ModelForm):
     class Meta:
         model = Video
         fields = ('title', 'description', 'category', 'visibility')
+
+class ChannelBackgroundForm(forms.ModelForm):
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
+    desktop_image = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
+    class Meta:
+        model = ChannelBackground
+        exclude = ['channel']

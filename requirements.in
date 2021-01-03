@@ -21,3 +21,4 @@ python-memcached
 bunnycdn-storage
 bleach
 django-qsessions
+django-colorfield

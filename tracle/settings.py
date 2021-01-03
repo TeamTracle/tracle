@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'cacheops',
     'imagekit',
+    'colorfield',
 ] 
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 

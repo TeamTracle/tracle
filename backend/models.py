@@ -4,6 +4,7 @@ from django.core.exceptions import FieldError
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import File
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -18,6 +19,8 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
 import bleach
+
+from colorfield.fields import ColorField
 
 from .storage import WrappedBCDNStorage
 from .fields import WrappedFileField, WrappedImageField
@@ -41,6 +44,18 @@ def get_image_location(instance, filename=None):
         return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/{filename}'
     else:
         return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/'
+
+def get_bg_image_location(instance, filename=None):
+    if filename:
+        return f'{instance.channel.channel_id}/{filename}'
+    else:
+        return f'{instance.channel.channel_id}/'
+
+def get_bg_image_media_url():
+    return os.path.join(settings.MEDIA_URL, 'backgrounds')
+
+def get_bg_image_base_location():
+    return os.path.join(settings.MEDIA_ROOT, 'backgrounds')
 
 def get_poster_media_url():
     return os.path.join(settings.MEDIA_URL, 'posters')
@@ -150,6 +165,19 @@ class Channel(models.Model):
         if self.avatar:
             return self.avatar.url
         return '/static/web/img/avatar.png'
+
+class ChannelBackground(models.Model):
+    channel = models.OneToOneField(Channel, on_delete=models.CASCADE, related_name='background')
+    desktop_image = WrappedImageField(storage=WrappedBCDNStorage(local_options={'location' : get_bg_image_base_location, 'base_url' : get_bg_image_media_url}), upload_to=get_bg_image_location)
+    header_size = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(150)])
+    imagemap = models.TextField(max_length=5000, null=True, blank=True)
+    color = ColorField(null=True, blank=True)
+
+    def get_map_code(self):
+        if self.imagemap and self.header_size > 0:
+            return bleach.clean(self.imagemap, tags=['area'], attributes={'area' : ['shape', 'coords', 'alt', 'href', 'target']}, strip=True).strip()
+        else:
+            return ''
 
 class Category(models.Model):
     title = models.CharField(max_length=100)

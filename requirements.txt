@@ -12,6 +12,7 @@ chardet==3.0.4            # via requests
 click==7.1.2              # via rq
 django-appconf==1.0.4     # via -r requirements.in, django-compressor, django-imagekit
 django-cacheops==5.0.1    # via -r requirements.in
+django-colorfield==0.3.2  # via -r requirements.in
 django-compressor-autoprefixer==0.1.0  # via -r requirements.in
 django-compressor==2.4    # via -r requirements.in, django-compressor-autoprefixer, django-libsass
 django-imagekit==4.0.2    # via -r requirements.in
