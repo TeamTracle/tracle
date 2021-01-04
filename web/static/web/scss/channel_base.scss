@@ -4,9 +4,13 @@
 .channel {
 
 	&__container {
-		padding-top: 1.4em;
 		background-color: #CCCCCC;
 		min-height: 100vh;
+
+		&__inner {
+			padding-top: 22px;
+			max-width: 1280px;
+		}
 	}
 
 	&__header {
@@ -168,5 +172,19 @@
 			text-align: center;
 			font-size: 1rem;
 		}
+	}
+}
+
+.owner-ribbon {
+	display: flex;
+	justify-content: space-between;
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 0.5em 1em;
+	background-image: linear-gradient(to bottom, #404040 0%, #282828 100%);
+
+	> a {
+		text-decoration: none;
+		padding: 0.7em 1em;
 	}
 }

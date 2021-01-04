@@ -15,6 +15,7 @@ urlpatterns = [
 	path('channel/<channel_id>/featured', views.ChannelFeaturedView.as_view(), name='web_channel_featured'),
 	path('channel/<channel_id>/videos', views.ChannelVideosView.as_view(), name='web_channel_videos'),
 	path('channel/<channel_id>/feed', views.ChannelFeedView.as_view(), name='web_channel_feed'),
+	path('channel_editor', views.ChannelEditorView.as_view(), name='web_channel_editor'),
 	path('channels', views.ChannelsView.as_view(), name='web_channels'),
 	path('upload', views.UploadVideoView.as_view(), name='web_upload_video'),
 	path('dashboard', views.DashboardBaseView.as_view(), name='web_dashboard'),

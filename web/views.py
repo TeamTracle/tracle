@@ -3,6 +3,7 @@ import functools
 
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,8 +12,9 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
-from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm
+from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm, ChannelBackgroundForm
 from backend import queries
 from .tokens import account_activation_token
 
@@ -114,7 +116,7 @@ class SigninView(View):
                 user.update_last_login(request.META.get('REMOTE_ADDR'))
                 channel = queries.get_channel(user)
                 channel.update_last_login()
-                return redirect('web_home')
+                return redirect(request.GET.get('redirect_to', 'web_home'))
         return render(request, 'web/signin.html', {'form' : form})
 
 class SignoutView(View):
@@ -202,6 +204,8 @@ class SubscriptionsView(DashboardBaseView):
         return render(request, 'web/dashboard_subscriptions.html')
 
 class ChannelVideosView(View):
+
+    @xframe_options_sameorigin
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
@@ -222,6 +226,8 @@ class ChannelVideosView(View):
         return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos', 'ordering' : ordering})
 
 class ChannelFeaturedView(View):
+
+    @xframe_options_sameorigin
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
@@ -238,6 +244,8 @@ class ChannelFeaturedView(View):
         return render(request, 'web/channel_featured.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'featured', 'featured_video' : featured_video})
 
 class ChannelFeedView(View):
+
+    @xframe_options_sameorigin
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
         if not channel:
@@ -247,6 +255,36 @@ class ChannelFeedView(View):
         if request.user.is_authenticated:
             subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
         return render(request, 'web/channel_feed.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'feed'})
+
+class ChannelEditorView(LoginRequiredMixin, View):
+    login_url = '/signin'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        try: 
+            form = ChannelBackgroundForm(instance=request.channel.background)
+        except:
+            form = ChannelBackgroundForm()
+        return render(request, 'web/channel_editor.html', {'form' : form})
+    
+    def post(self, request):
+        if request.POST.get('delete', None):
+            try:
+                cb = request.channel.background.desktop_image.delete()
+                return JsonResponse({'message' : 'Deleted desktop background'})
+            except:
+                return JsonResponse({'message' : 'Something went wrong. :('})
+        try:
+            form = ChannelBackgroundForm(request.POST, request.FILES, instance=request.channel.background)
+        except:
+            form = ChannelBackgroundForm(request.POST, request.FILES)
+        if form.is_valid():
+            cb = form.save(commit=False)
+            cb.channel = request.channel
+            cb.save()
+            return redirect('web_channel', channel_id=request.channel.channel_id)
+        print(form.errors)
+        return render(request, 'web/channel_editor.html', {'form' : form})
 
 class ChannelsView(View):
     def get(self, request):
