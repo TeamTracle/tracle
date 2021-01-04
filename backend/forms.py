@@ -4,6 +4,8 @@ from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
 from .models import Video, Channel, ChannelBackground
 
+from colorfield.fields import color_validator
+
 User = get_user_model()
 class UserAdminCreationForm(forms.ModelForm):
     """
@@ -154,6 +156,8 @@ class VideoDetailsForm(forms.ModelForm):
 class ChannelBackgroundForm(forms.ModelForm):
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
     desktop_image = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
+    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_validator])
+
     class Meta:
         model = ChannelBackground
         exclude = ['channel']
