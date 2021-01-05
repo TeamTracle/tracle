@@ -58,7 +58,7 @@
     </div>
 </div>
 
-<iframe src="{% url 'web_channel' 'rR07gyL5ijo' %}" style="width: 100%; height: 100vh; border: none;"></iframe>
+<iframe src="/channel/{{ request.channel.channel_id }}" style="width: 100%; height: 100vh; border: none;"></iframe>
 
 <div class="container">
     {% include 'web/includes/footer.html' %}
