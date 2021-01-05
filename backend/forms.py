@@ -161,3 +161,9 @@ class ChannelBackgroundForm(forms.ModelForm):
     class Meta:
         model = ChannelBackground
         exclude = ['channel']
+
+    def clean_desktop_image(self):
+        f = self.cleaned_data.get('desktop_image')
+        if f:
+            f.name = f'bg.{f.name[-3:]}'
+        return f
