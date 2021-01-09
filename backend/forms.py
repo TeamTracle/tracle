@@ -156,7 +156,8 @@ class VideoDetailsForm(forms.ModelForm):
 class ChannelBackgroundForm(forms.ModelForm):
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
     desktop_image = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
-    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_validator])
+    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_validator], initial='#CCCCCC')
+    desktop_image_repeat = forms.TypedChoiceField(empty_value=None, choices=ChannelBackground.RepeatChoices.choices)
 
     class Meta:
         model = ChannelBackground

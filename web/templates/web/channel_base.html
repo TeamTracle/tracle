@@ -24,8 +24,7 @@
 	@media only screen and (min-width: 1280px) {
 		.channel__container {
 			background-image: {% if channel.background.desktop_image %} url("{{ channel.background.desktop_image.url }}") {% else %} unset {% endif %};
-			background-position-x: center;
-			background-repeat: no-repeat;
+			background-repeat: {{ channel.background.desktop_image_repeat }};
 			background-color: {% if channel.background.color %} {{ channel.background.color }} {% else %} #CCCCCC {% endif %};
 		}
 

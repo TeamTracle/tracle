@@ -32,7 +32,7 @@
                 {{ form.avatar }}
                 <h3>Background</h3>
                 <p>Choose image. (<a href="{% static 'web/img/channel_template.png' %}" target="_blank">Official template</a>)</p>
-                <button id="btnDesktopBg" class="btn btn-gray">Select</button>
+                <button id="btnDesktopBg" class="btn btn-gray">Select</button> {{ form.desktop_image_repeat }}
                 {% for error in form.desktop_image.errors %}
                     <p style="color: red;">{{ error }}</p>
                 {% endfor %}
@@ -117,6 +117,11 @@
                 preview_inner.style.maxWidth = '970px';
             }
             reader.readAsDataURL(this.files[0]);
+        }
+
+        var desktop_image_repeat_el = document.getElementById('id_desktop_image_repeat');
+        desktop_image_repeat_el.onchange = function () {
+            preview_bg.style.backgroundRepeat = this.selectedOptions[0].innerHTML;
         }
 
         var color_el = document.getElementById('id_color');

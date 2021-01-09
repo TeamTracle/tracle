@@ -176,11 +176,18 @@ class Channel(models.Model):
         return '/static/web/img/avatar.png'
 
 class ChannelBackground(models.Model):
+    class RepeatChoices(models.TextChoices):
+        NO_REPEAT = 'NR', 'no-repeat'
+        REPEAT = 'RE', 'repeat'
+        REPEAT_X = 'RX', 'repeat-x'
+        REPEAT_Y = 'RY', 'repeat-y'
+
     channel = models.OneToOneField(Channel, on_delete=models.CASCADE, related_name='background')
     desktop_image = WrappedImageField(storage=WrappedBCDNStorage(local_options={'location' : get_bg_image_base_location, 'base_url' : get_bg_image_media_url}), upload_to=get_bg_image_location)
+    desktop_image_repeat = models.CharField(max_length=2, choices=RepeatChoices.choices, default=RepeatChoices.NO_REPEAT, blank=True)
     header_size = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(150)])
     imagemap = models.TextField(max_length=5000, null=True, blank=True)
-    color = ColorField(null=True, blank=True)
+    color = ColorField(default="#CCCCCC", blank=True)
 
     def get_map_code(self):
         if self.imagemap and self.header_size > 0:
