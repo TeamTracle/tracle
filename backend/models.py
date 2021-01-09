@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank, TrigramSimilarity
 from django.db import models
 
 import django_rq
@@ -29,6 +30,14 @@ from . import tasks, utils
 class PublishedVideoManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False)
+
+    def search(self, query):
+        qs = self.get_queryset()
+        sq = SearchQuery(query)
+        sv = SearchVector('title', 'description', 'channel__name')
+        sr = SearchRank(sv, sq)
+        similarity = TrigramSimilarity('title', query) + TrigramSimilarity('description', query) + TrigramSimilarity('channel__name', query)
+        return qs.annotate(rank=sr, similarity=similarity).annotate(score=(models.F('rank') + models.F('similarity')) / 2).filter(score__gt=0.1, visibility=Video.VisibilityStatus.PUBLIC).order_by('-score')
 
 def get_video_location(instance, filename=None):
     if instance.pk is None:

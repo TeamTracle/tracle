@@ -42,7 +42,7 @@ def get_videos_from_channel(channel):
 	return Video.published_objects.filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def filter_by_search_terms(search_terms):
-	return Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC, title__icontains=search_terms)
+	return Video.published_objects.search(search_terms)
 
 def get_sub_feed(channel):
 	subs = channel.subscribers.all()
