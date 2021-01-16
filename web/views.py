@@ -16,6 +16,7 @@ from django.http import JsonResponse
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm, ChannelBackgroundForm
 from backend import queries
+from backend.models import WatchHistory
 from .tokens import account_activation_token
 
 import logging
@@ -160,6 +161,8 @@ class WatchView(View):
             is_disliked = queries.is_video_disliked(video, channel)
             subscribed = queries.is_subscribed(video.channel, channel)
 
+            WatchHistory.objects.add_entry(channel, video)
+
         rating = video.likes.count() + video.dislikes.count()
         if rating > 0:
             likebar_value = (100 / rating) * video.likes.count()
@@ -274,6 +277,7 @@ class ChannelEditorView(LoginRequiredMixin, View):
                 return JsonResponse({'message' : 'Deleted desktop background'})
             except:
                 return JsonResponse({'message' : 'Something went wrong. :('})
+
         try:
             form = ChannelBackgroundForm(request.POST, request.FILES, instance=request.channel.background)
         except:

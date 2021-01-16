@@ -440,3 +440,19 @@ class Notification(models.Model):
     target_object = GenericForeignKey('target_type', 'target_id')
 
     objects = NotificationManager()
+
+class WatchHistoryManager(models.Manager):
+    def add_entry(self, channel, video):
+        try:
+            entry = self.get(channel=channel, video=video)
+            entry.created = timezone.now()
+            entry.save()
+        except WatchHistory.DoesNotExist:
+            self.create(channel=channel, video=video)
+
+class WatchHistory(models.Model):
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='watch_history')
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='+')
+    created = models.DateTimeField(default=timezone.now)
+
+    objects = WatchHistoryManager()
