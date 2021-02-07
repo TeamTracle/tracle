@@ -22,3 +22,4 @@ bunnycdn-storage
 bleach
 django-qsessions
 django-colorfield
+django-waffle

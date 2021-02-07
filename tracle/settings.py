@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cacheops',
     'imagekit',
     'colorfield',
+    'waffle',
 ] 
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'web.middleware.SelectedChannelMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'waffle.middleware.WaffleMiddleware',
 ]
 
 SESSION_ENGINE = 'qsessions.backends.db'
