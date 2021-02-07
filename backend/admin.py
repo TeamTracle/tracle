@@ -19,12 +19,12 @@ class UserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
 
-    list_display = ('email', 'admin', 'banned')
-    list_filter = ('admin', 'banned')
-    readonly_fields = ('ipadress', 'banned', 'banned_at')
+    list_display = ('email', 'is_superuser', 'banned')
+    list_filter = ('is_superuser', 'banned')
+    readonly_fields = ('ipadress', 'banned', 'banned_at', 'is_superuser', 'staff')
     fieldsets = (
         (None, {'fields': ('email', 'password', 'notes', 'ipadress')}),
-        ('Permissions', {'fields': ('admin', 'staff', 'banned', 'banned_at')}),
+        ('Permissions', {'fields': ('is_superuser', 'staff', 'banned', 'banned_at')}),
     )
     add_fieldsets = (
         (None, {

@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank, TrigramSimilarity
@@ -100,12 +100,12 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None):
         user = self.create_user(email, password=password)
-        user.admin = True
+        user.is_superuser = True
         user.staff = True
         user.save(using=self._db)
         return user
 
-class User(AbstractBaseUser):
+class User(PermissionsMixin, AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -113,7 +113,6 @@ class User(AbstractBaseUser):
     email_confirmed = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     staff = models.BooleanField(default=False)
-    admin = models.BooleanField(default=False)
     banned = models.BooleanField(default=False)
     banned_at = models.DateTimeField(blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
@@ -131,18 +130,8 @@ class User(AbstractBaseUser):
     def is_staff(self):
         return self.staff
 
-    @property
-    def is_admin(self):
-        return self.admin
-    
     def __str__(self):
         return self.email
-
-    def has_perm(self, app_label):
-        return self.is_admin
-
-    def has_module_perms(self, module):
-        return self.is_admin
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
