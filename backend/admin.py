@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.admin.models import LogEntry
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
 from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket
@@ -50,6 +51,11 @@ class TicketAdmin(admin.ModelAdmin):
     ordering = ('created',)
     list_filter = ('status',)
 
+
+class LogAdmin(admin.ModelAdmin):
+    list_display = ('user', '__str__', 'action_time')
+    search_fields = ('user', '__str__')
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Channel, ChannelAdmin)
 admin.site.register(Category)
@@ -57,3 +63,4 @@ admin.site.register(Video)
 admin.site.register(Comment)
 admin.site.register(CommentTicket, TicketAdmin)
 admin.site.register(VideoTicket, TicketAdmin)
+admin.site.register(LogEntry, LogAdmin)
