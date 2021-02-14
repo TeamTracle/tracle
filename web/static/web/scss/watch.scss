@@ -208,82 +208,363 @@
 // VIDEO JS
 // ####################
 
-
-.video-js .vjs-big-play-button {
-	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAnElEQ…p2Utr2tFn/OvT5s5b0BHwJdmZ2Bybg0NmllB5d190kHb5cL8J5WhbWZJeBAAAAAElFTkSuQmCC), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA8CAIAAAAok0etAAAAJUlEQVR42mNKTU1lunnzJtP///+ZGBgYwDQ6xiVOrhw1zSNRPQBu5Zagca3K1AAAAABJRU5ErkJggg==), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAA8CAYAAABfESsNAAAAmklEQ…iRMhrXA1Gk0D+uoQH+gIkIRSCrC5gIeOIBkA74+PHjRgDhswBcaL43lQAAAABJRU5ErkJggg==);
-    background-size: 10px 100%, 40px 100%, 10px 100% !important;
-    background-position: left center, center center, right center;
-    border: none;
-}
-
-.video-js .vjs-big-play-button .vjs-icon-placeholder::before {
-	content: '\f04b';
-	font-style: normal;
-	font-variant: normal;
-	text-rendering: auto;
-	-webkit-font-smoothing: antialiased;
-	font-family: "FA5Free";
-	font-weight: 900;
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.video-js .vjs-control-bar {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAaCAIAAAD5ZqGGAAAAJklEQVR42mNKSUlhevToEdPXr1+Z/v37RxH+//8/htjv379BZgMA4j5LOzqaqAsAAAAASUVORK5CYII=) center center repeat-x;
-    background-repeat: repeat-x;
-    background-size: contain;
-    width: 98%;
-	margin: 0 auto;
-	border-radius: 0.5em;
-}
-
-.video-js .vjs-progress-holder {
-	border-radius: 1em;
-	height: 0.9em;
-	background-color: #333;
-	box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.75);
-}
-
-.video-js .vjs-progress-holder .vjs-load-progress {
-	background: black;
-	border-radius: 1em;
-}
-
-.video-js .vjs-progress-holder .vjs-load-progress div {
-	background-color: black;
-    border-radius: 1em;
-}
-
-
-.video-js .vjs-progress-holder .vjs-play-progress {
-	border-radius: 1em;
-}
-
-.video-js .vjs-progress-holder .vjs-play-progress::before {
-	content: unset;
-}
-
-.video-js .vjs-current-time {
-	display: block;
-}
-
-.video-js .vjs-duration {
-	display: block;
-}
-
-.video-js .vjs-progress-control:hover .vjs-play-progress > .vjs-time-tooltip {
+.video-js {
+	color: #999;
+   }
+   
+   .video-js .vjs-big-play-button .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-big-play-button {
+	border: none;
+	height: 80px;
+	width: 88px;
+   /*  background: no-repeat url("https://web.archive.org/web/20120609193510im_/http://s.ytimg.com/yt/imgbin/player-common-vflzogr__.png") -125px 0px; */
+	background: none;
+   }
+   
+   .video-js:hover .vjs-big-play-button {
+	background-color: unset;
+   }
+   
+   .vjs-has-started .vjs-control-bar {
+	display: grid;
+   }
+   .video-js .vjs-control-bar {
+	grid-template-areas:
+	 "progress progress progress progress progress progress progress"
+	 "playtoggle volume currenttime divider duration spacer fullscreentoggle";
+	grid-template-columns: 0fr 0fr 0fr 0fr 0fr 1fr 0fr;
+	height: 4em;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAdCAYAAABrAQZpAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAABAAAAHQAh4gKwAAAAMUlEQVQI12OQlJD4x2Sgr8/I9OTZs5dM//79Y2T6//8/IyqLAcLClEBjYahDKCHSKADN5VNQpdTxzgAAAABJRU5ErkJggg==);
+	background-repeat: repeat-x;
+	background-position-y: 10px;
+   }
+   
+   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
+	visibility: visible;
+	opacity: 1;
+	transition: none;
+	height: 35px;
+	background-position-y: 5px;
+   }
+   
+   .video-js .vjs-progress-control .vjs-progress-holder {
+	height: 1.1em;
+   }
+   
+   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-progress-control {
+	height: 5px;
+   }
+   
+   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-progress-control .vjs-progress-holder {
+	height: 6px;
+   }
+   
+   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-play-progress::before {
+	content: '';
 	display: none;
-}
-
-.video-js .vjs-progress-control:hover .vjs-time-tooltip {
-	font-size: 0.8rem;
-}
-
-.video-js .vjs-progress-control:hover .vjs-progress-holder {
+   }
+   
+   .vjs-has-started.vjs-user-inactive.vjs-playing.vjs-fullscreen .vjs-control-bar {
+	visibility: visible;
+	opacity: 0;
+	transition: visibility 1s, opacity 1s;
+   }
+   
+   .video-js .vjs-play-control {
+	grid-area: playtoggle;
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -38px -148px;
+	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
+	z-index: 2;
+   }
+   
+   .video-js .vjs-play-control:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -38px -121px;
+   }
+   
+   .video-js .vjs-playing {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -7px -338px;
+   }
+   
+   .video-js .vjs-playing:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -7px -68px;
+   }
+   
+   .video-js .vjs-play-control .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-play-control.vjs-playing .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-play-control.vjs-ended .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-play-control.vjs-ended {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -43px -283px;
+   }
+   
+   .video-js .vjs-play-control.vjs-ended:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -43px -310px;
+   }
+   
+   .video-js .vjs-volume-panel {
+	grid-area: volume;
+	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
+	z-index: 1;
+   }
+   
+   .video-js .vjs-mute-control .vjs-icon-placeholder::before,  .video-js .vjs-mute-control.vjs-vol-2 .vjs-icon-placeholder::before, .vjs-icon-volume-low::before, .video-js .vjs-mute-control.vjs-vol-1 .vjs-icon-placeholder::before, .video-js .vjs-mute-control.vjs-vol-0 .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-3 {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) 5px -229px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-3:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) 5px -176px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-2 {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -26px -175px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-2:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -86px -256px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-1 {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) 5px -122px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-1:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -57px -176px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-0 {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -52px -67px;
+   }
+   
+   .video-js .vjs-mute-control.vjs-vol-0:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) 3px -256px;
+   }
+   
+   .vjs-slider-horizontal .vjs-volume-level {
+	height: 0.5em;
+	background-image: linear-gradient(#bd2020 0, #6f1313 100%);
+   }
+   
+   .video-js .vjs-slider-horizontal .vjs-volume-level::before {
+	   content: '';
+	   top: -0.4em;
+	   right: -0.5em;
+	   width: 7px;
+	   height: 14px;
+	   background-color: #e2e2e2;
+	   border-radius: 3px;
+   }
+   
+   .video-js .vjs-current-time {
+	grid-area: currenttime;
+   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
+	padding: 0 0 0 1em;
+	box-sizing: content-box;
+   }
+   
+   .video-js .vjs-current-time-display {
+	color: #fff;
+   }
+   
+   .video-js .vjs-current-time, .video-js .vjs-duration {
+	display: block;
+   }
+   
+   .video-js .vjs-time-divider {
+	display: block;
+	padding: 0;
+	text-align: center;
+	grid-area: divider;
+   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
+   }
+   
+   .video-js .vjs-duration {
+	grid-area: duration;
+   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
+	padding: 0 1em 0 0;
+	box-sizing: content-box;
+	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
+	z-index: 2;
+   }
+   
+   .video-js .vjs-fullscreen-control .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js .vjs-fullscreen-control {
+	grid-area: fullscreentoggle;
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -123px -40px;
+   }
+   
+   .video-js .vjs-fullscreen-control:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -84px -337px;
+   }
+   
+   .video-js.vjs-fullscreen .vjs-fullscreen-control .vjs-icon-placeholder::before {
+	content: '';
+   }
+   
+   .video-js.vjs-fullscreen .vjs-fullscreen-control {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) -26px -203px;
+   }
+   
+   .video-js.vjs-fullscreen .vjs-fullscreen-control:hover {
+	background: no-repeat url(https://web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-dark-vflf2FniH.png) 6px -41px;
+   }
+   
+   .video-js .vjs-progress-control {
+	grid-area: progress;
+	width: 100%;
+	height: 1em;
+	z-index: 99;
+   }
+   
+   .video-js .vjs-progress-control .vjs-progress-holder {
+	height: 1em;
+	margin: 0;
+	background: none;
+	background-color: #222;
+   }
+   
+   .video-js .vjs-progress-holder .vjs-load-progress {
+	background: none;
+	background-color: #636363;
+   }
+   
+   .video-js .vjs-progress-holder .vjs-load-progress > div {
+	background-color: #636363;
+	opacity: 1;
+   }
+   
+   .video-js .vjs-progress-holder .vjs-play-progress {
+	background: none;
+	background-image: linear-gradient(180deg, #c20102 0%, #7c0000 100%);
+	border-top: 1px solid #7a0001;
+	border-bottom: 1px solid #470000;
+	font-size: 1.5em;
+	line-height: 1.2em;
+   }
+   
+   .video-js .vjs-progress-holder .vjs-play-progress .vjs-time-tooltip {
+	  display: none;
+   }
+   
+   .video-js .vjs-progress-control:hover .vjs-time-tooltip {
+	top: -2rem;
+	font-size: 0.8rem
+   }
+   
+   .video-js .vjs-progress-control:hover .vjs-progress-holder {
 	font-size: inherit;
-}
+   }
+   
+   .video-js .vjs-custom-control-spacer {
+	grid-area: spacer;
+	display: block;
+   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
+	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
+	z-index: 1;
+   }
+   
+   .video-js .vjs-play-progress::before {
+	content: "";
+   /*  border-radius: 50%;
+	border: 5px solid white; */
+	right: -8px;
+	top: -3px;
+	width: 16px;
+	height: 16px;
+	background: no-repeat url(//web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-common-vflzogr__.png) -305px -41px;
+   }
+   
+   .video-js .vjs-play-progress:hover::before {
+	background: no-repeat url(//web.archive.org/web/20120609184924im_/http://s.ytimg.com/yt/imgbin/player-common-vflzogr__.png) 0 0;
+   }
+   
+   .html5-bezel {
+	display:block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width:60px;
+	height:60px;
+	margin:-30px 0 0 -30px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	border-radius:10px;
+	background:rgba(0,0,0,0.5)
+   }
+   .html5-bezel>div {
+	position:relative;
+	top:15px;
+	margin:0 auto
+   }
+   .html5-bezel-fade {
+	transform:scale(2);
+	opacity:0;
+   /*  transition:all .25s ease-in; */
+	transition:opacity .25s ease-in, transform .25s ease-in;
+   }
+   .html5-bezel-play {
+	width:0;
+	height:0;
+	border-top:15px solid transparent;
+	border-bottom:15px solid transparent;
+	border-left:20px solid white;
+   }
+   .html5-bezel-pause {
+	width:25px;
+	height:30px;
+	border-right:10px solid #fff;
+	border-left:10px solid #fff;
+   }
+   
+   .vjs-loading-spinner {
+	border: none;
+	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB8AAAAfCAQAAAC1p96yAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAAAEgAAABIAEbJaz4AAAAJdnBBZwAAAB8AAAAfACoIA9kAAAIHSURBVDjLlZWxahtBEIa/OzmxtUThQMEgokDAnTsXAePODJigxoXLPEFKP0HIE7hMk0eICzchCAZSGVcWIeBORYiDq5AD2RcpcL4Ukk47q9OFTCFu9p+PHe3cvxexMrTBa9rAT95JXl0TrYQjPnEwS/q8lKKqKl65+VEJwwFH1UVr3n4xPVrAiI9yz7GpO+YDaEIDyCVdal4j3rIzSwa8IWPDw8fS1C5ulmVyHTa/V8Kwwx6XZvdLbZUwOG2F+KEpP+TE5CckJk9CfMvIW5zSL7M+p+avMM8W+NDIQynoScQ++xLRk4Kx0cchfmbkM5Ac+CKfgcdAavQ0xM8ZlM8DzqcP8mv+KyOyUs9k5A1OI17QJOaOMYV81VjuqQx1wMPF9Kevzavy4H7Ie8BxW40zoYOjQQ76SK5j0G3v1J/qNsgqGBwOmBrIaSsGdk3BLnWR2CwGOmapU4sH04+BG7N0U4sH04+BC7N0UYunNotBrrw3bihXdXQ4/dncpdDnQMoahe9nG3O/8wckA9/vGzzBsc4Ez88GXvh9It9AG5IvXtoHOGACeH72YN/v69qaemJxWSWmOmEUXE4Vum+ZJT9rl03atNnUbpVu8WCiS5fTP/xuTztdajbULb7k56DZGr975+vmE9VnND3ht3y3etj8NCaSgTZYcTl5etXuppOKz8J/hjp1dfpfJ3WnaHXCf5IAAAAASUVORK5CYII=);
+	background-repeat: no-repeat;
+	background-position: center;
+   }
+   
+   .vjs-waiting .vjs-loading-spinner {
+	display:block;
+	width:31px;
+	height:31px;
+	margin-left:-15px;
+	margin-top:-15px;
+	-webkit-animation: spinner 1s linear infinite;
+	animation: spinner 1s linear infinite;
+	visibility: visible;
+   }
+   
+   @keyframes spinner { from { transform: rotate(0deg); } to { transform: rotate(360deg); }  }
+   @-webkit-keyframes spinner { from { transform: rotate(0deg); } to { transform: rotate(360deg); }  }
+   
+   .vjs-seeking .vjs-loading-spinner::after, .vjs-waiting .vjs-loading-spinner::after {
+	display: none;
+   }
+   
+   .vjs-seeking .vjs-loading-spinner::after, .vjs-waiting .vjs-loading-spinner::before {
+	display: none;
+   }
 
+// ####################
+// END VIDEO JS
+// ####################
 
 .comments {
 	& > h4 {

@@ -35,7 +35,7 @@
 		</div>
 		<div class="primary">
 			<div class="video__container">
-				<video-js id="player" class="video-js vjs-big-play-centered vjs-show-big-play-button-on-pause" controls preload="auto" poster="{{ video.get_poster }}">
+				<video-js id="player" class='video-js vjs-big-play-centered' preload="auto" poster="{{ video.get_poster }}">
 					<p class="vjs-no-js">
 						To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
 					</p>
@@ -136,6 +136,7 @@
 {% block script %}
 	<script src="{% static 'web/js/vendor/video.js' %}"></script>
 	<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
+	<script src='https://cdn.sc.gl/videojs-hotkeys/latest/videojs.hotkeys.min.js'></script>
 	<script>
 
 		function hideReport(event) {
@@ -172,25 +173,23 @@
 					overrideNative: !videojs.browser.IS_ANY_SAFARI
 		      	}  
 		    },
-			aspectRatio: "16:9", 
-			responsive: true,
-			userActions: {
-				doubleClick: true,
-				hotkeys: true
-			},
+			controls: true,
+			autoplay: false,
+			preload: 'auto',
+			fluid: true,
+			aspectRatio: '16:9',
+			responsive: false,
 			controlBar: {
-				children: [
-					'playToggle',
-					'currentTimeDisplay',
-					'progressControl',
-					'durationDisplay',
-					'volumePanel',
-					'fullscreenToggle'
-				],
-				volumePanel: {
-				  inline: false
-				}
-			}
+			children: [
+				'playToggle',
+				'volumePanel',
+				'currentTimeDisplay',
+				'timeDivider',
+				'durationDisplay',
+				'progressControl',
+				'customControlSpacer',
+				'fullscreenToggle',
+			]}
 		});
 
 		if (videojs.browser.IS_ANY_SAFARI) {
@@ -207,6 +206,11 @@
 		}
 
 		player.landscapeFullscreen();
+		player.hotkeys({});
+
+		player.on('contextmenu', function (e) {
+		e.preventDefault();
+		});
 
 		function handlePlay() {
 			const view_count = $('#view_count');
@@ -227,6 +231,56 @@
 
 		player.one('play', handlePlay);
 
+		btn = document.getElementsByClassName('vjs-big-play-button')[0];
+		btn.innerHTML +=
+		`
+		<svg class="html5-big-play-button html5-center-overlay html5-scalable-icon">
+			<g opacity="0.4">
+			<path fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M88.34,9.698
+				c-1.09-1.04-2.43-1.62-3.92-1.8c-23.061-1.44-46.08-1.44-69.14,0c-1.48,0.18-2.72,0.76-3.84,1.8c-1.09,1.04-1.81,2.27-2.14,3.78
+				c-1.05,7.07-1.56,14.17-1.56,21.26c0,7.21,0.51,14.27,1.56,21.34c0.33,1.51,1.05,2.74,2.14,3.779c1.12,1.051,2.36,1.621,3.84,1.801
+				c23.06,1.439,46.08,1.439,69.14,0c1.49-0.18,2.83-0.75,3.92-1.801c1.12-1.039,1.77-2.34,2.1-3.819
+				C91.46,48.938,92,41.878,92,34.738c0-7.09-0.54-14.16-1.561-21.22C90.109,12.038,89.46,10.818,88.34,9.698z"></path>
+			</g>
+			<g class="html5-overlay-button-background" opacity="0.8">
+			<path d="M88.34,9.698c-1.09-1.04-2.43-1.62-3.92-1.8c-23.061-1.44-46.08-1.44-69.14,0c-1.48,0.18-2.72,0.76-3.84,1.8
+				c-1.09,1.04-1.81,2.27-2.14,3.78c-1.05,7.07-1.56,14.17-1.56,21.26c0,7.21,0.51,14.27,1.56,21.34c0.33,1.51,1.05,2.74,2.14,3.779
+				c1.12,1.051,2.36,1.621,3.84,1.801c23.06,1.439,46.08,1.439,69.14,0c1.49-0.18,2.83-0.75,3.92-1.801
+				c1.12-1.039,1.77-2.34,2.1-3.819C91.46,48.938,92,41.878,92,34.738c0-7.09-0.54-14.16-1.561-21.22
+				C90.109,12.038,89.46,10.818,88.34,9.698z"></path>
+			</g>
+			<path opacity="0.19" fill="#FFFFFF" enable-background="new" d="M88.34,9.698c-1.09-1.04-2.43-1.62-3.92-1.8
+			c-23.061-1.44-46.08-1.44-69.14,0c-1.48,0.18-2.72,0.76-3.84,1.8c-1.09,1.04-1.81,2.27-2.14,3.78c-1.05,7.07-1.56,14.17-1.56,21.26
+			c0,7.21,1.49,21.949,1.56,21.34c30.89-29.62,44.3-5.48,81.14-42.56C91.51,12.438,89.46,10.818,88.34,9.698z"></path>
+			<g class="html5-overlay-button-background" opacity="0.66">
+			<polygon fill="#FFFFFF" points="39.32,16.729 39.32,52.798 68.18,34.168"></polygon>
+			</g>
+		</svg>
+		`
+
+		var first_play = true;
+		const show_bezel = function () {
+		if (!first_play) {
+			var play_confirm_el_container = document.createElement("div");
+			play_confirm_el_container.classList.add("html5-bezel");
+			play_confirm_el_container.classList.add("html5-center-overlay");
+			var play_confirm_el = document.createElement("div");
+			player.paused() ? play_confirm_el.classList.add("html5-bezel-pause") : play_confirm_el.classList.add("html5-bezel-play");
+			play_confirm_el_container.appendChild(play_confirm_el);
+			btn.parentNode.insertBefore(play_confirm_el_container, btn.nextSibling);
+			setTimeout(function () { play_confirm_el_container.classList.add("html5-bezel-fade"); }, 10);
+			setTimeout(function () { play_confirm_el_container.parentNode.removeChild(play_confirm_el_container); }, 600);
+		}
+		first_play = false;
+		};
+
+		var video_el = document.getElementById('player_html5_api');
+		video_el.onclick = show_bezel;
+
+		player.on('keydown', function (e) {
+		if (e.which === 32 || e.which === 179) {}
+		show_bezel();
+		});
 	</script>
 
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
