@@ -4,7 +4,25 @@
 {% load humanize %}
 
 {% block title %}
-	<title>{{ video.title }} - Tracle</title>
+<!-- Primary Meta Tags -->
+<title>{{ video.title }}</title>
+<meta name="title" content="{{ video.title }}">
+<meta name="description" content="{{ video.description|truncatechars_html:157 }}">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.tracle.tv/watch?v={{ video.watch_id }}">
+<meta property="og:title" content="{{ video.title }}">
+<meta property="og:description" content="{{ video.description|truncatechars_html:157 }}">
+<meta property="og:image" content="{{ video.get_poster }}">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://www.tracle.tv/watch?v={{ video.watch_id }}">
+<meta property="twitter:title" content="{{ video.title }}">
+<meta property="twitter:description" content="{{ video.description|truncatechars_html:157 }}">
+<meta property="twitter:image" content="{{ video.get_poster }}">
+
 {% endblock %}
 
 {% block css %}
