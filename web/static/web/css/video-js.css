@@ -1659,5 +1659,5 @@ video::-webkit-media-text-track-display {
 .video-js *:focus:not(:focus-visible),
 .video-js .vjs-menu *:focus:not(:focus-visible) {
   outline: none;
-  background: none;
+  /* background: none; */
 }
