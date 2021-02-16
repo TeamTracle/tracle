@@ -11,6 +11,7 @@ urlpatterns = [
 	path('signin', views.SigninView.as_view(), name='web_signin'),
 	path('signout', views.SignoutView.as_view(), name='web_signout'),
 	path('watch', views.WatchView.as_view(), name='web_watch'),
+	path('embed/<watch_id>', views.WatchEmbedView.as_view(), name='web_embed'),
 	path('channel/<channel_id>', views.ChannelFeaturedView.as_view(), name='web_channel'),
 	path('channel/<channel_id>/featured', views.ChannelFeaturedView.as_view(), name='web_channel_featured'),
 	path('channel/<channel_id>/videos', views.ChannelVideosView.as_view(), name='web_channel_videos'),

@@ -171,6 +171,13 @@ class WatchView(View):
 
         return render(request, 'web/watch.html', {'video' : video, 'is_liked' : is_liked, 'is_disliked': is_disliked, 'likebar_value' : likebar_value, 'is_subscribed' : subscribed, 'recommended_videos' : recommended_videos})
 
+class WatchEmbedView(View):
+    def get(self, request, watch_id):
+        video = queries.get_published_video_or_none(watch_id)
+        if not video or video.visibility == video.VisibilityStatus.PRIVATE:
+            return render(request, 'web/embed.html')
+        return render(request, 'web/embed.html', {'video' : video})
+
 class DashboardBaseView(LoginRequiredMixin, View):
     login_url = '/signin'
     redirect_field_name = 'redirect_to'
