@@ -29,7 +29,7 @@ from . import tasks, utils
 
 class PublishedVideoManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False)
+        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False, videostrike__isnull=True)
 
     def search(self, query):
         qs = self.get_queryset()
@@ -445,3 +445,21 @@ class WatchHistory(models.Model):
     created = models.DateTimeField(default=timezone.now)
 
     objects = WatchHistoryManager()
+
+class Strike(models.Model):
+    class CategoryChoices(models.TextChoices):
+        COPYRIGHT = 'CY', 'Copyright'
+        COMMUNITY = 'CG', 'Community Guidelines'
+
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
+    category = models.CharField(max_length=2, choices=CategoryChoices.choices)
+
+    class Meta:
+        abstract = True
+
+class VideoStrike(Strike):
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, blank=True, null=True)
+
+class CommentStrike(Strike):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, blank=True, null=True)

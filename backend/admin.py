@@ -3,10 +3,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.admin.models import LogEntry
+from django.forms import ModelForm
 from django.utils.html import format_html
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket
+from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket, VideoStrike
 
 User = get_user_model()
 
@@ -27,6 +28,25 @@ class ChannelsInline(admin.TabularInline):
 
     extra = 0
     max_num = 0
+
+class VideoStrikesInline(admin.TabularInline):
+    model = VideoStrike
+    can_delete = False
+    show_change_link = False
+    extra = 0
+    max_num = 1
+    readonly_fields = ['created']
+    fields = ['channel', 'video', 'category', 'created']
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super(VideoStrikesInline, self).get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'channel':
+            if self.parent_obj and isinstance(self.parent_obj, Video):
+                kwargs['queryset'] = Channel.objects.filter(pk=self.parent_obj.channel_id)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class UserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
@@ -63,6 +83,8 @@ class VideoAdmin(admin.ModelAdmin):
         (None, {'fields': ('transcode_status', 'uploaded_file', 'playlist_file')}),
     )
 
+    inlines = [VideoStrikesInline]
+
     def title_with_link(self, obj):
         url = f'/watch?v={obj.watch_id}'
         return format_html('{} <a href="{}">View on site</a>', obj.title, url)
@@ -73,18 +95,31 @@ class VideoAdmin(admin.ModelAdmin):
         return format_html('{} <a href="{}">View on site</a>', obj.channel.name, url)
     channel_with_link.short_description = 'Created by'
 
+    def get_formsets_with_inlines(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            yield inline.get_formset(request, obj), inline
+
 class ChannelAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
-    readonly_fields = ('name', 'description', 'created', 'last_login', 'avatar', 'verified', 'user', 'show_url')
-    fields = ('name', 'description', 'created', 'last_login', 'avatar', 'verified', ('user', 'show_url'))
+    readonly_fields = ('name', 'view_channel_on_site', 'description', 'created', 'last_login', 'avatar', 'verified', 'user', 'show_url')
+    fields = ('name', 'view_channel_on_site', 'description', 'created', 'last_login', 'avatar', 'verified', ('user', 'show_url'))
+
+    inlines = [VideoStrikesInline]
 
     def show_url(self, obj):
-        url = f'/admin/backend/user/{obj.pk}'
-        print(url)
+        url = f'/admin/backend/user/{obj.user.pk}'
+        return format_html('<a href="{}">{}</a>', url, url)
+    show_url.short_description = 'Change:'
+
+    def view_channel_on_site(self, obj):
+        url = f'/channel/{obj.channel_id}'
         return format_html('<a href="{}">{}</a>', url, url)
 
-    show_url.short_description = 'Change:'
+    def get_formsets_with_inlines(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            inline.readonly_fields = inline.fields
+            yield inline.get_formset(request, obj), inline
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'status', 'created')
