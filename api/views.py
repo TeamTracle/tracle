@@ -12,6 +12,8 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile, File
 from django.core.cache import cache
 from django.utils import timezone
+from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.contenttypes.models import ContentType
 
 import django_rq
 from django_rq.jobs import Job
@@ -393,6 +395,8 @@ class BanUser(APIView):
 			user.banned_at = timezone.now()
 			user.session_set.all().delete()
 			user.save()
+			change_message = 'banned' if user.banned else 'unbanned'
+			LogEntry.objects.log_action(user_id=request.user.id, content_type_id=ContentType.objects.get_for_model(user).pk, object_id=user.id, object_repr=str(user), action_flag=CHANGE, change_message=change_message)
 			return Response({})
 		else:
 			return Response({'message': 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)
