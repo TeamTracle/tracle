@@ -3,7 +3,7 @@ import functools
 
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.views.decorators.clickjacking import xframe_options_sameorigin, xframe_options_exempt
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -172,6 +172,8 @@ class WatchView(View):
         return render(request, 'web/watch.html', {'video' : video, 'is_liked' : is_liked, 'is_disliked': is_disliked, 'likebar_value' : likebar_value, 'is_subscribed' : subscribed, 'recommended_videos' : recommended_videos})
 
 class WatchEmbedView(View):
+
+    @xframe_options_exempt
     def get(self, request, watch_id):
         video = queries.get_published_video_or_none(watch_id)
         if not video or video.visibility == video.VisibilityStatus.PRIVATE:
