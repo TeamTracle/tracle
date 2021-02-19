@@ -47,7 +47,13 @@
 		  			case 'failed':
 		  				return 'Upload failed! :(';
 		  		}
-		  	}
+		  	},
+			strike_category: function () {
+				switch (this.video.videostrike_set[0].category) {
+					case 'CY':
+						return 'Copyright Strike'
+				}
+			}
 		  },
 		  methods: {
 		  	open_details: function () {
@@ -79,6 +85,10 @@
 			  	<div v-else>
 			  		<span>[[ status ]]</span>
 			  	</div>
+				<div v-if="video.videostrike_set.length">
+					<div style="color: red" title="This video received a strike for copyright violation."><i class="fas fa-exclamation-circle"></i> [[ strike_category ]]</div>
+					<div>[[ video.videostrike_set[0].created|humanTime ]]</div>
+				</div>
 			  </div>`
 		})
 
@@ -92,7 +102,6 @@
 			mounted () {
 				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => {
 					this.videos = response['data'];
-					console.log(this.videos);
 				});
 			},
 			template: `

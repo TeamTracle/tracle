@@ -19,11 +19,10 @@ from django_rq.jobs import Job
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
 from rest_framework import status
 
 from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
-from .permissions import IsAuthenticated, ReadOnly
+from .permissions import IsAuthenticated, ReadOnly, IsSuperUser
 
 from backend.queries import get_user, toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
 from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
@@ -384,7 +383,7 @@ class NotificationsView(APIView):
 		return Response({})
 
 class BanUser(APIView):
-	permission_classes = [IsAdminUser]
+	permission_classes = [IsSuperUser]
 
 	def post(self, request):
 		pk = request.data.get('id', None)

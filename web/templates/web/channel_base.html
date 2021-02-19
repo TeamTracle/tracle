@@ -75,7 +75,7 @@
 				<i class="fas fa-check channel__header__title__checkmark"></i>
 				{% endif %}
 			</h1>
-			{% if user.is_admin %}<a href="/admin/backend/channel/{{ channel.id }}/change/" style="font-size: 1rem; color: #fff"><i class="far fa-edit"></i></a>{% endif %}
+			{% if user.is_staff %}<a href="/admin/backend/channel/{{ channel.id }}/change/" style="font-size: 1rem; color: #fff"><i class="far fa-edit"></i></a>{% endif %}
 			<button id="btn-subscribe" class="channel__header__btn-subscribe" {% if not request.user.is_authenticated or request.channel.channel_id == channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i><span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</button>
 			<div class="channel__header__subscribers">
 				<span id="sub-count">{{ channel.subscriptions.count }}</span>subscribers

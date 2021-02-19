@@ -31,7 +31,7 @@ class ChannelsInline(admin.TabularInline):
 
 class VideoStrikesInline(admin.TabularInline):
     model = VideoStrike
-    can_delete = False
+    can_delete = True
     show_change_link = False
     extra = 0
     max_num = 1

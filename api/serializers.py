@@ -4,15 +4,23 @@ from django.utils.timesince import timesince
 
 from rest_framework import serializers
 
-from backend.models import Video, Comment, Channel, Subscription, Notification
+from backend.models import Video, Comment, Channel, Subscription, Notification, VideoStrike
+
+class VideoStrikeSerializer(serializers.Serializer):
+	category = serializers.CharField()
+	created = serializers.CharField()
+
+	class Meta:
+		model = VideoStrike
+		fields = '__all__'
 
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
-	# status = serializers.CharField(source='get_video_status')
+	videostrike_set = VideoStrikeSerializer(many=True, read_only=True)
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcode_status', 'published']
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set']
 
 
 class VideoEditSerializer(serializers.ModelSerializer):
