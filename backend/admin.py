@@ -62,8 +62,9 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_superuser', 'banned')
     readonly_fields = ('ipadress', 'banned', 'banned_at', 'is_superuser', 'staff', 'email')
     fieldsets = (
-        (None, {'fields': ('email', 'notes', 'ipadress')}),
+        (None, {'fields': ('email', 'password', 'notes', 'ipadress')}),
         ('Permissions', {'fields': ('is_superuser', 'staff', 'banned', 'banned_at')}),
+        ('Groups', {'fields': ['groups']})
     )
     add_fieldsets = (
         (None, {
@@ -75,7 +76,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-    inlines = [ChannelsInline, GroupInline]
+    inlines = [ChannelsInline]
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'watch_id', 'created', 'transcode_status')
