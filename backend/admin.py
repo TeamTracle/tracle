@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.admin.models import LogEntry
 from django.forms import ModelForm
@@ -48,6 +49,11 @@ class VideoStrikesInline(admin.TabularInline):
                 kwargs['queryset'] = Channel.objects.filter(pk=self.parent_obj.channel_id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+class GroupInline(admin.TabularInline):
+    model = User.groups.through
+    max_num = 1
+    extra = 0
+
 class UserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
@@ -69,7 +75,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-    inlines = [ChannelsInline]
+    inlines = [ChannelsInline, GroupInline]
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'watch_id', 'created', 'transcode_status')
