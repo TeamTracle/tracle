@@ -318,3 +318,17 @@ class InboxNotifications(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, 'web/inbox_notifications.html')
+
+class WatchHistoryView(LoginRequiredMixin, View):
+    login_url = '/signin'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        categories = queries.get_all_categories()
+        history = request.channel.watch_history.order_by('-created')
+        all_videos = [ entry.video for entry in history ]
+        page_number = request.GET.get('p', 1)
+        paginator = Paginator(all_videos, 20)
+        videos = paginator.get_page(page_number)
+
+        return render(request, 'web/watch_history.html', {'videos' : videos, 'categories' : categories})
