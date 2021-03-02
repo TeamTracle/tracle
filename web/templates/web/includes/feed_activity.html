@@ -1,0 +1,16 @@
+{% load humanize %}
+
+{% if action.verb == 'uploaded' %}
+    <div class="activity-feed__item">
+        <div class="activity-feed__item__thumbnail">
+            <a href="/watch?v={{ action.action_object.watch_id }}"><img src="{{ action.action_object.get_thumbnail }}"></a>
+        </div>
+        <div class="activity-feed__item__content">
+            <a class="title" href="/watch?v={{ action.action_object.watch_id }}"><h4>{{ action.action_object.title }}</h4></a>
+            <div class="description">{{ action.action_object.description|linebreaksbr|urlizetrunc:50 }}</div>
+            <div class="views">{{ action.action_object.views }} views</div>
+            <a class="action" href="/channel/{{ action.actor.channel.channel_id }}"><img style="height: 18px;" src="{{ action.actor.get_avatar }}">{{ action.actor }}</a> <span style="color: #333">{{ action.verb }}</span>
+        </div>
+        <div class="activity-feed__item__timestamp">{{ action.timestamp|timesince }} ago</div>
+    </div>
+{% endif %}

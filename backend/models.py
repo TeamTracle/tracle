@@ -28,6 +28,8 @@ from .fields import WrappedFileField, WrappedImageField
 from . import tasks, utils
 
 class PublishedVideoManager(models.Manager):
+    use_for_related_fields = True
+
     def get_queryset(self):
         return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False, videostrike__isnull=True)
 
@@ -261,8 +263,8 @@ class Video(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 
-    objects = models.Manager()
     published_objects = PublishedVideoManager()
+    objects = models.Manager()
 
     subs_notified = models.BooleanField(default=False)
     action_relations = GenericRelation('Notification', object_id_field='action_id', content_type_field='action_type')
@@ -294,10 +296,10 @@ class Video(models.Model):
             return ''
 
     def get_thumbnail(self):
-        if self.image_set and self.image_set.primary_image:
+        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.image.storage.exists(self.image_set.primary_image.image.name):
             return self.image_set.primary_image.thumbnail.url
         else:
-            return ''
+            return '/static/web/img/thumbnail_default.jpg'
 
     def transfer_files(self):
         folder = os.path.join(get_video_base_location(), get_video_location(self))

@@ -260,13 +260,22 @@ class ChannelFeedView(View):
     @xframe_options_sameorigin
     def get(self, request, channel_id):
         channel = queries.get_channel_by_id(channel_id)
+        filter = request.GET.get('filter', '2')
         if not channel:
             return render(request, 'web/channel_feed.html', {})
         total_views = queries.get_total_views(channel)
         subscribed = False
         if request.user.is_authenticated:
             subscribed = queries.is_subscribed(channel, queries.get_channel(request.user))
-        return render(request, 'web/channel_feed.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'feed'})
+
+        if filter  == '1':
+            all_qs = [ video.target_actions.public() for video in channel.videos.all() ]
+            stream = all_qs[0].union(*all_qs)
+        else:
+            from actstream.models import actor_stream
+            stream = actor_stream(channel)
+            stream = stream.exclude(verb='commented')
+        return render(request, 'web/channel_feed.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'feed', 'filter' : filter, 'stream' : stream})
 
 class ChannelEditorView(LoginRequiredMixin, View):
     login_url = '/signin'

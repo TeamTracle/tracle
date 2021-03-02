@@ -4,11 +4,33 @@
 {% load humanize %}
 
 {% block css %}
-	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel_base.scss' %}">
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/channel_feed.scss' %}">
 {% endblock %}
 
 {% block channel_body %}
 <div class="channel__body">
-	<h5>Coming soon...</h5>
+	<div class="primary">
+		<div class="activity-header">
+			<a {% if filter == '2' %} class="selected" {% endif %} href="/channel/{{ channel.channel_id }}/feed?filter=2">Activity</a>
+			<a {% if filter == '1' %} class="selected" {% endif %} href="/channel/{{ channel.channel_id }}/feed?filter=1">Comments</a>
+		</div>
+		<div class="horizontal-rule"></div>
+		<div class="activity-feed">
+			<div class="activity-feed__body">
+				{% if filter == '2' %}
+					{% for action in stream %}
+						{% include 'web/includes/feed_activity.html' %}
+					{% endfor %}
+				{% else %}
+					{% for action in stream %}
+						{% include 'web/includes/feed_comments.html' %}
+					{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="secondary">
+		{% include 'web/includes/channel_profile.html' %}
+	</div>
 </div>
 {% endblock %}

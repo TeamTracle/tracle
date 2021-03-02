@@ -30,14 +30,7 @@
 		{% endif %}
 	</div>
 	<div class="secondary">
-		<div class="channel-profile">
-			<h2>About {{ channel.name }}</h2>
-			<input id="cpa-expander" type="checkbox">
-			<div class="channel-profile__about">
-				{{ channel.description|linebreaks|urlize }}
-			</div>
-			<label for="cpa-expander"></label>
-		</div>
+		{% include 'web/includes/channel_profile.html' %}
 	</div>
 </div>
 {% endblock %}

@@ -26,8 +26,8 @@ DATABASES = {
 
 INSTALLED_APPS = [
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
-    # 'django.contrib.sessions',
     'qsessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -45,11 +45,14 @@ INSTALLED_APPS = [
     'imagekit',
     'colorfield',
     'waffle',
-] 
+    'actstream',
+]
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 
 if DEV_APPS:
     INSTALLED_APPS += DEV_APPS.split(';')
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
