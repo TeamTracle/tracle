@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load usertags %}
 
 {% if action.verb == 'commented' %}
     <div class="comment-feed__item">
@@ -7,7 +8,7 @@
             <span class="comment-feed__item__info"><a class="comment-feed__item__link" href="#">{{ action.actor.name }}</a> posted a comment</span><span class="comment-feed__item__timestamp">{{ action.timestamp|timesince}}</span>
         </div>
         <div class="comment-feed__item__body">
-            {{ action.action_object.text }}
+            {{ action.action_object.text|urlize|usertags }}
         </div>
     </div>
 {% endif %}

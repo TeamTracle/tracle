@@ -71,6 +71,7 @@
         @media only screen and (min-width: 1024px) {
             grid-auto-flow: column;
             grid-template-areas: "thumbnail content timestamp";
+            grid-template-columns: 0fr 3fr 1fr;
         }
 
         &:hover a {
