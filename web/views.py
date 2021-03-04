@@ -273,6 +273,7 @@ class ChannelFeedView(View):
             all_qs = [ video.target_actions.public() for video in channel.videos.all() ]
             if all_qs:
                 stream = all_qs[0].union(*all_qs)
+                stream = stream.order_by('-timestamp')
             else:
                 stream = []
         else:
