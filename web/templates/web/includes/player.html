@@ -60,8 +60,10 @@
    .video-js .vjs-play-control {
 	grid-area: playtoggle;
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -38px -148px;
-	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
 	z-index: 2;
+   box-shadow: 1px 0px 0px #131313, 2px 0px 5px -2px #575757;
+   width: 50px;
+   left: 9px;
    }
    
    .video-js .vjs-play-control:hover {
@@ -98,8 +100,10 @@
    
    .video-js .vjs-volume-panel {
 	grid-area: volume;
-	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
 	z-index: 1;
+   box-shadow: 1px 0px 0px #131313, 2px 0px 5px -2px #575757;
+   width: 45px;
+   left: 10px;
    }
    
    .video-js .vjs-mute-control .vjs-icon-placeholder::before,  .video-js .vjs-mute-control.vjs-vol-2 .vjs-icon-placeholder::before, .vjs-icon-volume-low::before, .video-js .vjs-mute-control.vjs-vol-1 .vjs-icon-placeholder::before, .video-js .vjs-mute-control.vjs-vol-0 .vjs-icon-placeholder::before {
@@ -112,34 +116,41 @@
    
    .video-js .vjs-mute-control.vjs-vol-3:hover {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") 5px -176px;
+   top: 1px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-2 {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -26px -175px;
+   right: 1px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-2:hover {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -86px -256px;
+   right: 1px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-1 {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") 5px -122px;
+   top: 1px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-1:hover {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -57px -176px;
+   right: 2px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-0 {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -52px -67px;
+   left: 2px;
    }
    
    .video-js .vjs-mute-control.vjs-vol-0:hover {
 	background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") 3px -256px;
+   right: 1px;
    }
    
    .vjs-slider-horizontal .vjs-volume-level {
-	height: 0.5em;
+	height: 0.4em;
 	background-image: linear-gradient(#bd2020 0, #6f1313 100%);
    }
    
@@ -155,8 +166,7 @@
    
    .video-js .vjs-current-time {
 	grid-area: currenttime;
-   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
-	padding: 0 0 0 1em;
+	padding: 0 0 0 2em;
 	box-sizing: content-box;
    }
    
@@ -173,15 +183,12 @@
 	padding: 0;
 	text-align: center;
 	grid-area: divider;
-   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
    }
    
    .video-js .vjs-duration {
 	grid-area: duration;
-   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
 	padding: 0 1em 0 0;
 	box-sizing: content-box;
-	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
 	z-index: 2;
    }
    
@@ -259,15 +266,12 @@
    .video-js .vjs-custom-control-spacer {
 	grid-area: spacer;
 	display: block;
-   /*  background-image: url('https://pasteimg.com/images/2020/11/17/vjs-controlbar-bg.png'); */
-	box-shadow: 1px 0px 0px #131313, 2px 0px 1px #575757;
+   box-shadow: 1px 0px 0px #131313, 2px 0px 5px -2px #575757
 	z-index: 1;
    }
    
    .video-js .vjs-play-progress::before {
 	content: "";
-   /*  border-radius: 50%;
-	border: 5px solid white; */
 	right: -8px;
 	top: -3px;
 	width: 16px;
@@ -300,7 +304,6 @@
    .html5-bezel-fade {
 	transform:scale(2);
 	opacity:0;
-   /*  transition:all .25s ease-in; */
 	transition:opacity .25s ease-in, transform .25s ease-in;
    }
    .html5-bezel-play {
