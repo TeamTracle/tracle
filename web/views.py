@@ -271,7 +271,10 @@ class ChannelFeedView(View):
 
         if filter  == '1':
             all_qs = [ video.target_actions.public() for video in channel.videos.all() ]
-            stream = all_qs[0].union(*all_qs)
+            if all_qs:
+                stream = all_qs[0].union(*all_qs)
+            else:
+                stream = []
         else:
             from actstream.models import actor_stream
             stream = actor_stream(channel)
