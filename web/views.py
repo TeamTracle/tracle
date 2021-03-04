@@ -131,6 +131,7 @@ class ResetPasswordView(PasswordResetView):
     domain = settings.DOMAIN
     form_class = ResetPasswordForm
     success_url = '/'
+    extra_email_context = {'domain' : 'tracle.tv', 'site_name' : 'Tracle'}
 
 class ResetPasswordConfirmView(PasswordResetConfirmView):
     template_name = 'web/forgot_password_confirm.html'
