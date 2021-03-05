@@ -106,6 +106,13 @@ class VideoAdmin(admin.ModelAdmin):
         for inline in self.get_inline_instances(request, obj):
             yield inline.get_formset(request, obj), inline
 
+    def get_queryset(self, request):
+        qs = self.model.objects.get_queryset()
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
+
 class ChannelAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
