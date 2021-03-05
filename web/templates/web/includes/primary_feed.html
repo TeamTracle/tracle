@@ -41,8 +41,13 @@
         <div class="pagination">
             <div class="pagination__step-links">
                 {% if videos.has_previous %}
-                    <a class="btn btn-gray" href="?p=1">&laquo;</a>
-                    <a class="btn btn-gray" href="?p={{ videos.previous_page_number }}">&lt;</a>
+                    {% if selected_category %}
+                        <a class="btn btn-gray" href="?c={{selected_category.slug}}&p=1">&laquo;</a>
+                        <a class="btn btn-gray" href="?c={{selected_category.slug}}&p={{ videos.previous_page_number }}">&lt;</a>
+                    {% else %}
+                        <a class="btn btn-gray" href="?p=1">&laquo;</a>
+                        <a class="btn btn-gray" href="?p={{ videos.previous_page_number }}">&lt;</a>
+                    {% endif %}
                 {% endif %}
 
                 <span class="pagination__current">
@@ -50,8 +55,13 @@
                 </span>
 
                 {% if videos.has_next %}
-                    <a class="btn btn-gray" href="?p={{ videos.next_page_number }}">&gt;</a>
-                    <a class="btn btn-gray" href="?p={{ videos.paginator.num_pages }}">&raquo;</a>
+                    {% if selected_category %}
+                        <a class="btn btn-gray" href="?c={{selected_category.slug}}&p={{ videos.next_page_number }}">&gt;</a>
+                        <a class="btn btn-gray" href="?c={{selected_category.slug}}&p={{ videos.paginator.num_pages }}">&raquo;</a>
+                    {% else %}
+                        <a class="btn btn-gray" href="?p={{ videos.previous_page_number }}">&gt;</a>
+                        <a class="btn btn-gray" href="?p={{ videos.paginator.num_pages }}">&raquo;</a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

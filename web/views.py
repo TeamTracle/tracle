@@ -33,7 +33,7 @@ class HomeView(View):
         else:
             if category_slug == 'subscriptions':
                 videos = queries.get_sub_feed(request.channel)
-                context['selected_category'] = {'title' : 'Subscriptions', 'icon' : 'fa-list'}
+                context['selected_category'] = {'title' : 'Subscriptions', 'icon' : 'fa-list', 'slug' : 'subscriptions'}
             else:
                 category = queries.get_category(category_slug)
                 videos = queries.get_videos_from_category(category)
