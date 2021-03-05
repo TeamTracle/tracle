@@ -5,7 +5,7 @@
     <div class="comment-feed__item">
         <div class="comment-feed__item__header">
             <a href="/channel/{{ action.actor.channel_id }}"><img class="comment-feed__item__avatar" src="{{ action.actor.get_avatar }}"></a>
-            <span class="comment-feed__item__info"><a class="comment-feed__item__link" href="#">{{ action.actor.name }}</a> posted a comment</span><span class="comment-feed__item__timestamp">{{ action.timestamp|timesince}}</span>
+            <span class="comment-feed__item__info"><a class="comment-feed__item__link" href="#">{{ action.actor.name }}</a> posted a comment on<a class="comment-feed__item__link" href="/watch?v={{ target.watch_id }}">{{ action.target.title|truncatechars_html:15 }}</a></span><span class="comment-feed__item__timestamp">{{ action.timestamp|timesince}}</span>
         </div>
         <div class="comment-feed__item__body">
             {{ action.action_object.text|urlize|usertags|safe }}
