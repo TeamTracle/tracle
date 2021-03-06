@@ -59,7 +59,7 @@
                         <a class="btn btn-gray" href="?c={{selected_category.slug}}&p={{ videos.next_page_number }}">&gt;</a>
                         <a class="btn btn-gray" href="?c={{selected_category.slug}}&p={{ videos.paginator.num_pages }}">&raquo;</a>
                     {% else %}
-                        <a class="btn btn-gray" href="?p={{ videos.previous_page_number }}">&gt;</a>
+                        <a class="btn btn-gray" href="?p={{ videos.next_page_number }}">&gt;</a>
                         <a class="btn btn-gray" href="?p={{ videos.paginator.num_pages }}">&raquo;</a>
                     {% endif %}
                 {% endif %}
