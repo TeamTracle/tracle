@@ -5,6 +5,10 @@
 .video-js {
 	color: #999;
    }
+
+.video-js .vjs-button, .video-js .vjs-menu-title {
+   outline: none;
+}
    
    .video-js .vjs-big-play-button .vjs-icon-placeholder::before {
 	content: '';
@@ -26,29 +30,70 @@
    }
    .video-js .vjs-control-bar {
 	grid-template-areas:
-	 "progress progress progress progress progress progress progress"
-	 "playtoggle volume currenttime divider duration spacer fullscreentoggle";
+	 "progress progress progress progress progress progress progress progress"
+	 "playtoggle volume currenttime divider duration spacer quality fullscreentoggle";
 	grid-template-columns: 0fr 0fr 0fr 0fr 0fr 1fr 0fr;
 	height: 4em;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAdCAYAAABrAQZpAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAABAAAAHQAh4gKwAAAAMUlEQVQI12OQlJD4x2Sgr8/I9OTZs5dM//79Y2T6//8/IyqLAcLClEBjYahDKCHSKADN5VNQpdTxzgAAAABJRU5ErkJggg==);
 	background-repeat: repeat-x;
 	background-position-y: 10px;
+   background-color: #000;
    }
    
-   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
-	visibility: visible;
-	opacity: 1;
-	transition: none;
-	height: 35px;
-	background-position-y: 5px;
+   .video-js .vjs-quality-selector {
+      grid-area: quality;
+      background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -85px -67px;
    }
-   
-   .video-js .vjs-progress-control .vjs-progress-holder {
-	height: 1.1em;
+
+   .video-js .vjs-quality-selector:hover {
+      background: no-repeat url("/static/web/img/player-dark-vflf2FniH.png") -31px -256px;
    }
-   
-   .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-progress-control {
-	height: 5px;
+
+   .video-js .vjs-quality-selector > .vjs-menu {
+      left: -68px;
+      bottom: -2px;
+      z-index: 99;
+   }
+
+   .video-js .vjs-quality-selector:hover > .vjs-menu {
+      display: none;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu > .vjs-menu-content {
+      background-color: #141414;
+      border-radius: 3px 3px 0 0;
+      border: 1px solid #141414;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-title {
+      color: #fff;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-item {
+      list-style: disc inside none;
+      color: transparent;
+      font-size: 1.3rem;
+   }
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-item:hover {
+      background-color: #601212;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-item > .vjs-menu-item-text {
+      color: #aaa;
+      font-size: 0.8em;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-item.vjs-selected {
+      background-color: transparent;
+      color: #fff;
+   }
+
+   .video-js .vjs-quality-selector > .vjs-menu li.vjs-menu-item.vjs-selected > .vjs-menu-item-text {
+      color: #fff;
+   }
+
+   .vjs-button > .vjs-icon-placeholder::before {
+      content: '';
    }
    
    .vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
@@ -225,7 +270,7 @@
    }
    
    .video-js .vjs-progress-control .vjs-progress-holder {
-	height: 1em;
+	height: 1.1em;
 	margin: 0;
 	background: none;
 	background-color: #222;
@@ -244,8 +289,6 @@
    .video-js .vjs-progress-holder .vjs-play-progress {
 	background: none;
 	background-image: linear-gradient(180deg, #c20102 0%, #7c0000 100%);
-	border-top: 1px solid #7a0001;
-	border-bottom: 1px solid #470000;
 	font-size: 1.5em;
 	line-height: 1.2em;
    }
@@ -359,6 +402,8 @@
 <script src="{% static 'web/js/vendor/video.js' %}"></script>
 <script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
 <script src='https://cdn.sc.gl/videojs-hotkeys/latest/videojs.hotkeys.min.js'></script>
+<script src="{% static 'web/js/vendor/videojs-contrib-quality-levels.min.js' %}"></script>
+<script src="{% static 'web/js/vendor/videojs-hls-quality-selector.min.js' %}"></script>
 <script>
 
     function hideReport(event) {
@@ -413,7 +458,7 @@
             'fullscreenToggle',
         ]}
     });
-
+{% comment %} 
     if (videojs.browser.IS_ANY_SAFARI) {
         player.src([
             {% for url in video.get_all_playlists %}
@@ -426,12 +471,19 @@
             type: 'application/x-mpegURL'
         });
     }
+{% endcomment %}
+
+   player.src({
+      src: '{{ video.playlist_file.url }}',
+      type: 'application/x-mpegURL'
+   });
 
     player.landscapeFullscreen();
     player.hotkeys({});
+    player.hlsQualitySelector();
 
     player.on('contextmenu', function (e) {
-    e.preventDefault();
+    {% comment %} e.preventDefault(); {% endcomment %}
     });
 
     function handlePlay() {
