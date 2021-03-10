@@ -10,8 +10,7 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	time_threshold = timezone.now() - timedelta(days=7)
-	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-created', '-like_count', '-sub_count', '-views').filter(visibility__exact=Video.VisibilityStatus.PUBLIC, created__gte=time_threshold)
+	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_videos_from_category(category):
 	return Video.published_objects.filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
