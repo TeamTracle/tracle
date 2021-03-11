@@ -21,6 +21,10 @@ from .tokens import account_activation_token
 
 import logging
 logger = logging.getLogger()
+
+def page_not_found_view(request, exception=None):
+    return render(request, 'web/error/404.html')
+
 class HomeView(View):
     def get(self, request):
         categories = queries.get_all_categories()
