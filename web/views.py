@@ -23,7 +23,10 @@ import logging
 logger = logging.getLogger()
 
 def page_not_found_view(request, exception=None):
-    return render(request, 'web/error/404.html')
+    return render(request, 'web/error/404.html', status=404)
+
+def server_error_view(request, exception=None):
+    return render(request, 'web/error/500.html', status=500)
 
 class HomeView(View):
     def get(self, request):

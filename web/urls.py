@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.urls import path, re_path
 
 from . import views
 
 handler404 = 'web.views.page_not_found_view'
+handler500 = 'web.views.server_error_view'
 
 urlpatterns = [
 	path('', views.HomeView.as_view(), name='web_home'),
@@ -32,3 +34,9 @@ urlpatterns = [
 	path('feed/history', views.WatchHistoryView.as_view(), name='web_watch_history'),
 	re_path(r'^(?P<key>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.ActivateView.as_view(), name='web_activate'),
 ]
+
+if settings.DEBUG:
+	urlpatterns += [
+		path('404', views.page_not_found_view),
+		path('500', views.server_error_view)
+	]
