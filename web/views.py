@@ -83,7 +83,7 @@ class SignupView(View):
             subject = 'Activate your TRACLE Account!'
             context = {
                 'user' : user,
-                'domain' : settings.DOMAIN,
+                'domain' : 'tracle.tv',
                 'uid' : urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': account_activation_token.make_token(user),
             }
