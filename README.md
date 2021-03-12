@@ -9,7 +9,11 @@ Join our [discord server](https://discord.gg/gKatcJ8)
 
 ### Installation (for development)
 
-TRACLE requires Python3 and pip3, if you are running Linux you probably have it already installed, otherwise refer to the documentation of your distribution on how to install it.
+TRACLE requires Python3, pip3 and Redis if you are running Linux you probably have it already installed, otherwise refer to the documentation of your distribution on how to install it.
+On Debian you can use this command to make sure all needed packages are installed:
+```
+sudo apt install git python3-venv python3-dev build-essential redis-server
+```
 
 First, clone, fork or download this repository.
 Open a terminal and change your working directory to the root of the repository, e.g.
