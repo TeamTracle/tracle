@@ -3,9 +3,6 @@ from django.urls import path, re_path
 
 from . import views
 
-handler404 = 'web.views.page_not_found_view'
-handler500 = 'web.views.server_error_view'
-
 urlpatterns = [
 	path('', views.HomeView.as_view(), name='web_home'),
 	path('results', views.ResultsView.as_view(), name='web_results'),

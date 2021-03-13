@@ -20,6 +20,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+handler404 = 'web.views.page_not_found_view'
+handler500 = 'web.views.server_error_view'
+
 urlpatterns = [
     path('', include('web.urls')),
     path('api/', include('api.urls')),
