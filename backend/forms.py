@@ -165,6 +165,6 @@ class ChannelBackgroundForm(forms.ModelForm):
 
     def clean_desktop_image(self):
         f = self.cleaned_data.get('desktop_image')
-        if f:
+        if f and not self.instance.desktop_image:
             f.name = f'bg.{f.name[-3:]}'
         return f
