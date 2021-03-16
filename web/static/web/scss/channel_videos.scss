@@ -142,3 +142,15 @@
 		display: block;
 	}
 }
+
+.pagination {
+	color: #333;
+	margin: 1em;
+	text-align: center;
+	grid-column-start: 1;
+	grid-column-end: 3;
+
+	&__step-links > a {
+		padding: 1em;
+	}
+}

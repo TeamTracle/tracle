@@ -243,7 +243,13 @@ class ChannelVideosView(View):
         elif ordering == 'p':
             videos  =  videos.order_by('-views')
 
-        return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos', 'ordering' : ordering})
+        video_count = videos.count()
+
+        page_number = request.GET.get('p', 1)
+        paginator = Paginator(videos, 20)
+        videos = paginator.get_page(page_number)
+
+        return render(request, 'web/channel_videos.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'videos' : videos, 'selected_tab' : 'videos', 'ordering' : ordering, 'video_count' : video_count})
 
 class ChannelFeaturedView(View):
 
