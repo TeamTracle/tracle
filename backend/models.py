@@ -7,10 +7,9 @@ from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank, TrigramSimilarity
 from django.db import models
 
 import django_rq
@@ -25,21 +24,8 @@ from colorfield.fields import ColorField
 
 from .storage import WrappedBCDNStorage
 from .fields import WrappedFileField, WrappedImageField
+from .managers import UserManager, VideoManager
 from . import tasks, utils
-
-class PublishedVideoManager(models.Manager):
-    use_for_related_fields = True
-
-    def get_queryset(self):
-        return super().get_queryset().filter(transcode_status=Video.TranscodeStatus.DONE, published=True, channel__user__banned=False, videostrike__isnull=True)
-
-    def search(self, query):
-        qs = self.get_queryset()
-        sq = SearchQuery(query)
-        sv = SearchVector('title', 'description', 'channel__name')
-        sr = SearchRank(sv, sq)
-        similarity = TrigramSimilarity('title', query) + TrigramSimilarity('description', query) + TrigramSimilarity('channel__name', query)
-        return qs.annotate(rank=sr, similarity=similarity).annotate(score=(models.F('rank') + models.F('similarity')) / 2).filter(score__gt=0.1, visibility=Video.VisibilityStatus.PUBLIC).order_by('-score')
 
 def get_video_location(instance, filename=None):
     if instance.pk is None:
@@ -79,33 +65,6 @@ def get_video_base_location():
 
 def get_video_media_url():
     return os.path.join(settings.MEDIA_URL, 'videos')
-
-class UserManager(BaseUserManager):
-
-    def create_user(self, email, password=None):
-        if not email or not password:
-            raise ValueError('Users must have email and password.')
-
-        email = self.normalize_email(email)
-        user = self.model(email=email)
-        user.set_password(password)
-        user.created = timezone.now()
-        user.last_login = timezone.now()
-        user.save(using=self._db)
-        return user
-
-    def create_staffuser(self, email, password=None):
-        user = self.create_user(email, password=password)
-        user.staff = True
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None):
-        user = self.create_user(email, password=password)
-        user.is_superuser = True
-        user.staff = True
-        user.save(using=self._db)
-        return user
 
 class User(PermissionsMixin, AbstractBaseUser):
     USERNAME_FIELD = 'email'
@@ -263,8 +222,7 @@ class Video(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 
-    published_objects = PublishedVideoManager()
-    objects = models.Manager()
+    objects = VideoManager()
 
     subs_notified = models.BooleanField(default=False)
     action_relations = GenericRelation('Notification', object_id_field='action_id', content_type_field='action_type')

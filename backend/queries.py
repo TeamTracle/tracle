@@ -10,13 +10,13 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_latest_videos():
-	return Video.published_objects.annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+	return Video.objects.public().annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def get_videos_from_category(category):
-	return Video.published_objects.filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
+	return Video.objects.public().filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
 
 def get_recommended_videos():
-	videos = Video.published_objects.filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+	videos = Video.objects.public().filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 	if videos:
 		if videos.count() > 25:
 			start = random.randint(0, videos.count()-21)
@@ -33,15 +33,15 @@ def get_video(watch_id):
 
 def get_published_video_or_none(watch_id):
 	try:
-		return Video.published_objects.get(watch_id__exact=watch_id)
+		return Video.objects.public().get(watch_id__exact=watch_id)
 	except Video.DoesNotExist:
 		return None
 
 def get_videos_from_channel(channel):
-	return Video.published_objects.filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
+	return Video.objects.public().filter(channel__exact=channel, visibility__exact=Video.VisibilityStatus.PUBLIC)
 
 def filter_by_search_terms(search_terms):
-	return Video.published_objects.search(search_terms)
+	return Video.objects.search(search_terms)
 
 def get_sub_feed(channel):
 	subs = channel.subscribers.all()
