@@ -188,6 +188,17 @@ class Image(models.Model):
             "thumbnail": self.thumbnail.url,
         }
 
+class TranscodedVideo(models.Model):
+    class TranscodeStatus(models.TextChoices):
+        QUEUED = 'queued', 'Queued'
+        PROCESSING = 'started', 'Processing'
+        DONE = 'finished', 'Done'
+        ERROR = 'failed', 'Error'
+
+    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location)
+    status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
+    job_id = models.CharField(max_length=255, null=True, blank=True)
+
 class Video(models.Model):
 
     class VisibilityStatus(models.TextChoices):
@@ -213,6 +224,7 @@ class Video(models.Model):
 
     visibility = models.CharField(max_length=8, choices=VisibilityStatus.choices, default=VisibilityStatus.PRIVATE)
     transcode_status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED, db_column='video_status')
+    transcoded_video = models.OneToOneField(TranscodedVideo, on_delete=models.CASCADE, null=True)
     published = models.BooleanField(default=False)
     
     views = models.BigIntegerField(default=0)
