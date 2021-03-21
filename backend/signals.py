@@ -25,7 +25,7 @@ def generate_watch_id(sender, instance, created, **kwargs):
         finally:
             del instance._dirty
     else:
-        if not instance.subs_notified and instance.published and instance.transcode_status == instance.TranscodeStatus.DONE and instance.visibility == instance.VisibilityStatus.PUBLIC:
+        if not instance.subs_notified and instance.published and instance.transcoded_video.status == instance.transcoded_video.TranscodeStatus.DONE and instance.visibility == instance.VisibilityStatus.PUBLIC:
             action.send(instance.channel, verb='uploaded', action_object=instance)
             subs = [ sub.from_channel.user for sub in instance.channel.subscriptions.all() ]
             for sub in subs:

@@ -39,7 +39,7 @@
 		  		return '/watch?v=' + this.video.watch_id;
 		  	},
 		  	status: function () {
-		  		switch (this.video.transcode_status) {
+		  		switch (this.video.transcoded_video) {
 		  			case 'queued':
 		  				return 'Queued for processing';
 		  			case 'started':
@@ -102,6 +102,7 @@
 			mounted () {
 				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => {
 					this.videos = response['data'];
+					console.log(this.videos)
 				});
 			},
 			template: `

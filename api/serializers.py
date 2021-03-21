@@ -4,7 +4,7 @@ from django.utils.timesince import timesince
 
 from rest_framework import serializers
 
-from backend.models import Video, Comment, Channel, Subscription, Notification, VideoStrike
+from backend.models import Video, Comment, Channel, Subscription, Notification, VideoStrike, TranscodedVideo
 
 class VideoStrikeSerializer(serializers.Serializer):
 	category = serializers.CharField()
@@ -14,14 +14,23 @@ class VideoStrikeSerializer(serializers.Serializer):
 		model = VideoStrike
 		fields = '__all__'
 
+class TranscodedVideoSerializer(serializers.Serializer):
+	class Meta:
+		model = TranscodedVideo
+		fields = '__all__'
+
+class TranscodeStatusField(serializers.RelatedField):
+	def to_representation(self, value):
+		return value.status
+
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
 	videostrike_set = VideoStrikeSerializer(many=True, read_only=True)
+	transcoded_video = TranscodeStatusField(read_only=True)
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set']
-
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcoded_video', 'published', 'videostrike_set']
 
 class VideoEditSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -45,8 +54,10 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		print(validated_data)
+		transcoded_video = TranscodedVideo.objects.create()
 		video = Video.objects.create(channel=validated_data.get('channel'))
 		video.uploaded_file = validated_data.get('uploaded_file')
+		video.transcoded_video = transcoded_video
 		video.save()
 		return video
 

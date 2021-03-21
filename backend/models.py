@@ -36,6 +36,13 @@ def get_video_location(instance, filename=None):
     else:
         return f'{instance.channel.channel_id}/{instance.watch_id}/'
 
+def get_playlist_location(instance, filename=None):
+    if filename:
+        return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/{filename}'
+    else:
+        return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/'
+
+
 def get_image_location(instance, filename=None):
     if filename:
         return f'{instance.video.channel.channel_id}/{instance.video.watch_id}/{filename}'
@@ -195,9 +202,16 @@ class TranscodedVideo(models.Model):
         DONE = 'finished', 'Done'
         ERROR = 'failed', 'Error'
 
-    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location)
+    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_playlist_location)
     status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
     job_id = models.CharField(max_length=255, null=True, blank=True)
+
+    def get_all_playlists(self):
+        storage = self.playlist_file.storage.get_storage(self.playlist_file.name)
+        return [
+            storage.url(f'{self.channel.channel_id}/{self.watch_id}/480p.m3u8'),
+            storage.url(f'{self.channel.channel_id}/{self.watch_id}/360p.m3u8'),
+        ]
 
 class Video(models.Model):
 
@@ -207,29 +221,19 @@ class Video(models.Model):
         UNLISTED = 'UNLISTED', 'Unlisted'
         DRAFT = 'draft', 'Draft'
 
-    class TranscodeStatus(models.TextChoices):
-        QUEUED = 'queued', 'Queued'
-        PROCESSING = 'started', 'Processing'
-        DONE = 'finished', 'Done'
-        ERROR = 'failed', 'Error'
-
     title = models.CharField(max_length=100, default='UNTITLED VIDEO')
     description = models.TextField(blank=True, null=True)
     watch_id = models.CharField(max_length=11, blank=True, null=True)
     created = models.DateTimeField(default=timezone.now)
 
     uploaded_file = WrappedFileField(max_length=255, storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location, blank=True)
-    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_video_location)
     image_set = models.OneToOneField(ImageSet, on_delete=models.CASCADE, null=True)
 
     visibility = models.CharField(max_length=8, choices=VisibilityStatus.choices, default=VisibilityStatus.PRIVATE)
-    transcode_status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED, db_column='video_status')
     transcoded_video = models.OneToOneField(TranscodedVideo, on_delete=models.CASCADE, null=True)
     published = models.BooleanField(default=False)
     
     views = models.BigIntegerField(default=0)
-    
-    job_id = models.CharField(max_length=255, null=True, blank=True)
 
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
@@ -285,14 +289,7 @@ class Video(models.Model):
 
     def delete_remote_files(self):
         folder = get_video_location(self)
-        self.playlist_file.storage.remote.delete(folder)
-
-    def get_all_playlists(self):
-        storage = self.playlist_file.storage.get_storage(self.playlist_file.name)
-        return [
-            storage.url(f'{self.channel.channel_id}/{self.watch_id}/480p.m3u8'),
-            storage.url(f'{self.channel.channel_id}/{self.watch_id}/360p.m3u8'),
-        ]
+        self.uploaded_file.storage.remote.delete(folder)
 
 class Likes(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

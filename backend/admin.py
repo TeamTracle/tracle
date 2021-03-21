@@ -8,7 +8,7 @@ from django.forms import ModelForm
 from django.utils.html import format_html
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket, VideoStrike
+from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket, VideoStrike, TranscodedVideo
 
 User = get_user_model()
 
@@ -78,9 +78,27 @@ class UserAdmin(BaseUserAdmin):
 
     inlines = [ChannelsInline]
 
+class TranscodeStatusFilter(admin.SimpleListFilter):
+    title = 'Transcode Status'
+    parameter_name = 'transcode_status'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('queued', 'queued'),
+            ('started', 'started'),
+            ('finished', 'finished'),
+            ('failed', 'failed'),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value in ['queued', 'started', 'finished', 'failed']:
+            return queryset.filter(transcoded_video__status=value)
+        return queryset
+
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'watch_id', 'created', 'transcode_status')
-    list_filter = ('transcode_status',)
+    list_filter = (TranscodeStatusFilter,)
     search_fields = ('title', 'watch_id')
     ordering = ('title', 'created')
 
@@ -89,6 +107,14 @@ class VideoAdmin(admin.ModelAdmin):
         (None, {'fields': ('title_with_link', 'description', 'visibility', 'views', 'created', 'channel_with_link', 'category')}),
         (None, {'fields': ('transcode_status', 'uploaded_file', 'playlist_file')}),
     )
+
+    def transcode_status(self, obj):
+        return obj.transcoded_video.status
+    transcode_status.short_description = "Transcode Status"
+
+    def playlist_file(self, obj):
+        return obj.transcoded_video.playlist_file
+    playlist_file.short_description = "Playlist File"
 
     inlines = [VideoStrikesInline]
 

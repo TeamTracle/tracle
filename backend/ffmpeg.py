@@ -93,7 +93,7 @@ def on_message_handler(percent, frame_count, total_frames, elapsed):
 	sys.stdout.flush()
 
 def start_transcoding(video_instance):
-	out_folder = os.path.join(video_instance.playlist_file.storage.local.location, str(video_instance.channel.channel_id), str(video_instance.watch_id))
+	out_folder = os.path.join(video_instance.transcoded_video.playlist_file.storage.local.location, str(video_instance.channel.channel_id), str(video_instance.watch_id))
 	ffmpegprogress.start(video_instance.uploaded_file.path, out_folder, ffmpeg_callback, on_message=on_message_handler)
 	master_playlist = '''
 #EXTM3U
@@ -104,8 +104,7 @@ def start_transcoding(video_instance):
 480p.m3u8
 '''
 	f = ContentFile(master_playlist)
-	video_instance.playlist_file.save('playlist.m3u8', f)
-
+	video_instance.transcoded_video.playlist_file.save('playlist.m3u8', f)
 
 def create_poster(in_file, timestamp, size=('854','480'), out_file=None):
     if not out_file:

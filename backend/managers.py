@@ -7,7 +7,7 @@ class VideoManager(models.Manager):
     use_for_related_fields = True
 
     def public(self):
-        return super().get_queryset().filter(visibility='PUBLIC', transcode_status='finished', published=True, channel__user__banned=False, videostrike__isnull=True)
+        return super().get_queryset().filter(visibility='PUBLIC', transcoded_video__status='finished', published=True, channel__user__banned=False, videostrike__isnull=True)
 
     def search(self, query):
         qs = self.public()

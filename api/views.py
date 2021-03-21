@@ -200,9 +200,6 @@ class VideoUploadView(APIView):
 		serializer = VideoUploadSerializer(data=request.data)
 		if serializer.is_valid():
 			video = serializer.save()
-			# job = django_rq.enqueue(video_transcode_task, video=video)
-			# video.job_id = job.id
-			# video.status = job.get_status()
 			video.save()
 			video.create_posters()
 			video.transcode()

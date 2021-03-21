@@ -5,19 +5,17 @@ from django.conf import settings
 
 def video_transcode_task(video=None):
 	print('TRANSCODING VIDEO...')
-	video.refresh_from_db()
-	video.transcode_status = video.TranscodeStatus.PROCESSING
-	video.save(update_fields=['transcode_status'])
+	transcoded_video = video.transcoded_video
+	transcoded_video.status = transcoded_video.TranscodeStatus.PROCESSING
+	transcoded_video.save()
 	try:
 		ffmpeg.start_transcoding(video)
-		video.refresh_from_db()
-		video.transcode_status = video.TranscodeStatus.DONE
-		video.save(update_fields=['transcode_status'])
+		transcoded_video.status = transcoded_video.TranscodeStatus.DONE
+		transcoded_video.save()
 		print('TRANSCODING DONE!')
 	except Exception as e:
-		video.refresh_from_db()
-		video.transcode_status = video.TranscodeStatus.ERROR
-		video.save(update_fields=['transcode_status'])
+		transcoded_video.status = transcoded_video.TranscodeStatus.ERROR
+		transcoded_video.save()
 		print(e)
 		print('TRANSCODING FAILED!')
 		raise e
