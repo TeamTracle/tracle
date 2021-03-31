@@ -458,7 +458,7 @@
             'fullscreenToggle',
         ]}
     });
-{% comment %} 
+ 
     if (videojs.browser.IS_ANY_SAFARI) {
         player.src([
             {% for url in video.transcoded_video.get_all_playlists %}
@@ -471,12 +471,6 @@
             type: 'application/x-mpegURL'
         });
     }
-{% endcomment %}
-
-   player.src({
-      src: '{{ video.transcoded_video.playlist_file.url }}',
-      type: 'application/x-mpegURL'
-   });
 
     player.landscapeFullscreen();
     player.hotkeys({});
