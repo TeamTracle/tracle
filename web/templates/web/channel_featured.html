@@ -11,12 +11,12 @@
 {% block channel_body %}
 <div class="channel__body">
 	<div class="primary">
-		{% if featured_video %}
+		{% if video %}
 		<div class="channel-featured-video">
 			{% include 'web/includes/player.html' %}
 			<div class="channel-featured-video__details">
-				<a href="/watch?v={{ featured_video.watch_id }}">{{ featured_video.title }}</a>
-				<div>uploaded {{ featured_video.created|naturaltime }}, {{ featured_video.views }} views</div>
+				<a href="/watch?v={{ video.watch_id }}">{{ video.title }}</a>
+				<div>uploaded {{ video.created|naturaltime }}, {{ video.views }} views</div>
 			</div>
 		</div>
 		{% else %}
@@ -29,52 +29,4 @@
 		{% include 'web/includes/channel_profile.html' %}
 	</div>
 </div>
-{% endblock %}
-
-{% block script %}
-<script src="{% static 'web/js/vendor/video.js' %}"></script>
-<script src="{% static 'web/js/vendor/videojs-landscape-fullscreen.min.js' %}"></script>
-<script>
-var player = videojs('player', {
-	html5: {
-		hls: {
-			overrideNative: !videojs.browser.IS_ANY_SAFARI
-		}  
-	},
-	aspectRatio: "16:9", 
-	responsive: true,
-	userActions: {
-		doubleClick: true,
-		hotkeys: true
-	},
-	controlBar: {
-		children: [
-			'playToggle',
-			'currentTimeDisplay',
-			'progressControl',
-			'durationDisplay',
-			'volumePanel',
-			'fullscreenToggle'
-		],
-		volumePanel: {
-			inline: false
-		}
-	}
-});
-
-if (videojs.browser.IS_ANY_SAFARI) {
-	player.src([
-		{% for url in featured_video.get_all_playlists %}
-			{ src: '{{ url }}', type: 'application/x-mpegURL'},
-		{% endfor %}
-	]);
-} else {
-	player.src({
-		src: '{{ featured_video.playlist_file.url }}',
-		type: 'application/x-mpegURL'
-	});
-}
-
-player.landscapeFullscreen();
-</script>
 {% endblock %}

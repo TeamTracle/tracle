@@ -267,7 +267,7 @@ class ChannelFeaturedView(View):
             featured_video = qs.order_by('-views')[0]
         else:
             featured_video = None
-        return render(request, 'web/channel_featured.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'featured', 'featured_video' : featured_video})
+        return render(request, 'web/channel_featured.html', {'channel' : channel, 'is_subscribed' : subscribed, 'total_views' : total_views, 'selected_tab' : 'featured', 'video' : featured_video})
 
 class ChannelFeedView(View):
 
