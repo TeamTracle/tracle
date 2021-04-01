@@ -9,8 +9,21 @@ from .models import Video, Category, Channel, Likes, Dislikes, Subscription, Use
 def get_user(pk):
 	return User.objects.get(pk=pk)
 
+def get_top_videos():
+	videos = Video.objects.public().annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created')
+	if videos and videos.count() > 60:
+		start = random.randint(0, 40)
+		videos = list(videos[start:start+20])
+		random.shuffle(videos)
+		return videos
+	else:
+		return videos
+
 def get_latest_videos():
-	return Video.objects.public().annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created').filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
+	videos = Video.objects.public().order_by('-created')
+	videos = list(videos[0:max(videos.count(), 100)])
+	random.shuffle(videos)
+	return videos
 
 def get_videos_from_category(category):
 	return Video.objects.public().filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')

@@ -52,7 +52,7 @@ class HomeView(View):
         paginator = Paginator(context['videos'], 20)
         context['videos'] = paginator.get_page(page_number)
 
-        context['recommended_videos'] = recommended_videos = queries.get_recommended_videos()
+        context['recommended_videos'] = recommended_videos = queries.get_top_videos()
 
         return render(request, 'web/home.html', context)
 
