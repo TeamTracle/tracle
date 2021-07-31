@@ -5,7 +5,7 @@ from django.dispatch import receiver
 
 from actstream import action
 
-from .models import Video, Channel, Image, Comment, Notification
+from .models import Video, BunnyVideo, Channel, Image, Comment, Notification
 
 @receiver(post_save, sender=Channel)
 def generate_channel_id(sender, instance, **kwargs):
@@ -45,6 +45,10 @@ def delete_image_files(sender, instance, using, **kwargs):
 def delete_video_files(sender, instance, using, **kwargs):
     instance.delete_local_files()
     instance.delete_remote_files()
+
+@receiver(pre_delete, sender=BunnyVideo)
+def delete_bunnyvideo(sender, instance, using, **kwargs):
+    instance.delete_files()
 
 @receiver(post_save, sender=Comment)
 def send_comment_notification(sender, instance, created, **kwargs):

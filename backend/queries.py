@@ -21,7 +21,7 @@ def get_top_videos():
 
 def get_latest_videos():
 	videos = Video.objects.public().order_by('-created')
-	videos = list(videos[0:max(videos.count(), 100)])
+	videos = list(videos[0:min(videos.count(), 50)])
 	random.shuffle(videos)
 	return videos
 

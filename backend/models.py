@@ -26,6 +26,7 @@ from .storage import WrappedBCDNStorage
 from .fields import WrappedFileField, WrappedImageField
 from .managers import UserManager, VideoManager
 from . import tasks, utils
+from bunnyapi import VideosApi
 
 def get_video_location(instance, filename=None):
     if instance.pk is None:
@@ -206,12 +207,40 @@ class TranscodedVideo(models.Model):
     status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
     job_id = models.CharField(max_length=255, null=True, blank=True)
 
+    def get_playlist(self):
+        return self.playlist_file.url
+
     def get_all_playlists(self):
         storage = self.playlist_file.storage.get_storage(self.playlist_file.name)
         return [
             storage.url(f'{self.video.channel.channel_id}/{self.video.watch_id}/480p.m3u8'),
             storage.url(f'{self.video.channel.channel_id}/{self.video.watch_id}/360p.m3u8'),
         ]
+
+class BunnyVideo(models.Model):
+    class TranscodeStatus(models.TextChoices):
+        QUEUED = 'queued', 'Queued'
+        PROCESSING = 'started', 'Processing'
+        DONE = 'finished', 'Done'
+        ERROR = 'failed', 'Error'
+
+    status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
+    bunny_guid = models.CharField(max_length=255, null=True, blank=True)
+    video = models.OneToOneField('Video', on_delete=models.CASCADE)
+
+    def upload(self):
+        vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
+        vobj = vapi.create_video(self.video.watch_id)
+        self.bunny_guid = vobj['guid']
+        vapi.upload_video(self.bunny_guid, self.video.uploaded_file.path)
+        self.save()
+
+    def get_playlist(self):
+        return f'{settings.BUNNYNET["storage_url"]}/{self.bunny_guid}/playlist.m3u8'
+
+    def delete_files(self):
+        vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
+        vapi.delete_video(self.bunny_guid)
 
 class Video(models.Model):
 
@@ -248,7 +277,15 @@ class Video(models.Model):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
     def transcode(self):
-        django_rq.enqueue(tasks.video_transcode_task, video=self)
+        # django_rq.enqueue(tasks.video_transcode_task, video=self)
+        bvideo = BunnyVideo.objects.create(video=self)
+        bvideo.upload()
+
+    def get_playlist(self):
+        try:
+            return self.bunnyvideo.get_playlist()
+        except BunnyVideo.DoesNotExist:
+            return self.transcoded_video.get_playlist()
 
     def create_posters(self):
         if self.image_set:

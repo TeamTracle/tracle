@@ -8,11 +8,13 @@ asgiref==3.2.7
     # via django
 bleach==3.3.0
     # via -r requirements.in
+bunnyapi==0.1.0
+    # via -r requirements.in
 bunnycdn-storage==0.4
     # via -r requirements.in
 certifi==2020.6.20
     # via requests
-chardet==3.0.4
+charset-normalizer==2.0.4
     # via requests
 click==7.1.2
     # via rq
@@ -91,9 +93,10 @@ redis==3.5.3
     #   django-cacheops
     #   django-rq
     #   rq
-requests==2.24.0
+requests==2.26.0
     # via
     #   -r requirements.in
+    #   bunnyapi
     #   bunnycdn-storage
 rjsmin==1.1.0
     # via django-compressor

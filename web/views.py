@@ -16,7 +16,7 @@ from django.http import JsonResponse
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm, ChannelBackgroundForm
 from backend import queries
-from backend.models import WatchHistory
+from backend.models import WatchHistory, User
 from .tokens import account_activation_token
 
 import logging

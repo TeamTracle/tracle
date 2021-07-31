@@ -245,6 +245,13 @@ BUNNYCDN = {
     'account_token' : os.environ.get('BUNNYCDN_ACCOUNT_TOKEN', None)
 }
 
+BUNNYNET = {
+    'enabled' : os.environ.get('BUNNYNET_ENABLED', '0') == '1',
+    'access_token' : os.environ.get('BUNNYNET_ACCESS_TOKEN', None),
+    'library_id' : os.environ.get('BUNNYNET_LIBRARY_ID', None),
+    'storage_url' : os.environ.get('BUNNYNET_STORAGE_URL', None),
+}
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
