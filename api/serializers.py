@@ -26,11 +26,13 @@ class TranscodeStatusField(serializers.RelatedField):
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
 	videostrike_set = VideoStrikeSerializer(many=True, read_only=True)
-	transcoded_video = TranscodeStatusField(read_only=True)
+	# transcoded_video = TranscodeStatusField(read_only=True)
+	# bunnyvideo = TranscodeStatusField(read_only=True)
+	transcode_status = TranscodeStatusField(read_only=True, source='get_transcoded_video')
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcoded_video', 'published', 'videostrike_set']
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set']
 
 class VideoEditSerializer(serializers.ModelSerializer):
 	class Meta:

@@ -1,4 +1,5 @@
 import os, string, random, magic, base64, fixedint, json, shutil
+import re
 
 from django.core.exceptions import FieldError
 from django.core.files.storage import FileSystemStorage
@@ -280,6 +281,13 @@ class Video(models.Model):
         # django_rq.enqueue(tasks.video_transcode_task, video=self)
         bvideo = BunnyVideo.objects.create(video=self)
         bvideo.upload()
+
+    def get_transcoded_video(self):
+        try:
+            self.bunnyvideo.status
+            return self.bunnyvideo
+        except BunnyVideo.DoesNotExist:
+            return self.transcoded_video
 
     def get_playlist(self):
         try:

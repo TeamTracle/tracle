@@ -3,6 +3,7 @@ import json
 # 
 from PIL import Image
 from io import BytesIO
+from django.conf import settings
 
 from django.shortcuts import render
 from django.views import View
@@ -27,7 +28,7 @@ from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerial
 from .permissions import IsAuthenticated, ReadOnly, IsSuperUser
 
 from backend.queries import get_user, toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
-from backend.models import Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
+from backend.models import BunnyVideo, Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -397,3 +398,21 @@ class BanUser(APIView):
 			return Response({})
 		else:
 			return Response({'message': 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#TODO: Improve access restriction
+class BunnyCallback(APIView):
+	def post(self, request):
+		if not request.META['REMOTE_ADDR'] == settings.BUNNYNET['callback_remote']:
+			return Response({}, status=status.HTTP_400_BAD_REQUEST)
+		guid = request.data['VideoGuid']
+		status = request.data['Status']
+		if status == 3:
+			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
+			bvideo.status = BunnyVideo.TranscodeStatus.DONE
+			bvideo.save()
+		elif status == 4:
+			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
+			bvideo.status = BunnyVideo.TranscodeStatus.PROCESSING
+			bvideo.save()
+
+		return Response({})

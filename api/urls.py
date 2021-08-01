@@ -20,4 +20,5 @@ urlpatterns = [
 	path('subscriptions', views.SubscriptionsView.as_view(), name='api_subscriptions'),
 	path('notifications', views.NotificationsView.as_view(), name='api_notifications_unread'),
 	path('admin/ban_user', views.BanUser.as_view(), name='api_ban_user'),
+	path('bunnycb', views.BunnyCallback.as_view(), name='api_bunnycb'),
 ]
