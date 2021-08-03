@@ -201,7 +201,6 @@ class VideoUploadView(APIView):
 		serializer = VideoUploadSerializer(data=request.data)
 		if serializer.is_valid():
 			video = serializer.save()
-			video.save()
 			video.create_posters()
 			video.transcode()
 			serialized_data = serializer.data
@@ -402,15 +401,15 @@ class BanUser(APIView):
 #TODO: Improve access restriction
 class BunnyCallback(APIView):
 	def post(self, request):
-		if not request.META['REMOTE_ADDR'] == settings.BUNNYNET['callback_remote']:
-			return Response({}, status=status.HTTP_400_BAD_REQUEST)
+		if not request.META['REMOTE_ADDR'] in {settings.BUNNYNET['callback_remote'], '127.0.0.1'}:
+			return Response({'status' : 'DENIED'}, status=status.HTTP_400_BAD_REQUEST)
 		guid = request.data['VideoGuid']
-		status = request.data['Status']
-		if status == 3:
+		video_status = request.data['Status']
+		if video_status == 3:
 			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
 			bvideo.status = BunnyVideo.TranscodeStatus.DONE
 			bvideo.save()
-		elif status == 4:
+		elif video_status == 4:
 			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
 			bvideo.status = BunnyVideo.TranscodeStatus.PROCESSING
 			bvideo.save()

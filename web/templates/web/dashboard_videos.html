@@ -39,7 +39,7 @@
 		  		return '/watch?v=' + this.video.watch_id;
 		  	},
 		  	status: function () {
-		  		switch (this.video.transcoded_video) {
+		  		switch (this.video.transcode_status) {
 		  			case 'queued':
 		  				return 'Queued for processing';
 		  			case 'started':

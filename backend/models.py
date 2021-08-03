@@ -230,11 +230,7 @@ class BunnyVideo(models.Model):
     video = models.OneToOneField('Video', on_delete=models.CASCADE)
 
     def upload(self):
-        vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
-        vobj = vapi.create_video(self.video.watch_id)
-        self.bunny_guid = vobj['guid']
-        vapi.upload_video(self.bunny_guid, self.video.uploaded_file.path)
-        self.save()
+        django_rq.enqueue(tasks.bunnyvideo_upload_task, bunny_video=self)
 
     def get_playlist(self):
         return f'{settings.BUNNYNET["storage_url"]}/{self.bunny_guid}/playlist.m3u8'

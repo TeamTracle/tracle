@@ -1,6 +1,8 @@
 from time import sleep
 from . import ffmpeg
 
+from bunnyapi import VideosApi
+
 from django.conf import settings
 
 def video_transcode_task(video=None):
@@ -28,3 +30,11 @@ def video_transcode_task(video=None):
 		except Exception as e:
 			print(e)
 			print('UPLOADING FAILED!')
+
+def bunnyvideo_upload_task(bunny_video=None):
+	vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
+	vobj = vapi.create_video(bunny_video.video.watch_id)
+	bunny_video.bunny_guid = vobj['guid']
+	bunny_video.save()
+	vapi.upload_video(bunny_video.bunny_guid, bunny_video.video.uploaded_file.path)
+	bunny_video.video.transfer_files()
