@@ -5,7 +5,7 @@ from django.dispatch import receiver
 
 from actstream import action
 
-from .models import Video, BunnyVideo, Channel, Image, Comment, Notification
+from .models import TranscodedVideo, Video, BunnyVideo, Channel, Image, Comment, Notification
 
 @receiver(post_save, sender=Channel)
 def generate_channel_id(sender, instance, **kwargs):
@@ -25,7 +25,8 @@ def generate_watch_id(sender, instance, created, **kwargs):
         finally:
             del instance._dirty
     else:
-        if not instance.subs_notified and instance.published and instance.transcoded_video.status == instance.transcoded_video.TranscodeStatus.DONE and instance.visibility == instance.VisibilityStatus.PUBLIC:
+        status = instance.get_transcoded_video().status
+        if not instance.subs_notified and instance.published and status == TranscodedVideo.TranscodeStatus.DONE and instance.visibility == instance.VisibilityStatus.PUBLIC:
             action.send(instance.channel, verb='uploaded', action_object=instance)
             subs = [ sub.from_channel.user for sub in instance.channel.subscriptions.all() ]
             for sub in subs:
