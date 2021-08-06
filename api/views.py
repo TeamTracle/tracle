@@ -398,20 +398,25 @@ class BanUser(APIView):
 		else:
 			return Response({'message': 'Something went wrong.'}, status=status.HTTP_400_BAD_REQUEST)
 
-#TODO: Improve access restriction
 class BunnyCallback(APIView):
 	def post(self, request):
-		if not request.META['REMOTE_ADDR'] in {settings.BUNNYNET['callback_remote'], '127.0.0.1'}:
+		if not request.META['REMOTE_ADDR'] in settings.BUNNYNET['callback_remote']:
 			return Response({'status' : 'DENIED'}, status=status.HTTP_400_BAD_REQUEST)
 		guid = request.data['VideoGuid']
 		video_status = request.data['Status']
-		if video_status == 3:
-			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
-			bvideo.status = BunnyVideo.TranscodeStatus.DONE
-			bvideo.save()
-		elif video_status == 4:
+		if video_status == 1:
 			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
 			bvideo.status = BunnyVideo.TranscodeStatus.PROCESSING
 			bvideo.save()
+		elif video_status == 3:
+			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
+			bvideo.status = BunnyVideo.TranscodeStatus.DONE
+			bvideo.save()
+		elif video_status == 5:
+			bvideo = BunnyVideo.objects.get(bunny_guid=guid)
+			bvideo.status = BunnyVideo.TranscodeStatus.ERROR
+			bvideo.save()
+
+
 
 		return Response({})

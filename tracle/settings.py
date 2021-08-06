@@ -250,7 +250,7 @@ BUNNYNET = {
     'access_token' : os.environ.get('BUNNYNET_ACCESS_TOKEN', None),
     'library_id' : os.environ.get('BUNNYNET_LIBRARY_ID', None),
     'storage_url' : os.environ.get('BUNNYNET_STORAGE_URL', None),
-    'callback_remote' : os.environ.get('BUNNY_CALLBACK_REMOTE', None),
+    'callback_remote' : os.environ.get('BUNNYNET_CALLBACK_REMOTE', '127.0.0.1').split(';'),
 }
 
 REST_FRAMEWORK = {
