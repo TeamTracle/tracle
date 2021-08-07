@@ -235,6 +235,9 @@ class BunnyVideo(models.Model):
     def get_playlist(self):
         return f'{settings.BUNNYNET["storage_url"]}/{self.bunny_guid}/playlist.m3u8'
 
+    def get_preview(self):
+        return f'{settings.BUNNYNET["storage_url"]}/{self.bunny_guid}/preview.webp'
+
     def delete_files(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vapi.delete_video(self.bunny_guid)
@@ -315,6 +318,12 @@ class Video(models.Model):
             return self.image_set.primary_image.thumbnail.url
         else:
             return '/static/web/img/thumbnail_default.jpg'
+
+    def get_preview(self):
+        try:
+            return self.bunnyvideo.get_preview()
+        except BunnyVideo.DoesNotExist:
+            return ''
 
     def transfer_files(self):
         folder = os.path.join(get_video_base_location(), get_video_location(self))
