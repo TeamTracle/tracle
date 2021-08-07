@@ -151,6 +151,9 @@
 
 		&__description {
 			color: #333;
+			max-width: 710px;
+			line-break: anywhere;
+			white-space: break-spaces;
 		}
 
 		&__left {
