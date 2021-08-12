@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
-asgiref==3.2.7
+asgiref==3.4.1
     # via django
 bleach==3.3.0
     # via -r requirements.in
@@ -18,6 +18,14 @@ charset-normalizer==2.0.4
     # via requests
 click==7.1.2
     # via rq
+django==3.1.12
+    # via
+    #   -r requirements.in
+    #   django-appconf
+    #   django-cacheops
+    #   django-qsessions
+    #   django-rq
+    #   djangorestframework
 django-activity-stream==0.10.0
     # via -r requirements.in
 django-appconf==1.0.4
@@ -29,13 +37,13 @@ django-cacheops==5.0.1
     # via -r requirements.in
 django-colorfield==0.3.2
     # via -r requirements.in
-django-compressor-autoprefixer==0.1.0
-    # via -r requirements.in
 django-compressor==2.4
     # via
     #   -r requirements.in
     #   django-compressor-autoprefixer
     #   django-libsass
+django-compressor-autoprefixer==0.1.0
+    # via -r requirements.in
 django-imagekit==4.0.2
     # via -r requirements.in
 django-ipware==3.0.2
@@ -48,14 +56,6 @@ django-rq==2.3.2
     # via -r requirements.in
 django-waffle==2.1.0
     # via -r requirements.in
-django==3.0.7
-    # via
-    #   -r requirements.in
-    #   django-appconf
-    #   django-cacheops
-    #   django-qsessions
-    #   django-rq
-    #   djangorestframework
 djangorestframework==3.11.0
     # via -r requirements.in
 fixedint==0.1.5
