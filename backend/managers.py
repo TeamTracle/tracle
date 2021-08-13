@@ -6,6 +6,9 @@ from django.utils import timezone
 class VideoManager(models.Manager):
     use_for_related_fields = True
 
+    def get_queryset(self):
+        return super().get_queryset().annotate(num_likes=models.Count('likes'), num_dislikes=models.Count('dislikes'))
+
     def public(self):
         qs = super().get_queryset()
         qs = qs.filter(visibility='PUBLIC', published=True, channel__user__banned=False, videostrike__isnull=True)

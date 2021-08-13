@@ -79,8 +79,8 @@
 			  	</div>
 			  	<div class="video__stats" v-if="video.transcode_status == 'finished'">
 			  		<div><i class="fa fa-chart-bar"></i> [[video.views]]</div>
-			  		<div><i class="fas fa-thumbs-up"></i> [[video.likes.length]]</div>
-			  		<div><i class="fas fa-thumbs-down"></i> [[video.dislikes.length]]</div>
+			  		<div><i class="fas fa-thumbs-up"></i> [[video.num_likes]]</div>
+			  		<div><i class="fas fa-thumbs-down"></i> [[video.num_dislikes]]</div>
 			  	</div>
 			  	<div v-else>
 			  		<span>[[ status ]]</span>

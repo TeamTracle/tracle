@@ -23,16 +23,27 @@ class TranscodeStatusField(serializers.RelatedField):
 	def to_representation(self, value):
 		return value.status
 
+
 class VideoSerializer(serializers.ModelSerializer):
 	thumbnail = serializers.CharField(source='get_thumbnail')
-	videostrike_set = VideoStrikeSerializer(many=True, read_only=True)
-	# transcoded_video = TranscodeStatusField(read_only=True)
-	# bunnyvideo = TranscodeStatusField(read_only=True)
-	transcode_status = TranscodeStatusField(read_only=True, source='get_transcoded_video')
+	num_likes = serializers.IntegerField(read_only=True)
+	num_dislikes = serializers.IntegerField(read_only=True)
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'likes', 'dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set']
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'num_likes', 'num_dislikes']
+
+class OwnerVideoSerializer(serializers.ModelSerializer):
+	thumbnail = serializers.CharField(source='get_thumbnail')
+	videostrike_set = VideoStrikeSerializer(many=True, read_only=True)
+	transcode_status = TranscodeStatusField(read_only=True, source='get_transcoded_video')
+	num_likes = serializers.IntegerField(read_only=True)
+	num_dislikes = serializers.IntegerField(read_only=True)
+
+	class Meta:
+		model = Video
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'num_likes', 'num_dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set']
+
 
 class VideoEditSerializer(serializers.ModelSerializer):
 	class Meta:

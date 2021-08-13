@@ -15,6 +15,7 @@ from django.core.cache import cache
 from django.utils import timezone
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count
 
 import django_rq
 from django_rq.jobs import Job
@@ -24,7 +25,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
+from backend import models
+
+from .serializers import OwnerVideoSerializer, VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
 from .permissions import IsAuthenticated, ReadOnly, IsSuperUser
 
 from backend.queries import get_user, toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
@@ -117,8 +120,15 @@ class VideoViewSet(viewsets.ModelViewSet):
 			channel = get_channel_by_id(channel_id)
 			if not channel:
 				return Response({'message': 'Channel not found.'}, status=status.HTTP_400_BAD_REQUEST)
-			queryset = Video.objects.filter(channel__exact=channel)
-			serializer = VideoSerializer(queryset, many=True)
+
+			if request.user.is_authenticated and channel == request.channel:
+				self.queryset = Video.objects.filter(channel__exact=channel)
+				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				serializer = OwnerVideoSerializer(self.queryset, many=True)
+			else:
+				self.queryset = Video.objects.public()
+				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				serializer = VideoSerializer(self.queryset, many=True)
 			return Response(serializer.data)
 
 class UploadAvatarView(View):
