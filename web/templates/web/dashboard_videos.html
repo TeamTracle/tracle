@@ -96,20 +96,29 @@
 			delimiters: ['[[', ']]'],
 			data () { 
 				return {
-					videos: []
+						videos: [],
+						next_page: '/api/videos/{{ request.channel.channel_id }}?page=1',
 					}
 			},
 			mounted () {
-				axios.get('/api/videos/{{ request.channel.channel_id }}').then(response => {
-					this.videos = response['data'];
-					console.log(this.videos)
-				});
+				this.fetch_videos();
+			},
+			methods: {
+				fetch_videos: function() {
+					axios.get(this.next_page).then(response => {
+						this.videos = this.videos.concat(response['data']['results']);
+						this.next_page = response['data']['next'];
+					});
+				}
 			},
 			template: `
 				<div class="video-table">
 					<h2 class="dashboard__primary__heading">Uploads</h2>
 					<div v-if="videos.length">
 						<video-entry v-for="video in videos" v-bind:key="video.pk" v-bind:video="video"></video-entry>
+						<div v-if="next_page" class="dashboard__primary__show-more" v-on:click="fetch_videos">
+							show more
+						</div>
 					</div>
 					<p v-else>
 						You haven't uploaded any videos yet.

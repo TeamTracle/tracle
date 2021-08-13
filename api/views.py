@@ -124,12 +124,14 @@ class VideoViewSet(viewsets.ModelViewSet):
 			if request.user.is_authenticated and channel == request.channel:
 				self.queryset = Video.objects.filter(channel__exact=channel)
 				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = OwnerVideoSerializer(self.queryset, many=True)
 			else:
 				self.queryset = Video.objects.public()
 				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = VideoSerializer(self.queryset, many=True)
-			return Response(serializer.data)
+			return self.get_paginated_response(serializer.data)
 
 class UploadAvatarView(View):
 	def post(self, request):

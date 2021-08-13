@@ -32,6 +32,18 @@
 	&__heading {
 		margin-left: 1em;
 	}
+
+	&__show-more {
+		text-align: center;
+		cursor: pointer;
+		color: #1c62b9;
+		font-size: 1.1rem;
+		padding: 1em;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 .video {
