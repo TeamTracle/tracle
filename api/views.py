@@ -127,7 +127,7 @@ class VideoViewSet(viewsets.ModelViewSet):
 				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = OwnerVideoSerializer(self.queryset, many=True)
 			else:
-				self.queryset = Video.objects.public()
+				self.queryset = Video.objects.public().filter(channel=channel)
 				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
 				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = VideoSerializer(self.queryset, many=True)
