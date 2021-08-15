@@ -98,6 +98,8 @@
 				return {
 						videos: [],
 						next_page: '/api/videos/{{ request.channel.channel_id }}?page=1',
+						channel_id: '{{ request.channel.channel_id }}',
+						orderByIsOpen: false
 					}
 			},
 			mounted () {
@@ -109,11 +111,32 @@
 						this.videos = this.videos.concat(response['data']['results']);
 						this.next_page = response['data']['next'];
 					});
+				},
+				toggleOrderByDropdown: function() {
+					this.orderByIsOpen = !this.orderByIsOpen;
+				},
+				setOrderBy: function(e) {
+					var el = e.target;
+					this.next_page = '/api/videos/' + this.channel_id + '?page=1&order_by=' + el.dataset.orderby;
+					this.videos = [];
+					this.fetch_videos();
+					this.orderByIsOpen = false;
 				}
 			},
 			template: `
 				<div class="video-table">
-					<h2 class="dashboard__primary__heading">Uploads</h2>
+					<div class="dashboard__primary__heading">
+						<h2>Uploads</h2>
+						<div class="order-dropdown">
+							<button class="btn btn-gray order-dropdown__button" v-on:click="toggleOrderByDropdown">Sort by...</button>
+							<div class="order-dropdown__menu" :class="{ open : orderByIsOpen }">
+								<div v-on:click="setOrderBy" data-orderby="da">Date added (newest to oldest)</div>
+								<div v-on:click="setOrderBy" data-orderby="dd">Date added (oldest to newest)</div>
+								<div v-on:click="setOrderBy" data-orderby="ta">Title (A-Z)</div>
+								<div v-on:click="setOrderBy" data-orderby="td">Title (Z-A)</div>
+							</div>
+						</div>
+					</div>
 					<div v-if="videos.length">
 						<video-entry v-for="video in videos" v-bind:key="video.pk" v-bind:video="video"></video-entry>
 						<div v-if="next_page" class="dashboard__primary__show-more" v-on:click="fetch_videos">

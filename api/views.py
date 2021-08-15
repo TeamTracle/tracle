@@ -121,14 +121,24 @@ class VideoViewSet(viewsets.ModelViewSet):
 			if not channel:
 				return Response({'message': 'Channel not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
+			orders = {
+				'da' : '-created',
+				'dd' : 'created',
+				'ta' : 'title',
+				'td' : '-title',
+			}
+			orderby = orders[request.query_params.get('order_by', 'da')]
+
 			if request.user.is_authenticated and channel == request.channel:
 				self.queryset = Video.objects.filter(channel__exact=channel)
 				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				self.queryset = self.queryset.order_by(orderby)
 				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = OwnerVideoSerializer(self.queryset, many=True)
 			else:
 				self.queryset = Video.objects.public().filter(channel=channel)
 				self.queryset = self.queryset.annotate(num_likes=Count('likes'), num_dislikes=Count('dislikes'))
+				self.queryset = self.queryset.order_by(orderby)
 				self.queryset = self.paginate_queryset(self.queryset)
 				serializer = VideoSerializer(self.queryset, many=True)
 			return self.get_paginated_response(serializer.data)
