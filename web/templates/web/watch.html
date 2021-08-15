@@ -34,7 +34,9 @@
 		{% include 'web/includes/nav.html' %}
 		{% if not video %}
 			<div class="primary">
-				<h2 style="text-align: center;margin-top: 10em;">Video not found</h2>
+				<div class="video-error">
+					<p class="video-error__message"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+				</div>
 			</div>
 		{% else %}
 		<div class="header">
@@ -51,6 +53,11 @@
 			<button  id="btn-subscribe" class="btn btn-gray" {% if not request.user.is_authenticated or request.channel.channel_id == video.channel.channel_id %} disabled {% else %} onclick="toggleSubscribe()" {% endif %}><i class="fas fa-plus-circle"></i> <span id="btn-subscribe-text">{% if request.user.is_authenticated and is_subscribed %} Unsubscribe {% else %} Subscribe {% endif %}</span></button>
 		</div>
 		<div class="primary">
+			{% if error %}
+				<div class="video-error">
+					<p class="video-error__message"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+				</div>
+			{% else %}
 			<div class="video__container">
 				{% include 'web/includes/player.html' %}
 			</div>
@@ -134,6 +141,7 @@
 			</div>
 			<div id="app" data-authenticated="{{ request.user.is_authenticated }}">
 			</div>
+			{% endif %}
 		</div>
 		{% endif %}
 		<div class="secondary">

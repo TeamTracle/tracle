@@ -152,13 +152,16 @@ class WatchView(View):
         video = queries.get_published_video_or_none(watch_id)
         
         if not video:
-            return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+            return render(request, 'web/watch.html', {'error' : 'Video unavailable', 'recommended_videos' : recommended_videos})
         if video.visibility == video.VisibilityStatus.PRIVATE:
             if request.user.is_authenticated:
                 if not request.channel == video.channel:
-                    return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+                    return render(request, 'web/watch.html', {'error' : 'This video is private', 'recommended_videos' : recommended_videos})
             else:
-                return render(request, 'web/watch.html', {'recommended_videos' : recommended_videos})
+                return render(request, 'web/watch.html', {'error' : 'This video is private', 'recommended_videos' : recommended_videos})
+
+        if video.get_transcoded_video().status != 'finished':
+            return render(request, 'web/watch.html', {'video' : video, 'error' : 'This video has not finished processing yet', 'recommended_videos' : recommended_videos})
 
         is_liked = False
         is_disliked = False

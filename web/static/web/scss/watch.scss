@@ -48,6 +48,16 @@
 	margin-bottom: 1em;
 }
 
+.video-error {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&__message {
+		font-size: 1.4rem;
+	}
+}
+
 .secondary {
 	grid-area: secondary;
 }

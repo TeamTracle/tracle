@@ -46,7 +46,10 @@ def get_video(watch_id):
 
 def get_published_video_or_none(watch_id):
 	try:
-		return Video.objects.public().get(watch_id__exact=watch_id)
+		video = Video.objects.get(watch_id__exact=watch_id)
+		if not video.published:
+			return None
+		return video
 	except Video.DoesNotExist:
 		return None
 
