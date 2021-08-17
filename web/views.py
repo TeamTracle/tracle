@@ -163,6 +163,9 @@ class WatchView(View):
         if video.get_transcoded_video().status != 'finished':
             return render(request, 'web/watch.html', {'video' : video, 'error' : 'This video has not finished processing yet', 'recommended_videos' : recommended_videos})
 
+        if video.videostrike_set.exists():
+            return render(request, 'web/watch.html', {'video' : video, 'error' : 'Video blocked due to violation of our ToS and/or Guidelines', 'recommended_videos' : recommended_videos})
+
         is_liked = False
         is_disliked = False
         subscribed = False
