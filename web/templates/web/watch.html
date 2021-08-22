@@ -224,7 +224,7 @@
 							  <textarea id="body" name="body" v-model="body"></textarea>
 							  <div class="report-form__actions">
 								  <button class="btn btn-gray" @click="$emit('close')">Cancel</button>
-								  <button class="btn btn-blue" @click="send()">Send</button>
+								  <button class="btn btn-blue" @click="send($event)">Send</button>
 							  </div>
 							</form>
 						</div>
