@@ -146,10 +146,10 @@ COMPRESS_OFFLINE = not DEBUG
 # for video_encoding
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 3600,
+        'HOST': os.environ.get('REDIS_RQ_HOST', 'localhost'),
+        'PORT': int(os.environ.get('REDIS_RQ_PORT', '6379')),
+        'DB': int(os.environ.get('REDIS_RQ_DB', '0')),
+        'DEFAULT_TIMEOUT': int(os.environ.get('REDIS_RQ_DEFAULT_TIMEOUT', '3600')),
     },
 }
 
@@ -259,9 +259,9 @@ REST_FRAMEWORK = {
 }
 
 CACHEOPS_REDIS = {
-    'host': 'localhost',
-    'port': 6379,
-    'db': 1,
+    'host': os.environ.get('REDIS_CACHE_HOST', 'localhost'),
+    'port': int(os.environ.get('REDIS_CACHE_PORT', '6379')),
+    'db': int(os.environ.get('REDIS_CACHE_DB', '1')),
 }
 
 CACHEOPS_DEFAULTS = {
