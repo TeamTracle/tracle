@@ -25,3 +25,4 @@ django-qsessions
 django-colorfield
 django-waffle
 django-activity-stream
+gunicorn
