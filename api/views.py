@@ -1,6 +1,5 @@
 import json
-# video.image_set.image_data() os
-# 
+import secrets 
 from PIL import Image
 from io import BytesIO
 from django.conf import settings
@@ -24,6 +23,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 
 from backend import models
 
@@ -422,8 +422,9 @@ class BanUser(APIView):
 
 class BunnyCallback(APIView):
 	def post(self, request):
-		if not request.META['REMOTE_ADDR'] in settings.BUNNYNET['callback_remote']:
-			return Response({'status' : 'DENIED'}, status=status.HTTP_400_BAD_REQUEST)
+		key = request.query_params.get('key', None)
+		if key is None or not secrets.compare_digest(settings.BUNNYNET['callback_key']):
+			raise PermissionDenied({'message': 'You do not have permission to access this resource.'})
 		guid = request.data['VideoGuid']
 		video_status = request.data['Status']
 		if video_status == 1:
