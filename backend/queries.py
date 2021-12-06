@@ -1,6 +1,7 @@
 import random
 from datetime import timedelta
 
+from django.core.cache import cache
 from django.db.models import Sum, Count
 from django.utils import timezone
 
@@ -10,19 +11,26 @@ def get_user(pk):
 	return User.objects.get(pk=pk)
 
 def get_top_videos():
-	videos = Video.objects.public().annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created')
-	if videos and videos.count() > 60:
-		start = random.randint(0, 40)
-		videos = list(videos[start:start+20])
-		random.shuffle(videos)
-		return videos
-	else:
-		return videos
+	videos = cache.get('topvideos')
+	if not videos:
+		videos = Video.objects.public().annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created')
+		if videos:
+			if videos.count() > 60:
+				start = random.randint(0, 40)
+				videos = list(videos[start:start+20])
+				random.shuffle(videos)
+			cache.set('topvideos', videos, timeout=3600)
+
+	return videos
 
 def get_latest_videos():
-	videos = Video.objects.public().order_by('-created')
-	videos = list(videos[0:min(videos.count(), 50)])
-	random.shuffle(videos)
+	videos = cache.get('latestvideos')
+	if not videos:
+		videos = Video.objects.public().order_by('-created')
+		videos = list(videos[0:min(videos.count(), 50)])
+		random.shuffle(videos)
+		cache.set('latestvideos', videos, timeout=3600)
+
 	return videos
 
 def get_videos_from_category(category):
