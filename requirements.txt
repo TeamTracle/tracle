@@ -78,7 +78,7 @@ packaging==20.4
     # via bleach
 pilkit==2.0
     # via django-imagekit
-pillow==7.1.2
+pillow==8.3.2
     # via
     #   -r requirements.in
     #   django-simple-captcha
