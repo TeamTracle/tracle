@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'colorfield',
     'waffle',
     'actstream',
+    'captcha',
 ]
 
 DEV_APPS = os.environ.get('INSTALLED_APPS', None) 

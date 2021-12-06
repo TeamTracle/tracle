@@ -423,7 +423,7 @@ class BanUser(APIView):
 class BunnyCallback(APIView):
 	def post(self, request):
 		key = request.query_params.get('key', None)
-		if key is None or not secrets.compare_digest(settings.BUNNYNET['callback_key']):
+		if key is None or not secrets.compare_digest(settings.BUNNYNET['callback_key'], key):
 			raise PermissionDenied({'message': 'You do not have permission to access this resource.'})
 		guid = request.data['VideoGuid']
 		video_status = request.data['Status']

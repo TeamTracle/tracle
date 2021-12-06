@@ -26,3 +26,5 @@ django-colorfield
 django-waffle
 django-activity-stream
 gunicorn
+whitenoise
+django-simple-captcha

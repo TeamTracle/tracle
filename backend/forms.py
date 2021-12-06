@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model, authenticate
 from .models import Video, Channel, ChannelBackground
 
 from colorfield.fields import color_validator
+from captcha.fields import CaptchaField
 
 User = get_user_model()
 class UserAdminCreationForm(forms.ModelForm):
@@ -59,6 +60,7 @@ class SignupForm(forms.ModelForm):
     channel_name = forms.CharField(max_length=20, help_text='Required.', widget=forms.TextInput(attrs={'placeholder' : 'CHANNEL NAME'}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder' : 'PASSWORD'}))
     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'placeholder' : 'CONFIRM PASSWORD'}))
+    captcha = CaptchaField()
 
     class Meta:
         model = User
