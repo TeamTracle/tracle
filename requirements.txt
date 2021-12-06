@@ -62,7 +62,7 @@ django-simple-captcha==0.5.14
     # via -r requirements.in
 django-waffle==2.1.0
     # via -r requirements.in
-djangorestframework==3.11.0
+djangorestframework==3.11.2
     # via -r requirements.in
 fixedint==0.1.5
     # via -r requirements.in
