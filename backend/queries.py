@@ -18,6 +18,8 @@ def get_top_videos():
 			if videos.count() > 60:
 				start = random.randint(0, 40)
 				videos = list(videos[start:start+20])
+				for v in videos:
+					setattr(v, 'thumbnail_url', v.get_thumbnail())
 				random.shuffle(videos)
 			cache.set('topvideos', videos, timeout=3600)
 
@@ -28,6 +30,8 @@ def get_latest_videos():
 	if not videos:
 		videos = Video.objects.public().order_by('-created')
 		videos = list(videos[0:min(videos.count(), 50)])
+		for v in videos:
+			setattr(v, 'thumbnail_url', v.get_thumbnail())
 		random.shuffle(videos)
 		cache.set('latestvideos', videos, timeout=3600)
 
@@ -39,12 +43,18 @@ def get_videos_from_category(category):
 def get_recommended_videos():
 	videos = Video.objects.public().filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
 	if videos:
-		if videos.count() > 25:
+		videos = list(videos)
+
+		if len(videos.count()) > 25:
 			start = random.randint(0, videos.count()-21)
-			return videos[start:start+20]
-		else:
-			return videos
-	return None
+			videos = videos[start:start+20]
+
+		for v in videos:
+			setattr(v, 'thumbnail_url', v.get_thumbnail())
+
+		return videos
+	else:
+		return None
 
 def get_video(watch_id):
 	try:
