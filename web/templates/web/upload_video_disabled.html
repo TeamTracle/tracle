@@ -1,0 +1,21 @@
+{% extends 'web/base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block title %}
+	<title>Upload Video - Tracle</title>
+{% endblock %}
+
+{% block css %}
+	<link rel="stylesheet" type="text/x-scss" href="{% static 'web/scss/upload_video.scss' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% include 'web/includes/nav.html' %}
+    <div class="initial-upload">
+        <h1>Uploading of videos has been temporarily disabled.</h1>
+    </div>
+    {% include 'web/includes/footer.html' %}
+</div>
+{% endblock body %}

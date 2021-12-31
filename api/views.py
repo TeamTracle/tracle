@@ -1,4 +1,5 @@
 import json
+import re
 import secrets 
 from PIL import Image
 from io import BytesIO
@@ -20,18 +21,21 @@ import django_rq
 from django_rq.jobs import Job
 
 from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.serializers import ModelSerializer, Serializer
 
 from backend import models
 
 from .serializers import OwnerVideoSerializer, VideoSerializer, VideoUploadSerializer, VideoEditSerializer, CommentSerializer, SubscriptionSerializer, NotificationSerializer
 from .permissions import IsAuthenticated, ReadOnly, IsSuperUser
+from .exceptions import ChunkedUploadError
 
 from backend.queries import get_user, toggle_like, toggle_dislike, get_video, get_videos_from_channel, get_channel, toggle_subscription, get_channel_by_id, increment_view_count, get_image_by_pk, toggle_comment_like, toggle_comment_dislike, get_comment
-from backend.models import BunnyVideo, Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
+from backend.models import BunnyVideo, ChunkedVideoUpload, Video, Comment, CommentLike, CommentTicket, VideoTicket, Subscription, Notification
 from backend.models import Image as ImageModel
 from backend.forms import VideoDetailsForm
 
@@ -216,63 +220,133 @@ class VideoEditView(APIView):
 		return Response(res)
 
 class VideoUploadView(APIView):
-	permission_classes = [IsAuthenticated|ReadOnly]
+	class Serializer(ModelSerializer):
+		class Meta:
+			fields = '__all__'
+			model = ChunkedVideoUpload
+
+	if settings.ALLOW_VIDEO_UPLOAD:
+		permission_classes = [IsAuthenticated]
+	else:
+		permission_classes = [IsAdminUser]
+
+	def get_response_data(self, chunked_upload, request):
+		return self.Serializer(chunked_upload, context={'request': request}).data
+
+	def is_valid_chunked_upload(self, chunked_upload):
+		if chunked_upload.expired:
+			raise ChunkedUploadError(status=status.HTTP_410_GONE, detail='Upload has expired')
+		if chunked_upload.status == ChunkedVideoUpload.UploadStatus.COMPLETE:
+			raise ChunkedUploadError(status=status.HTTP_400_BAD_REQUEST, detail='Upload has already been marked as "complete"')
+
+	def _post_chunk(self, request, upload_id, whole=False, *args, **kwargs):
+		try:
+			chunk = request.data['file']
+		except KeyError:
+			raise ChunkedUploadError(status=status.HTTP_400_BAD_REQUEST, detail='No chunk file was submitted')
+
+		chunk_size = int(request.data['chunk_size'])
+		max_bytes = None # TODO
+		if max_bytes is not None and chunk_size > max_bytes:
+			raise ChunkedUploadError(status=status.HTTP_400_BAD_REQUEST, details=f'Size of file exceeds the limit of {max_bytes} bytes')
+
+		if chunk_size != chunk.size:
+			raise ChunkedUploadError(status=status.HTTP_400_BAD_REQUEST, detail=f'File size does not match: file size is {chunk.size} but {chunk_size} reported')
+
+		chunk_number = request.data['chunk_number']
+		total_chunks = request.data['total_chunks']
+
+		try:
+			chunked_upload = ChunkedVideoUpload.objects.get(upload_id=upload_id)
+			self.is_valid_chunked_upload(chunked_upload)
+			chunked_upload.save_chunk(chunk, chunk_number, total_chunks)
+		except ChunkedVideoUpload.DoesNotExist:
+			raise ChunkedUploadError(status=status.HTTP_400_BAD_REQUEST, detail=chunked_upload.errors)
+
+		return chunked_upload
 
 	def post(self, request):
-		request.data.update({'channel' : request.channel.pk})
-		serializer = VideoUploadSerializer(data=request.data)
-		if serializer.is_valid():
-			video = serializer.save()
-			video.create_posters()
-			video.transcode()
-			serialized_data = serializer.data
-			serialized_data['thumbnails'] = video.image_set.image_data()
-			serialized_data['watch_id'] = video.watch_id
-			return Response(serialized_data)
-		else:
-			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		request.data.update({'user' : request.user.pk})
+		upload_id = request.data.get('upload_id', None)
+		try:
+			chunked_upload = self._post_chunk(request, upload_id)
+			return Response(self.get_response_data(chunked_upload, request), status=status.HTTP_200_OK)
+		except ValidationError as e:
+			return Response(e, status=status.HTTP_400_BAD_REQUEST)
+		except ChunkedUploadError as e:
+			return Response(e.data, status=status.HTTP_400_BAD_REQUEST)
 
 	def put(self, request):
-		instance = Video.objects.get(watch_id=request.data.get('watch_id'))
-		if not request.channel == instance.channel:
-			return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
-
-		serializer = VideoUploadSerializer(data=request.data, instance=instance)
+		request.data.update({'user' : request.user.pk})
+		upload_id = request.data.get('upload_id')
+		if upload_id is not None:
+			try:
+				chunked_upload = ChunkedVideoUpload.objects.get(upload_id=upload_id)
+				chunked_upload.set_completed()
+				uploaded_file = File(file=chunked_upload.file.open(), name=str(chunked_upload.upload_id))
+				data = {
+					'uploaded_file' : uploaded_file,
+					'channel' : request.channel.pk,
+				}
+				video_serializer = VideoUploadSerializer(data=data)
+				if video_serializer.is_valid():
+					video = video_serializer.save()
+					video.create_posters()
+					video.transcode()
+					serialized_data = video_serializer.data
+					serialized_data['thumbnails'] = video.image_set.image_data()
+					serialized_data['watch_id'] = video.watch_id
+					chunked_upload.delete()
+					return Response(serialized_data)
+				else:
+					return Response(video_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+			except ChunkedVideoUpload.DoesNotExist as e:
+				return Response(e, status=status.HTTP_400_BAD_REQUEST)
+		serializer = self.Serializer(data=request.data)
 		if serializer.is_valid():
-			instance = serializer.save()
-			instance.published = True
-			instance.save(update_fields=['published'])
-
-			selectedThumbnail = request.data.get('selectedThumbnail', None)
-			if selectedThumbnail != '-1': 
-				img = get_image_by_pk(selectedThumbnail)
-				img.toggle_primary()
-			
-			customthumbnail = request.FILES.get('customThumbnail', None)
-			if customthumbnail:
-				try:
-					in_image = Image.open(customthumbnail.temporary_file_path())
-					
-					out_file = BytesIO()
-					in_image.thumbnail((854, 480))
-					old_size = in_image.size
-					new_size = (854,480)
-					new_image = Image.new('RGB', new_size)
-					new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
-					new_image.save(out_file, 'PNG')
-					in_image.close()
-
-					image = ImageModel.objects.create(image_set=instance.image_set, video=instance)
-					image.image.save('poster.png', ContentFile(out_file.getvalue()))
-					image.toggle_primary()
-
-				except IOError:
-					return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
-
-
-			return Response(serializer.data)
+			chunked_upload = serializer.save()
+			return Response({'upload_id' : chunked_upload.upload_id})
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def patch(self, request):
+		try:
+			instance = Video.objects.get(watch_id=request.data.get('watch_id'))
+			if not request.channel == instance.channel:
+				return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+			serializer = VideoUploadSerializer(data=request.data, instance=instance)
+			if serializer.is_valid():
+				instance = serializer.save()
+				instance.published = True
+				instance.save(update_fields=['published'])
+
+				selected_thumbnail = request.data.get('selectedThumbnail', None)
+				if selected_thumbnail != '-1':
+					img = get_image_by_pk(selected_thumbnail)
+					img.toggle_primary()
+
+				customThumbnail = request.FILES.get('customThumbnail', None)
+				if customThumbnail:
+					try:
+						in_image = Image.open(customThumbnail.temporary_file_path())
+
+						out_file = BytesIO()
+						in_image.thumbnail((854, 480))
+						old_size = in_image.size
+						new_size = (854, 480)
+						new_image = Image.new('RGB', new_size)
+						new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
+						new_image.save(out_file, 'PNG')
+						in_image.close()
+
+						image = ImageModel.objects.create(image_set=instance.image_set, video=instance)
+						image.image.save('poster.png', ContentFile(out_file.getvalue()))
+						image.toggle_primary()
+					except IOError:
+						return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
+			return Response(serializer.data)
+		except Video.DoesNotExist as e:
+			return Response(e, status=status.HTTP_404_NOT_FOUND)
 
 class VideoStatusView(View):
 	def get(self, request, watch_id):

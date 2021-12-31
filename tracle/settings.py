@@ -280,3 +280,5 @@ CACHES = {
         'TIMEOUT' : 86400,
     }
 }
+
+ALLOW_VIDEO_UPLOAD = os.environ.get('ALLOW_VIDEO_UPLOAD', '0') == '1'

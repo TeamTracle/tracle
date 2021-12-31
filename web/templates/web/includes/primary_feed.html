@@ -1,5 +1,4 @@
 {% load humanize %}
-{% load cache %}
 
 <div class="feed">
     <div class="feed__header" onclick="toggleCategories()">
@@ -27,7 +26,6 @@
         <p style="margin: 2em auto; text-align: center">We couldn't find any videos, sorry.</p>
     {% else %}
     <div class="feed__container">
-        {% cache 500 primary_feed %}
         {% for video in videos %}
         <div class="feed__video">
             <a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.thumbnail_url }}" onmouseenter="showPreview(this)" onmouseleave="hidePreview(this)" data-thumbnail="{{ video.get_thumbnail }}" data-preview="{{ video.get_preview }}"></a>
@@ -40,7 +38,6 @@
             </div>
         </div>
         {% endfor %}
-        {% endcache %}
         <div class="pagination">
             <div class="pagination__step-links">
                 {% if videos.has_previous %}

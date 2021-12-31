@@ -66,7 +66,6 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		fields = ['uploaded_file', 'channel', 'title', 'description', 'category', 'visibility']
 
 	def create(self, validated_data):
-		print(validated_data)
 		transcoded_video = TranscodedVideo.objects.create()
 		video = Video.objects.create(channel=validated_data.get('channel'))
 		video.uploaded_file = validated_data.get('uploaded_file')
@@ -86,8 +85,8 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		return instance
 
 	def validate_uploaded_file(self, value):
-		if not magic.from_file(value.temporary_file_path(), mime=True).startswith('video/'):
-		    raise serializers.ValidationError("Unsupported file type.")
+		if not magic.from_file(value.file.path, mime=True).startswith('video/'):
+			raise serializers.ValidationError("Unsupported file type.")
 		new_name = "".join(c for c in value.name if c.isalnum() or c in ['_', '-', '.'])
 		value.name = new_name
 		return value

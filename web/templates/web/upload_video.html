@@ -18,7 +18,7 @@
 			<div class="initial-upload" v-bind:style="{ display: displayInitialUpload }">
 				<div class="file-container">
 					<h4>Click the button below to upload a video to your channel.</h4>
-					<button type="button" class="btn btn-gray" @click="selectFile()">Select Video</button>
+					<span id="browseButton" style="line-height: 2rem;" class="btn btn-gray">Select Video</span>
 					<ul class="upload-hints">
 						<li>Max files size is <strong>1GB</strong></li>
 						<li>Recommended encoding settings:
@@ -30,11 +30,6 @@
 							</ul>
 						</li>
 					</ul>
-					<form id="upload_form" method="POST" enctype="multipart/form-data">
-						{% csrf_token %}
-						<input id="id_file" name="uploaded_file" ref="file" type="file" accept="video/*" style="display: none;" @change="fileSelected()">
-						<button ref="upload" style="display: none" @click="uploadVideo($event)">Upload</button>
-					</form>
 				</div>
 				<div class="error-container" v-bind:style="{ display: hasError }">
 					<span class="error">[[ error_message ]]</span>
@@ -97,6 +92,7 @@
 {% block script %}
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/resumablejs@1/resumable.min.js"></script>
 	<script type="text/javascript">
 
 		var app = new Vue({
@@ -104,8 +100,8 @@
 			el: '#app',
 			data: {
 				watch_id: null,
-				thumbnails: {images: [{},{},{}]},
-				selectedThumbnail: '',
+				thumbnails: {images: [{thumbnail: '/static/web/img/video_thumb_placeholder.png'},{thumbnail: '/static/web/img/video_thumb_placeholder.png'},{thumbnail: '/static/web/img/video_thumb_placeholder.png'}]},
+				selectedThumbnail: '/static/web/img/video_thumb_placeholder.png',
 				selectedThumbnailPk: 0,
 				customThumbnail: '/static/web/img/video_thumb_placeholder.png',
 				hasCustomThumbnail: false,
@@ -123,8 +119,79 @@
 					failed: 'An unexpected error occured during processing.'
 				},
 				status: 'Your video is queued for processing.',
+				r: null,
+				upload_id: null
+			},
+			mounted() {
+				var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+				ResumableField = new Resumable({
+					target:'/api/videos',
+					headers: {'X-CSRFToken' : csrftoken},
+					maxFiles: 1,
+					maxFileSize: 1073741824, // 1GB
+					forceChunkSize: true,
+					simultaneousUploads: 3,
+					chunkSizeParameterName: '',
+					relativePathParameterName: '',
+					identifierParameterName: 'upload_id',
+					generateUniqueIdentifier: this.generateUniqueIdentifier,
+					currentChunkSizeParameterName: 'chunk_size',
+					chunkNumberParameterName: 'chunk_number',
+					totalChunksParameterName: 'total_chunks',
+					totalSizeParameterName: 'total_size',
+					fileNameParameterName: 'filename',
+					typeParameterName: 'mime_type',
+					testChunks: false
+				});
+				// Resumable.js isn't supported, fall back on a different method
+				if(!Resumable.support) {console.log('Why is this logging???');} // TODO
+
+				ResumableField.assignBrowse(document.getElementById('browseButton'));
+				
+				ResumableField.on('fileAdded', (file, event) => {
+					ResumableField.upload();
+				});
+
+				ResumableField.on('uploadStart', () => {
+					this.displayVideoDetails = 'grid';
+					this.displayInitialUpload = 'none';
+				});
+
+				ResumableField.on('fileProgress', (file, message) => {
+					this.uploadPercentage = file.progress() * 100;
+				});
+
+				ResumableField.on('fileSuccess', (file, message) => {
+					axios.put('/api/videos', {'upload_id' : this.upload_id}, {headers: {'X-CSRFToken' : csrftoken }})
+					.then(response => {
+						this.watch_id = response.data.watch_id;
+						this.thumbnails = response.data.thumbnails;
+						this.selectedThumbnail = response.data.thumbnails.primaryImage.thumbnail;
+						this.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
+						this.channel = response.data.channel;
+						this.status = this.statuses[response.data.status];
+					})
+					.catch(error => {
+						console.log(error.response);
+					});
+				});
+				this.r = ResumableField;
 			},
 			methods: {
+				generateUniqueIdentifier: function (file, event) {
+					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+					const request = axios.put('/api/videos', {}, {headers: {'X-CSRFToken' : csrftoken }});
+					console.log(event);
+					return request
+						.then(response => {
+							console.log(response);
+							this.upload_id = response.data.upload_id; 
+							return response.data.upload_id;
+						})
+						.catch(error => {
+							throw error;
+						});
+				},
 				selectThumbnail(event) {
 					this.selectedThumbnail = event.target.src
 					this.selectedThumbnailPk = event.target.dataset.pk;
@@ -146,7 +213,7 @@
 					if (this.hasCustomThumbnail) {
 						data.append('customThumbnail', document.getElementById('id_customthumbnail').files[0]);
 					}
-					axios.put('api/videos',
+					axios.patch('api/videos',
 						data,
 						{
 							headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}
@@ -160,12 +227,6 @@
 							this.category_error = error.response.data.category;
 						})
 				},
-				selectFile() {
-					this.$refs.file.click();
-				},
-				fileSelected() {
-					this.$refs.upload.click();
-				},
 				openFileDialog() {
 					this.$refs.custom_thumbnail.click();
 				},
@@ -178,38 +239,6 @@
 						this.hasCustomThumbnail = true;
 					}
 					reader.readAsDataURL(this.$refs.custom_thumbnail.files[0]);
-				},
-				uploadVideo(event) {
-					event.preventDefault();
-
-					var csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-					data = new FormData(document.getElementById('upload_form'));
-					this.displayVideoDetails = 'grid';
-					this.displayInitialUpload = 'none';
-					axios.post('api/videos',
-						data,
-						{
-							headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'},
-							onUploadProgress: function(progressEvent) {
-								this.uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100));
-							}.bind(this)
-						}
-						).then(response => {
-							this.watch_id = response.data.watch_id;
-							this.thumbnails = response.data.thumbnails;
-							this.selectedThumbnail = response.data.thumbnails.primaryImage.thumbnail;
-							this.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
-							this.channel = response.data.channel;
-							this.status = this.statuses[response.data.status];
-							// setInterval(function () { this.pollStatus(); }.bind(this), 3000);
-						})
-						.catch(error => {
-							console.log(error.response);
-							this.displayVideoDetails = 'none';
-							this.displayInitialUpload = 'flex';
-							this.hasError = 'block';
-							this.error_message = error.response.data.uploaded_file[0];
-						});
 				},
 				pollStatus() {
 					axios.get('/api/videos/status/' + this.watch_id).then(response => {

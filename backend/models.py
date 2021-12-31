@@ -1,9 +1,14 @@
+from datetime import timedelta
 import os, string, random, magic, base64, fixedint, json, shutil
 import re
+import uuid
+import hashlib
+import time
 
 from django.core.exceptions import FieldError
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import File
+from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
@@ -11,7 +16,9 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 import django_rq
 from django_rq.jobs import Job
@@ -242,6 +249,97 @@ class BunnyVideo(models.Model):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vapi.delete_video(self.bunny_guid)
 
+def generate_chunked_filename(instance, filename):
+    ext = '.part'
+    ext += os.path.splitext(filename)[1]
+
+    filename = os.path.join(instance.upload_dir, str(instance.upload_id) + '.upload')
+    return time.strftime(filename)
+
+def generate_chunk_filename(instance, chunk_number):
+    return os.path.join(settings.MEDIA_ROOT, instance.upload_dir, str(instance.upload_id), str(chunk_number) + '.part')
+
+class ChunkedVideoUpload(models.Model):
+    upload_dir = 'chunked_uploads'
+
+    class UploadStatus(models.TextChoices):
+        UPLOADING = 'UP', 'Uploading'
+        COMPLETE = 'CO', 'Complete'
+        ABORTED = 'AB', 'Aborted'
+
+    upload_id = models.CharField(max_length=255, default=uuid.uuid4, unique=True)
+    file = models.FileField(upload_to=generate_chunked_filename, max_length=255, null=True, blank=True)
+    filename = models.CharField(max_length=255, default='untitled') #TODO: REMOVE
+    offset = models.BigIntegerField(default=0)
+    total_chunks = models.IntegerField(default=0)
+    created = models.DateTimeField(verbose_name=('created at'), default=timezone.now, editable=False)
+    completed = models.DateTimeField(verbose_name=('completed at'), null=True, blank=True)
+    status = models.CharField(max_length=2, choices=UploadStatus.choices, default=UploadStatus.UPLOADING)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @property
+    def expires_at(self):
+        return self.created + timedelta(days=1)
+
+    @property
+    def expired(self):
+        return self.expires_at <= timezone.now()
+
+    def delete_file(self):
+        if self.file:
+            storage, path = self.file.storage, self.file.path
+            storage.delete(path)
+        self.file = None
+
+    @transaction.atomic
+    def delete(self, delete_file=True, *args, **kwargs):
+        super(ChunkedVideoUpload, self).delete(*args, **kwargs)
+        if delete_file:
+            self.delete_file()
+
+    def concat_chunks(self):
+        f = open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), '1.part'), 'rb')
+        self.file.save('cskaljdskajdk.mp4', File(f))
+        f.close()
+        for chunk_number in range(2, self.total_chunks+1):
+            f = open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), str(chunk_number)+'.part'), 'rb')
+            chunk = UploadedFile(file=f)
+            self.append_chunk(chunk, save=False)
+            f.close()
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, self.upload_dir, self.upload_id))
+
+    def append_chunk(self, chunk, save=True):
+        self.file.close()
+        self.file.open(mode='ab')  # mode = append+binary
+        for subchunk in chunk.chunks():
+            self.file.write(subchunk)
+        self._md5 = None  # Clear cached md5
+        if save:
+            self.save()
+        self.file.close()  # Flush
+
+    def save_chunk(self, chunk, chunk_number, total_chunks):
+        filename = generate_chunk_filename(self, chunk_number)
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id)), exist_ok=True)
+        with open(filename, 'wb') as f:
+            for c in chunk.chunks():
+                f.write(c)
+        if self.total_chunks == 0:
+            self.total_chunks = total_chunks
+        self.save()
+
+    @transaction.atomic
+    def set_completed(self, completed_at=timezone.now()):
+        self.concat_chunks()
+        self.status = self.UploadStatus.COMPLETE
+        self.completed_at = completed_at
+        self.save()
+
+@receiver(post_delete, sender=ChunkedVideoUpload)
+def auto_file_cleanup(sender, instance, **kwargs):
+    utils.file_cleanup(sender, instance, **kwargs)
+
 class Video(models.Model):
 
     class VisibilityStatus(models.TextChoices):
@@ -277,7 +375,6 @@ class Video(models.Model):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
     def transcode(self):
-        # django_rq.enqueue(tasks.video_transcode_task, video=self)
         bvideo = BunnyVideo.objects.create(video=self)
         bvideo.upload()
 

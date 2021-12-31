@@ -342,6 +342,8 @@ class UploadVideoView(LoginRequiredMixin, View):
     redirect_field_name = 'redirect_to'
 
     def get(self, request):
+        if not settings.ALLOW_VIDEO_UPLOAD and not request.user.is_staff:
+            return render(request, 'web/upload_video_disabled.html')
         form = VideoDetailsForm()
         return render(request, 'web/upload_video.html', {'form' : form})
 
