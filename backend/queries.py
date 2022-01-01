@@ -45,8 +45,8 @@ def get_recommended_videos():
 	if videos:
 		videos = list(videos)
 
-		if len(videos.count()) > 25:
-			start = random.randint(0, videos.count()-21)
+		if len(videos) > 25:
+			start = random.randint(0, len(videos)-21)
 			videos = videos[start:start+20]
 
 		for v in videos:
