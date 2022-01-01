@@ -31,9 +31,9 @@
 						</li>
 					</ul>
 				</div>
-				<div class="error-container" v-bind:style="{ display: hasError }">
-					<span class="error">[[ error_message ]]</span>
-				</div>
+			</div>
+			<div class="error-container" v-bind:style="{ display: hasError }">
+				<span class="error">[[ error_message ]]</span>
 			</div>
 
 		<div class="video-details" v-bind:style="{ display: displayVideoDetails }">
@@ -161,6 +161,13 @@
 					this.uploadPercentage = file.progress() * 100;
 				});
 
+				ResumableField.on('error', (message, file) => {
+					this.displayVideoDetails = 'none';
+					this.displayInitialUpload = 'none';
+					this.hasError = 'block';
+					this.error_message = message;
+				});
+
 				ResumableField.on('fileSuccess', (file, message) => {
 					axios.put('/api/videos', {'upload_id' : this.upload_id}, {headers: {'X-CSRFToken' : csrftoken }})
 					.then(response => {
@@ -172,7 +179,10 @@
 						this.status = this.statuses[response.data.status];
 					})
 					.catch(error => {
-						console.log(error.response);
+						this.hasError = 'block';
+						this.displayVideoDetails = 'none';
+						this.displayInitialUpload = 'none';
+						this.error_message = error.response.data.uploaded_file[0];
 					});
 				});
 				this.r = ResumableField;
@@ -219,11 +229,9 @@
 							headers: {'X-CSRFToken' : csrftoken, 'Content-Type': 'multipart/form-data'}
 						}
 						).then(response => {
-							console.log(response);
 							window.location.href = "{% url 'web_dashboard_videos' %}"
 						}
 						).catch(error => {
-							console.log(error.response);
 							this.category_error = error.response.data.category;
 						})
 				},
