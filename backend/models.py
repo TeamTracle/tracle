@@ -204,27 +204,6 @@ class Image(models.Model):
             "thumbnail": self.thumbnail.url,
         }
 
-class TranscodedVideo(models.Model):
-    class TranscodeStatus(models.TextChoices):
-        QUEUED = 'queued', 'Queued'
-        PROCESSING = 'started', 'Processing'
-        DONE = 'finished', 'Done'
-        ERROR = 'failed', 'Error'
-
-    playlist_file = WrappedFileField(storage=WrappedBCDNStorage(local_options={'location' : get_video_base_location, 'base_url' : get_video_media_url}), upload_to=get_playlist_location)
-    status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
-    job_id = models.CharField(max_length=255, null=True, blank=True)
-
-    def get_playlist(self):
-        return self.playlist_file.url
-
-    def get_all_playlists(self):
-        storage = self.playlist_file.storage.get_storage(self.playlist_file.name)
-        return [
-            storage.url(f'{self.video.channel.channel_id}/{self.video.watch_id}/480p.m3u8'),
-            storage.url(f'{self.video.channel.channel_id}/{self.video.watch_id}/360p.m3u8'),
-        ]
-
 class BunnyVideo(models.Model):
     class TranscodeStatus(models.TextChoices):
         QUEUED = 'queued', 'Queued'
@@ -357,7 +336,6 @@ class Video(models.Model):
     image_set = models.OneToOneField(ImageSet, on_delete=models.CASCADE, null=True)
 
     visibility = models.CharField(max_length=8, choices=VisibilityStatus.choices, default=VisibilityStatus.PRIVATE)
-    transcoded_video = models.OneToOneField(TranscodedVideo, on_delete=models.CASCADE, null=True)
     published = models.BooleanField(default=False)
     
     views = models.BigIntegerField(default=0)
@@ -383,13 +361,10 @@ class Video(models.Model):
             self.bunnyvideo.status
             return self.bunnyvideo
         except BunnyVideo.DoesNotExist:
-            return self.transcoded_video
+            return None
 
     def get_playlist(self):
-        try:
-            return self.bunnyvideo.get_playlist()
-        except BunnyVideo.DoesNotExist:
-            return self.transcoded_video.get_playlist()
+        return self.bunnyvideo.get_playlist()
 
     def create_posters(self):
         if self.image_set:
@@ -417,10 +392,7 @@ class Video(models.Model):
             return '/static/web/img/thumbnail_default.jpg'
 
     def get_preview(self):
-        try:
-            return self.bunnyvideo.get_preview()
-        except BunnyVideo.DoesNotExist:
-            return ''
+        return self.bunnyvideo.get_preview()
 
     def transfer_files(self):
         folder = os.path.join(get_video_base_location(), get_video_location(self))

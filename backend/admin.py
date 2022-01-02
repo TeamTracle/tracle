@@ -8,7 +8,7 @@ from django.forms import ModelForm
 from django.utils.html import format_html
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket, VideoStrike, TranscodedVideo
+from .models import Channel, Video, Category, Comment, CommentTicket, VideoTicket, VideoStrike
 
 User = get_user_model()
 
@@ -93,7 +93,7 @@ class TranscodeStatusFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         value = self.value()
         if value in ['queued', 'started', 'finished', 'failed']:
-            return queryset.filter(transcoded_video__status=value)
+            return queryset.filter(bunnyvideo__status=value)
         return queryset
 
 class VideoAdmin(admin.ModelAdmin):
@@ -109,11 +109,11 @@ class VideoAdmin(admin.ModelAdmin):
     )
 
     def transcode_status(self, obj):
-        return obj.transcoded_video.status
+        return obj.bunnyvideo.status
     transcode_status.short_description = "Transcode Status"
 
     def playlist_file(self, obj):
-        return obj.transcoded_video.playlist_file
+        return obj.bunnyvideo.playlist_file
     playlist_file.short_description = "Playlist File"
 
     inlines = [VideoStrikesInline]

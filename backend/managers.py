@@ -12,7 +12,7 @@ class VideoManager(models.Manager):
     def public(self):
         qs = super().get_queryset()
         qs = qs.filter(visibility='PUBLIC', published=True, channel__user__banned=False, videostrike__isnull=True)
-        return qs.filter(models.Q(transcoded_video__status='finished') | models.Q(bunnyvideo__status='finished'))
+        return qs.filter(bunnyvideo__status='finished')
 
     def search(self, query):
         qs = self.public()

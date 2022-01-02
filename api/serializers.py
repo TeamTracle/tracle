@@ -4,7 +4,7 @@ from django.utils.timesince import timesince
 
 from rest_framework import serializers
 
-from backend.models import Video, Comment, Channel, Subscription, Notification, VideoStrike, TranscodedVideo
+from backend.models import Video, Comment, Channel, Subscription, Notification, VideoStrike
 
 class VideoStrikeSerializer(serializers.Serializer):
 	category = serializers.CharField()
@@ -14,13 +14,10 @@ class VideoStrikeSerializer(serializers.Serializer):
 		model = VideoStrike
 		fields = '__all__'
 
-class TranscodedVideoSerializer(serializers.Serializer):
-	class Meta:
-		model = TranscodedVideo
-		fields = '__all__'
-
 class TranscodeStatusField(serializers.RelatedField):
 	def to_representation(self, value):
+		if value is None:
+			return 'queued'
 		return value.status
 
 
@@ -66,10 +63,8 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		fields = ['uploaded_file', 'channel', 'title', 'description', 'category', 'visibility']
 
 	def create(self, validated_data):
-		transcoded_video = TranscodedVideo.objects.create()
 		video = Video.objects.create(channel=validated_data.get('channel'))
 		video.uploaded_file = validated_data.get('uploaded_file')
-		video.transcoded_video = transcoded_video
 		video.save()
 		return video
 
