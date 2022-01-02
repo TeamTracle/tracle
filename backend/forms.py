@@ -68,7 +68,8 @@ class SignupForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        qs = User.objects.filter(email=email)
+        email = email.lower()
+        qs = User.objects.filter(email__iexact=email)
         if qs.exists():
             raise forms.ValidationError("email is taken")
         return email

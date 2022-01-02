@@ -114,6 +114,7 @@ USE_L10N = True
 USE_TZ = True
 
 AUTHENTICATION_BACKENDS = (
+    'backend.auth_backends.AuthBackend',
     'django.contrib.auth.backends.AllowAllUsersModelBackend',
 )
 AUTH_USER_MODEL = 'backend.User'
