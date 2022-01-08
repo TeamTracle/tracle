@@ -1,4 +1,4 @@
-Django
+Django ~= 3.1
 psycopg2-binary
 django_rq
 django-appconf

@@ -1,2 +1,4 @@
--c requirements.txt
+-r requirements.txt
 django-debug-toolbar
+django-extensions
+django-silk

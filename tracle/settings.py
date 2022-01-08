@@ -283,3 +283,5 @@ CACHES = {
 }
 
 ALLOW_VIDEO_UPLOAD = os.environ.get('ALLOW_VIDEO_UPLOAD', '0') == '1'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
