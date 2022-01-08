@@ -30,7 +30,7 @@ urlpatterns = [
 	path('forgot-password-confirm/<uidb64>/<token>/', views.ResetPasswordConfirmView.as_view(), name='web_password_reset_confirm'),
 	path('feed/history', views.WatchHistoryView.as_view(), name='web_watch_history'),
 	path('captcha/', include('captcha.urls')),
-	re_path(r'^(?P<key>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', views.ActivateView.as_view(), name='web_activate'),
+	re_path(r'^(?P<key>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]+)/$', views.ActivateView.as_view(), name='web_activate'),
 ]
 
 if settings.DEBUG:
