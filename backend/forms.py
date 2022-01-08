@@ -4,7 +4,7 @@ from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
 from .models import Video, Channel, ChannelBackground
 
-from colorfield.fields import color_validator
+from colorfield.fields import color_hex_validator
 from captcha.fields import CaptchaField
 
 User = get_user_model()
@@ -159,7 +159,7 @@ class VideoDetailsForm(forms.ModelForm):
 class ChannelBackgroundForm(forms.ModelForm):
     avatar = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
     desktop_image = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
-    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_validator], initial='#CCCCCC')
+    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_hex_validator], initial='#CCCCCC')
     desktop_image_repeat = forms.TypedChoiceField(empty_value=None, choices=ChannelBackground.RepeatChoices.choices)
 
     class Meta:
