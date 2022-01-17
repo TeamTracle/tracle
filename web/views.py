@@ -328,6 +328,9 @@ class ChannelEditorView(LoginRequiredMixin, View):
             cb = form.save(commit=False)
             cb.channel = request.channel
             cb.save()
+            if cb.desktop_image and cb.desktop_image.storage.local.exists(cb.desktop_image.name):
+                cb.desktop_image.storage.transfer(cb.desktop_image.name)
+                cb.desktop_image.storage.local.delete(cb.desktop_image.name)
             return redirect('web_channel', channel_id=request.channel.channel_id)
         print(form.errors)
         return render(request, 'web/channel_editor.html', {'form' : form})
