@@ -183,7 +183,7 @@ class ImageSet(models.Model):
     def transfer(self):
         for img in self.images.all():
             img.image.storage.transfer(img.image.name)
-            img.thumbnail_new.storage.transfer(img.thumbnail_new.name)
+            img.thumbnail.storage.transfer(img.thumbnail.name)
         self.delete_local_files()
 
     def delete_local_files(self):
@@ -199,8 +199,7 @@ class Image(models.Model):
     image_set = models.ForeignKey(ImageSet, related_name="images", on_delete=models.CASCADE)
     video = models.ForeignKey('Video', related_name="images", on_delete=models.CASCADE)
 
-    thumbnail_new = ProcessedImageField(processors=[ResizeToFill(320, 180)], format='PNG', storage=WrappedBCDNStorage(local_options={'location' : get_poster_base_location, 'base_url' : get_poster_media_url}), upload_to=get_image_location)
-    thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(320, 180)], format='PNG')
+    thumbnail = ProcessedImageField(null=True, processors=[ResizeToFill(320, 180)], format='PNG', storage=WrappedBCDNStorage(local_options={'location' : get_poster_base_location, 'base_url' : get_poster_media_url}), upload_to=get_image_location)
 
     def toggle_primary(self):
         if self.image_set.primary_image == self:
@@ -213,7 +212,7 @@ class Image(models.Model):
         return {
             "pk": self.pk,
             "is_primary": self == self.image_set.primary_image,
-            "thumbnail": self.thumbnail_new.url,
+            "thumbnail": self.thumbnail.url,
         }
 
 class BunnyVideo(models.Model):
@@ -389,18 +388,19 @@ class Video(models.Model):
         for f in poster_files:
             img = Image.objects.create(image_set=self.image_set, video=self)
             img.image.save('poster.png', File(open(f, 'rb')))
-            img.thumbnail_new.save('thumbnail.png', File(open(f, 'rb')))
+            img.thumbnail.save('thumbnail.png', File(open(f, 'rb')))
         img.toggle_primary()
+        self.image_set.transfer()
 
     def get_poster(self):
-        if self.image_set:
-            return os.path.join(settings.MEDIA_URL, 'posters', self.image_set.primary_image.image.name)
+        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.image and self.image_set.primary_image.image.storage.exists(self.image_set.primary_image.image.name):
+            return self.image_set.primary_image.image.url
         else:
             return ''
 
     def get_thumbnail(self):
-        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.thumbnail_new and self.image_set.primary_image.thumbnail_new.storage.exists(self.image_set.primary_image.thumbnail_new.name):
-            return self.image_set.primary_image.thumbnail_new.url
+        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.thumbnail and self.image_set.primary_image.thumbnail.storage.exists(self.image_set.primary_image.thumbnail.name):
+            return self.image_set.primary_image.thumbnail.url
         else:
             return '/static/web/img/thumbnail_default.jpg'
 
