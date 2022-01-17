@@ -2,7 +2,7 @@
 	<div class="secondary-feed__container">
 		{% for video in recommended_videos %}
 		<a href="/watch?v={{ video.watch_id }}" class="secondary-feed__video">
-			<img class="secondary-feed__video__thumbnail" src="{{ video.thumbnail_url }}" onmouseenter="showPreview(this)" onmouseleave="hidePreview(this)" data-thumbnail="{{ video.get_thumbnail }}" data-preview="{{ video.get_preview }}">
+			<img class="secondary-feed__video__thumbnail" src="{{ video.thumbnail_url }}" onmouseenter="showPreview(this)" onmouseleave="hidePreview(this)" data-thumbnail="{{ video.thumbnail_url }}" data-preview="{{ video.get_preview }}">
 			<div class="secondary-feed__video__details">
 				<h2 class="secondary-feed__video__details__title" title="{{ video.title }}">{{ video.title }}</h2>
 				<div class="secondary-feed__video__details__channel">{{ video.channel.name }} </div>

@@ -18,9 +18,9 @@ def get_top_videos():
 			if videos.count() > 60:
 				start = random.randint(0, 40)
 				videos = list(videos[start:start+20])
-				for v in videos:
-					setattr(v, 'thumbnail_url', v.get_thumbnail())
 				random.shuffle(videos)
+			for v in videos:
+				setattr(v, 'thumbnail_url', v.get_thumbnail())
 			cache.set('topvideos', videos, timeout=3600)
 
 	return videos
