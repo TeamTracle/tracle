@@ -64,6 +64,18 @@ def get_bg_image_location(instance, filename=None):
     else:
         return f'{instance.channel.channel_id}/'
 
+def get_avatar_image_location(instance, filename=None):
+    if filename:
+        return f'{instance.channel_id}/{filename}'
+    else:
+        return f'{instance.channel_id}/'
+
+def get_avatar_image_media_url():
+    return os.path.join(settings.MEDIA_URL, 'avatars')
+
+def get_avatar_image_base_location():
+    return os.path.join(settings.MEDIA_ROOT, 'avatars')
+
 def get_bg_image_media_url():
     return os.path.join(settings.MEDIA_URL, 'backgrounds')
 
@@ -124,7 +136,7 @@ class Channel(models.Model):
     channel_id = models.CharField(max_length=11, editable=False, blank=True)
     created = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(default=timezone.now)
-    avatar = models.ImageField(blank=True, null=True)
+    avatar = WrappedImageField(blank=True, null=True, storage=WrappedBCDNStorage(local_options={'location' : get_avatar_image_base_location, 'base_url' : get_avatar_image_media_url}), upload_to=get_avatar_image_location)
     verified = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)

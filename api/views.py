@@ -156,7 +156,9 @@ class UploadAvatarView(View):
 		out_image = in_image.resize((144, 144))
 		in_image.close()
 		out_image.save(out_file, 'PNG')
-		channel.avatar.save('avatars/' + channel.channel_id + '.png', ContentFile(out_file.getvalue()))
+		channel.avatar.save(channel.channel_id + '.png', ContentFile(out_file.getvalue()))
+		channel.avatar.storage.transfer(channel.avatar.name)
+		channel.avatar.storage.local.delete(channel.avatar.name)
 		result = {'success' : 'idk'}
 		return JsonResponse(result)
 
