@@ -38,7 +38,14 @@ def get_latest_videos():
 	return videos
 
 def get_videos_from_category(category):
-	return Video.objects.public().filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
+	videos = cache.get(f'{category.slug}_videos')
+	if not videos:
+		videos =  Video.objects.public().filter(category=category, visibility__exact=Video.VisibilityStatus.PUBLIC).order_by('-created')
+		for v in videos:
+			setattr(v, 'thumbnail_url', v.get_thumbnail())
+		cache.set(f'{category.slug}_videos', videos, timeout=3600)
+	return videos
+
 
 def get_recommended_videos():
 	videos = Video.objects.public().filter(visibility__exact=Video.VisibilityStatus.PUBLIC)
@@ -78,8 +85,14 @@ def filter_by_search_terms(search_terms):
 	return Video.objects.search(search_terms)
 
 def get_sub_feed(channel):
-	subs = channel.subscribers.all()
-	return Video.objects.filter(channel__in=[ sub.to_channel for sub in subs.all() ]).order_by('-created')
+	videos = cache.get(f'{channel.channel_id}_subfeed')
+	if not videos:
+		subs = channel.subscribers.all()
+		videos = Video.objects.filter(channel__in=[ sub.to_channel for sub in subs.all() ]).order_by('-created')
+		for v in videos:
+			setattr(v, 'thumbnail_url', v.get_thumbnail())
+		cache.set(f'{channel.channel_id}_subfeed', videos, timeout=3600)
+	return videos
 
 def get_all_categories():
 	return Category.objects.all()

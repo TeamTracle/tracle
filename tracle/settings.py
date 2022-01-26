@@ -277,7 +277,7 @@ CACHEOPS = {
 CACHES = {
     'default':{
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1;11211',
+        'LOCATION': '127.0.0.1:11211',
         'TIMEOUT' : 86400,
     }
 }
@@ -285,3 +285,4 @@ CACHES = {
 ALLOW_VIDEO_UPLOAD = os.environ.get('ALLOW_VIDEO_UPLOAD', '0') == '1'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+

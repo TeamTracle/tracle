@@ -411,7 +411,7 @@ class Video(models.Model):
             return ''
 
     def get_thumbnail(self):
-        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.thumbnail and self.image_set.primary_image.thumbnail.storage.exists(self.image_set.primary_image.thumbnail.name):
+        if self.image_set and self.image_set.primary_image and self.image_set.primary_image.thumbnail:
             return self.image_set.primary_image.thumbnail.url
         else:
             return '/static/web/img/thumbnail_default.jpg'
