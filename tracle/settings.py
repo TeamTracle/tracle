@@ -66,7 +66,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'waffle.middleware.WaffleMiddleware',
-    'silk.middleware.SilkyMiddleware',
 ]
 
 SESSION_ENGINE = 'qsessions.backends.db'
