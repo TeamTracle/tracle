@@ -1,0 +1,6 @@
+{% extends 'web/email/base_message.txt' %}
+
+{% block content %}
+We have reviewed your content and found severe or repeated violations of our Community Guidelines and/or Terms Of Use. Because of this, your account has been permanently disabled.
+If you believe we've made the wrong call, feel free to reply to this mail.
+{% endblock content %}

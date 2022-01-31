@@ -1,0 +1,17 @@
+{% extends 'web/email/base_message.html' %}
+
+{% block content %}
+<p>
+You received a strike on the following video:<br><br>
+Video title: {{ video.title }}<br>
+video url: <a href="{{ protocol }}://{{ domain }}{% url 'web_watch' %}?v={{ video.watch_id }}">{{ protocol }}://{{ domain }}{% url 'web_watch' %}?v={{ video.watch_id }}</a>
+</p>
+<p>
+You now have {{ video.channel.videostrike_set.count }} strike(s). If you get multiple strikes,
+we'll have to disable your account. To prevent that from happening, please
+don't upload videos that violoate our Community Guidelines, Terms Of Service, or contain copyrighted content that you aren't allowed to use.
+</p>
+<p>
+If you believe we've made the wrong call, feel free to reply to this mail.
+</p>
+{% endblock content %}

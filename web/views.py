@@ -12,12 +12,13 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 
 from backend.forms import SignupForm, SigninForm, ResetPasswordForm, SetPasswordForm, ChangeUserForm, VideoDetailsForm, ChannelBackgroundForm
 from backend import queries
 from backend.models import WatchHistory, User
 from .tokens import account_activation_token
+from backend.utils import send_confirmation_mail
 
 import logging
 logger = logging.getLogger()
@@ -80,15 +81,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save(request)
-            subject = 'Activate your TRACLE Account!'
-            context = {
-                'user' : user,
-                'domain' : 'tracle.tv',
-                'uid' : urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            }
-            message = render_to_string('web/email_confirm_account.html', context)
-            user.email_user(subject, message)
+            send_confirmation_mail(user)
             return render(request, 'web/verification_sent.html')
         return render(request, 'web/signup.html', {'form' : form})
 
@@ -134,11 +127,12 @@ class SignoutView(View):
 
 class ResetPasswordView(PasswordResetView):
     template_name = 'web/forgot_password.html'
-    email_template_name = 'web/forgot_password_email.html'
-    domain = settings.DOMAIN
     form_class = ResetPasswordForm
     success_url = '/'
-    extra_email_context = {'domain' : 'tracle.tv', 'site_name' : 'Tracle'}
+
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 class ResetPasswordConfirmView(PasswordResetConfirmView):
     template_name = 'web/forgot_password_confirm.html'

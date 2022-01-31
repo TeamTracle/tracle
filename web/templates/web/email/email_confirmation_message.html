@@ -1,0 +1,13 @@
+{% extends "web/email/base_message.html" %}
+
+{% block content %}
+{% autoescape off %}
+<p>
+    Thank your for creating an account. Please click the following link to confirm your email address:
+</p>
+<p>
+    <a href="{{ protocol }}://{{ domain }}{% url 'web_activate' key=uid token=token %}">Confirm</a>
+</p>
+
+{% endautoescape %}
+{% endblock %}

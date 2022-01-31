@@ -1,0 +1,4 @@
+Hello from {{ site_name }}!
+{% block content %}{% endblock content %}
+
+©2022 TeamTracle - {{ protocol }}://{{ domain }}

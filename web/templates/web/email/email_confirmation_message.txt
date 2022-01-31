@@ -1,0 +1,4 @@
+Thank your for creating an account.
+
+Please click the following link to confirm your email address:
+{{ protocol }}://{{ domain }}{% url 'web_activate' key=uid token=token %}

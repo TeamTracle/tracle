@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
+from backend.utils import send_ban_notification_mail
 
 import django_rq
 from django_rq.jobs import Job
@@ -490,6 +491,8 @@ class BanUser(APIView):
 			user.banned_at = timezone.now()
 			user.session_set.all().delete()
 			user.save()
+			if user.banned:
+				send_ban_notification_mail(user)
 			change_message = 'banned' if user.banned else 'unbanned'
 			LogEntry.objects.log_action(user_id=request.user.id, content_type_id=ContentType.objects.get_for_model(user).pk, object_id=user.id, object_repr=str(user), action_flag=CHANGE, change_message=change_message)
 			return Response({})

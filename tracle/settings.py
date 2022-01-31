@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'waffle.middleware.WaffleMiddleware',
+    'silk.middleware.SilkyMiddleware',
 ]
 
 SESSION_ENGINE = 'qsessions.backends.db'
@@ -189,13 +190,17 @@ MEDIA_URL = '/media/'
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
 
 CSRF_COOKIE_DOMAIN = os.environ.get('CSRF_COOKIE_DOMAIN', 'localhost')
-DOMAIN = os.environ.get('DOMAIN', 'localhost')
+CURRENT_SITE = {
+    'name' : os.environ.get('CURRENT_SITE_NAME', 'localhost'),
+    'domain' : os.environ.get('CURRENT_SITE_DOMAIN', 'localhost:8000'),
+    'protocol' : os.environ.get('CURRENT_SITE_PROTOCOL', 'http')
+}
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@example.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'PASSWORD')
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.example.com')
-EMAIL_PORT = 587
+EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'mail@example.com')
 
@@ -270,7 +275,7 @@ CACHEOPS_DEFAULTS = {
     'timeout': 60*60
 }
 CACHEOPS = {
-    'backend.*': {'ops': {'get', 'fetch'}},
+    # 'backend.*': {'ops': {'get', 'fetch'}},
     '*.*': {},
 }
 
@@ -286,3 +291,5 @@ ALLOW_VIDEO_UPLOAD = os.environ.get('ALLOW_VIDEO_UPLOAD', '0') == '1'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
+SILKY_META = True
+SILKY_PYTHON_PROFILER = True

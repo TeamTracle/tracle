@@ -5,7 +5,8 @@ from django.dispatch import receiver
 
 from actstream import action
 
-from .models import Video, BunnyVideo, Channel, Image, Comment, Notification
+from .models import Video, BunnyVideo, Channel, Image, Comment, Notification, VideoStrike
+from .utils import send_videostrike_notification_mail
 
 @receiver(post_save, sender=Channel)
 def generate_channel_id(sender, instance, **kwargs):
@@ -68,3 +69,8 @@ def send_comment_notification(sender, instance, created, **kwargs):
             for channel in Channel.objects.filter(channel_id__in=tags):
                 if instance.author != channel:
                     Notification.objects.create(notification_type=Notification.NotificationType.TAG, actor=instance.author, action_object=instance, target_object=instance.video, recipient=channel.user)
+
+@receiver(post_save, sender=VideoStrike)
+def on_videostrike_post_save(sender, instance, created, **kwargs):
+    if created:
+        send_videostrike_notification_mail(instance.video.channel.user, instance.video)
