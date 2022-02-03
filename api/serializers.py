@@ -76,7 +76,8 @@ class VideoUploadSerializer(serializers.ModelSerializer):
 		instance.description = validated_data.get('description', instance.description)
 		instance.title = validated_data.get('title', instance.title)
 		instance.visibility = validated_data.get('visibility', instance.visibility)
-		instance.save(update_fields=['category', 'title', 'description', 'visibility'])
+		instance.published = True
+		instance.save(update_fields=['category', 'title', 'description', 'visibility', 'published'])
 		return instance
 
 	def validate_uploaded_file(self, value):

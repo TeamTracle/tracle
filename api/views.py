@@ -320,8 +320,6 @@ class VideoUploadView(APIView):
 			serializer = VideoUploadSerializer(data=request.data, instance=instance)
 			if serializer.is_valid():
 				instance = serializer.save()
-				instance.published = True
-				instance.save(update_fields=['published'])
 
 				selected_thumbnail = request.data.get('selectedThumbnail', None)
 				if selected_thumbnail != '-1':
