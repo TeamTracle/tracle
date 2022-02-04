@@ -342,7 +342,7 @@ class VideoUploadView(APIView):
 
 						image = ImageModel.objects.create(image_set=instance.image_set, video=instance)
 						image.image.save('poster.png', ContentFile(out_file.getvalue()))
-						image.thumbnail.save('thumbnail.png', ContentFile(out_file.getvalue()))
+						image.thumbnail.save('thumbnail_c.png', ContentFile(out_file.getvalue()))
 						image.thumbnail.storage.transfer(image.thumbnail.name)
 						image.toggle_primary()
 					except IOError:
