@@ -48,6 +48,7 @@ def generate_watch_id(sender, instance, created, **kwargs):
 @receiver(pre_delete, sender=Image)
 def delete_image_files(sender, instance, using, **kwargs):
     instance.image.delete()
+    instance.thumbnail.delete()
 
 @receiver(pre_delete, sender=Video)
 def delete_video_files(sender, instance, using, **kwargs):
