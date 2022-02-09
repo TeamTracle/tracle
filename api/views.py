@@ -190,20 +190,7 @@ class VideoEditView(APIView):
 			customthumbnail = request.FILES.get('customThumbnail', None)
 			if customthumbnail:
 				try:
-					in_image = Image.open(customthumbnail.temporary_file_path())
-					out_file = BytesIO()
-					in_image.thumbnail((854, 480))
-					old_size = in_image.size
-					new_size = (854,480)
-					new_image = Image.new('RGB', new_size)
-					new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
-					new_image.save(out_file, 'PNG')
-					in_image.close()
-
-					image = ImageModel.objects.create(image_set=video.image_set, video=video)
-					image.image.save('poster.png', ContentFile(out_file.getvalue()))
-					image.toggle_primary()
-
+					video.add_custom_poster(customthumbnail.temporary_file_path())
 				except IOError:
 					return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
 
@@ -329,22 +316,7 @@ class VideoUploadView(APIView):
 				customThumbnail = request.FILES.get('customThumbnail', None)
 				if customThumbnail:
 					try:
-						in_image = Image.open(customThumbnail.temporary_file_path())
-
-						out_file = BytesIO()
-						in_image.thumbnail((854, 480))
-						old_size = in_image.size
-						new_size = (854, 480)
-						new_image = Image.new('RGB', new_size)
-						new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
-						new_image.save(out_file, 'PNG')
-						in_image.close()
-
-						image = ImageModel.objects.create(image_set=instance.image_set, video=instance)
-						image.image.save('poster.png', ContentFile(out_file.getvalue()))
-						image.thumbnail.save('thumbnail_c.png', ContentFile(out_file.getvalue()))
-						image.thumbnail.storage.transfer(image.thumbnail.name)
-						image.toggle_primary()
+						instance.add_custom_poster(customThumbnail.temporary_file_path())
 					except IOError:
 						return Response('Something went wrong.', status=status.HTTP_400_BAD_REQUEST)
 			return Response(serializer.data)

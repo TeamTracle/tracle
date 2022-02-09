@@ -4,10 +4,12 @@ import re
 import uuid
 import hashlib
 import time
+from io import BytesIO
+from PIL import Image as PILImage
 
 from django.core.exceptions import FieldError
 from django.core.files.storage import FileSystemStorage
-from django.core.files.base import File
+from django.core.files.base import File, ContentFile
 from django.core.files.uploadedfile import UploadedFile
 from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -403,6 +405,27 @@ class Video(models.Model):
             img.thumbnail.save('thumbnail.png', File(open(f, 'rb')))
         img.toggle_primary()
         self.image_set.transfer()
+
+    def add_custom_poster(self, custom_poster):
+        in_image = PILImage.open(custom_poster)
+
+        out_file = BytesIO()
+        in_image.thumbnail((854, 480))
+        old_size = in_image.size
+        new_size = (854, 480)
+        new_image = PILImage.new('RGB', new_size)
+        new_image.paste(in_image, (int((new_size[0]-old_size[0])/2), int((new_size[1]-old_size[1])/2)))
+        new_image.save(out_file, 'PNG')
+        in_image.close()
+
+        image = Image.objects.create(image_set=self.image_set, video=self)
+        image.image.save('poster_c.png', ContentFile(out_file.getvalue()))
+        image.thumbnail.save('thumbnail_c.png', ContentFile(out_file.getvalue()))
+        image.image.storage.transfer(image.image.name)
+        image.thumbnail.storage.transfer(image.thumbnail.name)
+        image.image.storage.local.delete(image.image.name)
+        image.thumbnail.storage.local.delete(image.thumbnail.name)
+        image.toggle_primary()
 
     def get_poster(self):
         if self.image_set and self.image_set.primary_image and self.image_set.primary_image.image and self.image_set.primary_image.image.storage.exists(self.image_set.primary_image.image.name):
