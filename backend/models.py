@@ -420,14 +420,23 @@ class Video(models.Model):
         new_image.save(out_file, 'PNG')
         in_image.close()
 
-        image = Image.objects.create(image_set=self.image_set, video=self)
+        replace = True
+        image = self.image_set.custom_poster
+        if image is None:
+            image = Image.objects.create(image_set=self.image_set, video=self)
+            self.image_set.custom_poster = image
+            replace = False
+        if replace:
+            image.image.storage.delete(image.image.name)
+            image.thumbnail.storage.delete(image.thumbnail.name)
         image.image.save('poster_c.png', ContentFile(out_file.getvalue()))
         image.thumbnail.save('thumbnail_c.png', ContentFile(out_file.getvalue()))
         image.image.storage.transfer(image.image.name)
         image.thumbnail.storage.transfer(image.thumbnail.name)
         image.image.storage.local.delete(image.image.name)
         image.thumbnail.storage.local.delete(image.thumbnail.name)
-        image.toggle_primary()
+        if not self.image_set.primary_image == self:
+            image.toggle_primary()
 
     def get_poster(self):
         if self.image_set and self.image_set.primary_image and self.image_set.primary_image.image and self.image_set.primary_image.image.storage.exists(self.image_set.primary_image.image.name):
