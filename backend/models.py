@@ -185,12 +185,14 @@ class Category(models.Model):
 
 class ImageSet(models.Model):
     primary_image = models.ForeignKey('Image', null=True, blank=True, on_delete=models.SET_NULL)
+    custom_poster = models.ForeignKey('Image', null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
     created_at = models.DateTimeField(default=timezone.now)
 
     def image_data(self):
         return {
             "pk": self.pk,
             "primaryImage": self.primary_image.data() if self.primary_image else {},
+            "customPoster" : self.custom_poster.data() if self.custom_poster else {},
             "images": [image.data() for image in self.images.all()],
         }
 
