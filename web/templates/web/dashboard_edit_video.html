@@ -74,7 +74,7 @@
 				<img :src="this.video.thumbnails.images[0].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
 				<img :src="this.video.thumbnails.images[1].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
 				<img :src="this.video.thumbnails.images[2].thumbnail" @click="select_thumbnail($event)" :data-pk="this.video.thumbnails.images[1].pk">
-				<img :src="this.video.customThumbnail" @click="select_thumbnail($event)" :data-pk="-1">
+				<img :src="this.video.customThumbnail" @click="select_thumbnail($event)" :data-pk="this.video.customThumbnailPk">
 			</div>
 		</div>
 		<div class="dashboard__right">
@@ -135,6 +135,7 @@
 				selectedThumbnailSrc: '',
 				selectedThumbnailPk: 0,
 				customThumbnail: '/static/web/img/video_thumb_placeholder.png',
+				customThumbnailPk: -1,
 				hasCustomThumbnail: false,
 				channel: 0,
 				published: false
@@ -163,7 +164,10 @@
 				this.video.thumbnails = response.data.thumbnails;
 				this.video.selectedThumbnailSrc = response.data.thumbnails.primaryImage.thumbnail;
 				this.video.selectedThumbnailPk = response.data.thumbnails.primaryImage.pk;
-				this.video.customThumbnail = '/static/web/img/video_thumb_placeholder.png';
+				if (response.data.thumbnails.customPoster.thumbnail) {
+					this.video.customThumbnail = response.data.thumbnails.customPoster.thumbnail;
+					this.video.customThumbnailPk = response.data.thumbnails.customPoster.pk;
+				}
 				this.video.hasCustomThumbnail = false;
 				this.video.category = response.data.category;
 				this.video.channel = response.data.channel;
