@@ -173,6 +173,8 @@ class VideoEditView(APIView):
 		serialized_data['thumbnails'] = video.image_set.image_data()
 		serialized_data['category'] = video.category_id
 		serialized_data['channel'] = video.channel_id
+		serialized_data['published'] = video.published
+		serialized_data['visibility'] = video.visibility
 		return Response(serialized_data)
 
 	def put(self, request, watch_id):
