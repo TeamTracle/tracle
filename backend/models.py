@@ -293,27 +293,27 @@ class ChunkedVideoUpload(models.Model):
         return self.expires_at <= timezone.now()
 
     def delete_file(self):
-        if self.file:
-            storage, path = self.file.storage, self.file.path
-            storage.delete(path)
-        self.file = None
+        self.file.delete()
+
+    def delete_chunks(self):
+        folder = os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id))
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
 
     @transaction.atomic
     def delete(self, delete_file=True, *args, **kwargs):
         super(ChunkedVideoUpload, self).delete(*args, **kwargs)
         if delete_file:
             self.delete_file()
+            self.delete_chunks()
 
     def concat_chunks(self):
-        f = open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), '1.part'), 'rb')
-        self.file.save('cskaljdskajdk.mp4', File(f))
-        f.close()
+        with open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), '1.part'), 'rb') as f:
+            self.file.save('cskaljdskajdk.mp4', File(f))
         for chunk_number in range(2, self.total_chunks+1):
-            f = open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), str(chunk_number)+'.part'), 'rb')
-            chunk = UploadedFile(file=f)
-            self.append_chunk(chunk, save=False)
-            f.close()
-        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, self.upload_dir, self.upload_id))
+            with open(os.path.join(settings.MEDIA_ROOT, self.upload_dir, str(self.upload_id), str(chunk_number)+'.part'), 'rb') as f:
+                chunk = UploadedFile(file=f)
+                self.append_chunk(chunk, save=False)
 
     def append_chunk(self, chunk, save=True):
         self.file.close()
@@ -337,14 +337,20 @@ class ChunkedVideoUpload(models.Model):
 
     @transaction.atomic
     def set_completed(self, completed_at=timezone.now()):
-        self.concat_chunks()
-        self.status = self.UploadStatus.COMPLETE
-        self.completed_at = completed_at
-        self.save()
+        try:
+            self.concat_chunks()
+        except Exception as e:
+            self.status = self.UploadStatus.ABORTED
+        else:
+            self.status = self.UploadStatus.COMPLETE
+            self.completed_at = completed_at
+        finally:
+            self.delete_chunks()
+            self.save()
 
-@receiver(post_delete, sender=ChunkedVideoUpload)
-def auto_file_cleanup(sender, instance, **kwargs):
-    utils.file_cleanup(sender, instance, **kwargs)
+#@receiver(post_delete, sender=ChunkedVideoUpload)
+#def auto_file_cleanup(sender, instance, **kwargs):
+#    utils.file_cleanup(sender, instance, **kwargs)
 
 class Video(models.Model):
 
