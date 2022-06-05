@@ -198,8 +198,11 @@ class ImageSet(models.Model):
 
     def transfer(self):
         for img in self.images.all():
-            img.image.storage.transfer(img.image.name)
-            img.thumbnail.storage.transfer(img.thumbnail.name)
+            try:
+                img.image.storage.transfer(img.image.name)
+                img.thumbnail.storage.transfer(img.thumbnail.name)
+            except (FileNotFoundError, IsADirectoryError):
+                pass
         self.delete_local_files()
 
     def delete_local_files(self):
