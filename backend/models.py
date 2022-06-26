@@ -376,6 +376,8 @@ class Video(models.Model):
     
     views = models.BigIntegerField(default=0)
 
+    age_restricted = models.BooleanField(default=False, blank=True)
+
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='videos')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
 

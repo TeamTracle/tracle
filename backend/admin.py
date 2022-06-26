@@ -104,7 +104,7 @@ class VideoAdmin(admin.ModelAdmin):
 
     readonly_fields = ('title_with_link', 'description', 'visibility', 'transcode_status', 'uploaded_file', 'playlist_file', 'views', 'created', 'category', 'channel_with_link')
     fieldsets = (
-        (None, {'fields': ('title_with_link', 'description', 'visibility', 'views', 'created', 'channel_with_link', 'category')}),
+        (None, {'fields': ('title_with_link', 'description', 'visibility', 'views', 'created', 'channel_with_link', 'category', 'age_restricted')}),
         (None, {'fields': ('transcode_status', 'uploaded_file', 'playlist_file')}),
     )
 
