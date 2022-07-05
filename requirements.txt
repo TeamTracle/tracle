@@ -20,7 +20,7 @@ click==8.0.3
     # via rq
 deprecated==1.2.13
     # via redis
-django==3.2.12
+django==3.2.14
     # via
     #   -r requirements.in
     #   django-appconf
@@ -126,7 +126,6 @@ six==1.16.0
     #   bleach
     #   django-cacheops
     #   django-imagekit
-    #   django-simple-captcha
     #   libsass
     #   python-memcached
 sqlparse==0.4.2
