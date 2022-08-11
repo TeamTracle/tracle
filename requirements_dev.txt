@@ -32,7 +32,7 @@ deprecated==1.2.13
     # via
     #   -r requirements.txt
     #   redis
-django==3.2.12
+django==3.2.15
     # via
     #   -r requirements.txt
     #   django-appconf
@@ -185,7 +185,6 @@ six==1.16.0
     #   bleach
     #   django-cacheops
     #   django-imagekit
-    #   django-simple-captcha
     #   libsass
     #   python-dateutil
     #   python-memcached
