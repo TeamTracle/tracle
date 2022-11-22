@@ -82,7 +82,7 @@ packaging==21.3
     #   redis
 pilkit==2.0
     # via django-imagekit
-pillow==9.0.1
+pillow==9.3.0
     # via
     #   -r requirements.in
     #   django-colorfield

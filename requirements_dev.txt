@@ -122,7 +122,7 @@ pilkit==2.0
     # via
     #   -r requirements.txt
     #   django-imagekit
-pillow==9.0.1
+pillow==9.3.0
     # via
     #   -r requirements.txt
     #   django-colorfield
