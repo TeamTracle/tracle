@@ -16,7 +16,7 @@ bunnyapi==0.1.1
     # via -r requirements.txt
 bunnycdn-storage==0.4
     # via -r requirements.txt
-certifi==2021.10.8
+certifi==2022.12.7
     # via
     #   -r requirements.txt
     #   requests
