@@ -2,7 +2,6 @@ from datetime import timedelta
 import os, string, random, magic, base64, fixedint, json, shutil
 import re
 import uuid
-import hashlib
 import time
 from io import BytesIO
 from PIL import Image as PILImage
@@ -68,7 +67,9 @@ def get_bg_image_location(instance, filename=None):
 
 def get_avatar_image_location(instance, filename=None):
     if filename:
-        return f'{instance.channel_id}/{filename}'
+        filename_base, filename_ext = os.path.split(filename)
+        timestamped_filename = f'{filename_base}{int(time.time())}.{filename_ext}'
+        return f'{instance.channel_id}/{timestamped_filename}'
     else:
         return f'{instance.channel_id}/'
 
