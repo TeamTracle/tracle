@@ -5,8 +5,6 @@ import tempfile
 
 from django.core.files.base import ContentFile
 
-from . import ffmpegprogress
-
 def ffprobe(infile):
     """ffprobe front-end."""
     return json.loads(
