@@ -155,35 +155,6 @@ RQ_QUEUES = {
     },
 }
 
-VIDEO_ENCODING_BACKEND = 'video_encoding.backends.ffmpeg.FFmpegBackend'
-VIDEO_ENCODING_THREADS = 1
-VIDEO_ENCODING_PROGRESS_UPDATE = 30
-VIDEO_ENCODING_BACKEND_PARAMS = {}
-VIDEO_ENCODING_FORMATS = {
-    'FFmpeg': [
-        {
-            'name': 'mp4_sd',
-            'extension': 'mp4',
-            'params': [
-                '-codec:v', 'libx264', '-crf', '20', '-preset', 'medium',
-                '-b:v', '1000k', '-maxrate', '1000k', '-bufsize', '2000k',
-                '-vf', 'scale=-2:480',  # http://superuser.com/a/776254
-                '-codec:a', 'aac', '-b:a', '128k', '-strict', '-2',
-            ],
-        },
-        {
-            'name': 'mp4_hd',
-            'extension': 'mp4',
-            'params': [
-                '-codec:v', 'libx264', '-crf', '20', '-preset', 'medium',
-                '-b:v', '3000k', '-maxrate', '3000k', '-bufsize', '6000k',
-                '-vf', 'scale=-2:720',
-                '-codec:a', 'aac', '-b:a', '128k', '-strict', '-2',
-            ],
-        },
-    ]
-}
-
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
