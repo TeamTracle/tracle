@@ -4,37 +4,38 @@
 #
 #    pip-compile requirements_dev.in
 #
-asgiref==3.5.0
+asgiref==3.6.0
     # via
     #   -r requirements.txt
     #   django
-autopep8==1.6.0
+async-timeout==4.0.2
+    # via
+    #   -r requirements.txt
+    #   redis
+autopep8==2.0.1
     # via django-silk
-bleach==4.1.0
+bleach==5.0.1
     # via -r requirements.txt
 bunnyapi==0.1.1
     # via -r requirements.txt
 bunnycdn-storage==0.4
     # via -r requirements.txt
-certifi==2021.10.8
+certifi==2022.12.7
     # via
     #   -r requirements.txt
     #   requests
-charset-normalizer==2.0.12
+charset-normalizer==3.0.1
     # via
     #   -r requirements.txt
     #   requests
-click==8.0.3
+click==8.1.3
     # via
     #   -r requirements.txt
     #   rq
-deprecated==1.2.13
+django==3.2.16
     # via
     #   -r requirements.txt
-    #   redis
-django==3.2.12
-    # via
-    #   -r requirements.txt
+    #   django-activity-stream
     #   django-appconf
     #   django-cacheops
     #   django-debug-toolbar
@@ -45,27 +46,27 @@ django==3.2.12
     #   django-silk
     #   django-simple-captcha
     #   djangorestframework
-django-activity-stream==0.10.0
+django-activity-stream==1.4.2
     # via -r requirements.txt
 django-appconf==1.0.5
     # via
     #   -r requirements.txt
     #   django-compressor
     #   django-imagekit
-django-cacheops==6.0
+django-cacheops==6.1
     # via -r requirements.txt
-django-colorfield==0.6.3
+django-colorfield==0.8.0
     # via -r requirements.txt
-django-compressor==3.1
+django-compressor==4.3
     # via
     #   -r requirements.txt
     #   django-compressor-autoprefixer
     #   django-libsass
 django-compressor-autoprefixer==0.1.0
     # via -r requirements.txt
-django-debug-toolbar==3.2.4
+django-debug-toolbar==3.8.1
     # via -r requirements_dev.in
-django-extensions==3.1.5
+django-extensions==3.2.1
     # via -r requirements_dev.in
 django-imagekit==4.1.0
     # via -r requirements.txt
@@ -75,105 +76,86 @@ django-ipware==4.0.2
     #   django-qsessions
 django-libsass==0.9
     # via -r requirements.txt
-django-qsessions==1.1.3
+django-qsessions==1.1.4
     # via -r requirements.txt
 django-ranged-response==0.2.0
     # via
     #   -r requirements.txt
     #   django-simple-captcha
-django-rq==2.5.1
+django-rq==2.6.0
     # via -r requirements.txt
-django-silk==4.2.0
+django-silk==5.0.3
     # via -r requirements_dev.in
-django-simple-captcha==0.5.14
+django-simple-captcha==0.5.17
     # via -r requirements.txt
-django-waffle==2.3.0
+django-waffle==3.0.0
     # via -r requirements.txt
-djangorestframework==3.13.1
+djangorestframework==3.14.0
     # via -r requirements.txt
-fixedint==0.1.6
+fixedint==0.2.0
     # via -r requirements.txt
 funcy==1.17
     # via
     #   -r requirements.txt
     #   django-cacheops
-gprof2dot==2021.2.21
+gprof2dot==2022.7.29
     # via django-silk
 gunicorn==20.1.0
     # via -r requirements.txt
-idna==3.3
+idna==3.4
     # via
     #   -r requirements.txt
     #   requests
-jinja2==3.0.3
-    # via django-silk
-libsass==0.21.0
+libsass==0.22.0
     # via
     #   -r requirements.txt
     #   django-libsass
-markupsafe==2.0.1
-    # via jinja2
-packaging==21.3
-    # via
-    #   -r requirements.txt
-    #   bleach
-    #   redis
 pilkit==2.0
     # via
     #   -r requirements.txt
     #   django-imagekit
-pillow==9.0.1
+pillow==9.4.0
     # via
     #   -r requirements.txt
     #   django-colorfield
     #   django-simple-captcha
-psutil==5.9.0
+psutil==5.9.4
     # via -r requirements.txt
-psycopg2-binary==2.9.3
+psycopg2-binary==2.9.5
     # via -r requirements.txt
-pycodestyle==2.8.0
+pycodestyle==2.10.0
     # via autopep8
-pygments==2.11.2
-    # via django-silk
-pyparsing==3.0.7
-    # via
-    #   -r requirements.txt
-    #   packaging
-python-dateutil==2.8.2
-    # via django-silk
-python-dotenv==0.19.2
+python-dotenv==0.21.1
     # via -r requirements.txt
-python-magic==0.4.25
+python-magic==0.4.27
     # via -r requirements.txt
 python-memcached==1.59
     # via -r requirements.txt
-pytz==2021.3
+pytz==2022.7.1
     # via
     #   -r requirements.txt
     #   django
-    #   django-silk
     #   djangorestframework
-rcssmin==1.1.0
+rcssmin==1.1.1
     # via
     #   -r requirements.txt
     #   django-compressor
-redis==4.1.3
+redis==4.4.2
     # via
     #   -r requirements.txt
     #   django-cacheops
     #   django-rq
     #   rq
-requests==2.27.1
+requests==2.28.2
     # via
     #   -r requirements.txt
     #   bunnyapi
     #   bunnycdn-storage
-    #   django-silk
-rjsmin==1.2.0
+rjsmin==1.2.1
     # via
     #   -r requirements.txt
     #   django-compressor
-rq==1.10.1
+rq==1.12.0
     # via
     #   -r requirements.txt
     #   django-rq
@@ -185,23 +167,20 @@ six==1.16.0
     #   bleach
     #   django-cacheops
     #   django-imagekit
-    #   django-simple-captcha
-    #   libsass
-    #   python-dateutil
     #   python-memcached
-sqlparse==0.4.2
+sqlparse==0.4.3
     # via
     #   -r requirements.txt
     #   django
     #   django-debug-toolbar
     #   django-silk
-toml==0.10.2
+tomli==2.0.1
     # via autopep8
-ua-parser==0.10.0
+ua-parser==0.16.1
     # via
     #   -r requirements.txt
     #   user-agents
-urllib3==1.26.8
+urllib3==1.26.14
     # via
     #   -r requirements.txt
     #   requests
@@ -213,14 +192,10 @@ webencodings==0.5.1
     # via
     #   -r requirements.txt
     #   bleach
-wheel==0.37.1
+wheel==0.38.4
     # via -r requirements.txt
-whitenoise==6.0.0
+whitenoise==6.3.0
     # via -r requirements.txt
-wrapt==1.13.3
-    # via
-    #   -r requirements.txt
-    #   deprecated
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
