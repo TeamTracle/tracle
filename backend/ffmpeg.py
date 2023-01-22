@@ -2,13 +2,14 @@ import sys
 import subprocess
 import os
 import tempfile
+import json
 
 from django.core.files.base import ContentFile
 
 def ffprobe(infile):
     """ffprobe front-end."""
     return json.loads(
-        sp.check_output([
+        subprocess.check_output([
             'ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_format',
             '-show_streams', infile
         ], encoding='utf-8'))
