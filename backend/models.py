@@ -27,6 +27,8 @@ from django_rq.jobs import Job
 from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFill
 
+from better_profanity import profanity
+
 import bleach
 
 from colorfield.fields import ColorField
@@ -390,6 +392,15 @@ class Video(models.Model):
 
     def __str__(self):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
+
+    def clean(self):
+        if profanity.contains_profanity(self.title) or profanity.contains_profanity(self.description):
+            self.age_restricted = True
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super().save(args, kwargs)
 
     def transcode(self):
         bvideo = BunnyVideo.objects.create(video=self)

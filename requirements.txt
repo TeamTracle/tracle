@@ -8,6 +8,8 @@ asgiref==3.6.0
     # via django
 async-timeout==4.0.2
     # via redis
+better-profanity==0.7.0
+    # via -r requirements.in
 bleach==5.0.1
     # via -r requirements.in
 bunnyapi==0.1.1

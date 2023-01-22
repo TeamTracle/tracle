@@ -28,3 +28,4 @@ django-activity-stream
 gunicorn
 whitenoise
 django-simple-captcha
+better_profanity
