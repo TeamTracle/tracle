@@ -71,6 +71,7 @@
 			  			<div class="video__details__title">[[video.title]]</div>
 			  			<div class="video__details__created">[[video.created|humanTime]]</div>
 			  			<button class="btn btn-gray" v-on:click="open_details">Edit</button>
+						<a :href="video.download_url" target="_blank">Dowload</a>
 			  		</div>
 			  	</div>
 			  	<div v-if="video.published" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
