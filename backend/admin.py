@@ -97,8 +97,8 @@ class TranscodeStatusFilter(admin.SimpleListFilter):
         return queryset
 
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('title', 'watch_id', 'created', 'transcode_status')
-    list_filter = (TranscodeStatusFilter,)
+    list_display = ('title', 'watch_id', 'created', 'transcode_status', 'age_restricted')
+    list_filter = (TranscodeStatusFilter, 'age_restricted',)
     search_fields = ('title', 'watch_id')
     ordering = ('title', 'created')
 
