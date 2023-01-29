@@ -396,11 +396,13 @@ class Video(models.Model):
     def clean(self):
         if profanity.contains_profanity(self.title) or profanity.contains_profanity(self.description):
             self.age_restricted = True
-        super().clean()
+        else:
+            self.age_restricted = False
+        return super().clean()
 
     def save(self, *args, **kwargs):
         self.clean()
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def transcode(self):
         bvideo = BunnyVideo.objects.create(video=self)

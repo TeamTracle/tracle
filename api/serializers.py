@@ -40,7 +40,7 @@ class OwnerVideoSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Video
-		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'num_likes', 'num_dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set', 'download_url']
+		fields = ['pk', 'watch_id', 'title', 'description', 'thumbnail', 'created', 'views', 'num_likes', 'num_dislikes', 'visibility', 'transcode_status', 'published', 'videostrike_set', 'download_url', 'age_restricted']
 
 
 class VideoEditSerializer(serializers.ModelSerializer):

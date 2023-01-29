@@ -74,7 +74,12 @@
 						<a :href="video.download_url" target="_blank">Download</a>
 			  		</div>
 			  	</div>
-			  	<div v-if="video.published" class="video__visibility"><i style="font-size: 1.8em;color: #333;" :class="visibility"></i></div>
+			  	<div v-if="video.published" class="video__visibility">
+					<i style="font-size: 1.8em;color: #333;" :class="visibility"></i>
+					<span v-if="video.age_restricted">
+						18+ Only
+					</span>
+				</div>
 			  	<div v-else>
 			  		<span style="color: red;"><strong>DRAFT</strong></span>
 			  	</div>
