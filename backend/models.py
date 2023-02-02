@@ -393,16 +393,16 @@ class Video(models.Model):
     def __str__(self):
         return str('{}/{}'.format(self.channel.channel_id, self.watch_id))
 
-    def clean(self):
-        if profanity.contains_profanity(self.title) or profanity.contains_profanity(self.description):
-            self.age_restricted = True
-        else:
-            self.age_restricted = False
-        return super().clean()
+    # def clean(self):
+    #     if profanity.contains_profanity(self.title) or profanity.contains_profanity(self.description):
+    #         self.age_restricted = True
+    #     else:
+    #         self.age_restricted = False
+    #     return super().clean()
 
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.clean()
+    #     super().save(*args, **kwargs)
 
     def transcode(self):
         bvideo = BunnyVideo.objects.create(video=self)
