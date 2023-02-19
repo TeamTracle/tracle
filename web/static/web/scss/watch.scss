@@ -469,6 +469,9 @@
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
+  align-items: center;
+  gap: 1em;
+  padding: 1em;
 }
 
 .report-form {
@@ -490,5 +493,22 @@
 		& > button {
 			margin-right: 1em;
 		}
+	}
+}
+
+.modal-container > .share-embed {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+
+	& > code {
+		border: 1px solid #ccc;
+	}
+}
+
+.modal-container > .share-link {
+	& > input {
+		border-color: #ccc;
+		border: 1px solid #ccc;
 	}
 }

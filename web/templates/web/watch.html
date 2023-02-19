@@ -68,7 +68,26 @@
 							<button id='btn-like' class="btn btn-gray btn-like {% if is_liked %} active {% endif %}" {% if request.user.is_authenticated %} onclick="like()" {% else %} disabled {% endif %}><i class="fas fa-thumbs-up"></i></button><button id="btn-dislike" class="btn btn-gray btn-dislike {% if is_disliked %} active {% endif %}" {% if request.user.is_authenticated %} onclick="dislike()" {% else %} disabled {% endif %}><i class="fas fa-thumbs-down"></i></button>
 						</div>
 						<button class="btn btn-gray btn-addto"><i class="fas fa-plus"></i></button>
-						<button class="btn btn-gray">Share</button>
+						<button class="btn btn-gray" onclick="showShare(event)">Share</button>
+						<!-- SHARE MODAL -->
+						<div id="share-modal" style="display: none" class="modal-mask">
+							<div class="modal-wrapper">
+								<div class="modal-container">
+									<div>Share video</div>
+									<div class="share-embed">
+										<code id="share-code">
+											&lt;iframe src="https://www.tracle.tv/embed/{{ video.watch_id }}" frameborder="0" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen="true"&gt;&lt;/iframe&gt;
+										</code>
+									</div>
+									<div class="share-link">
+										<input type="text" id="share-url" value="https://tracle.tv/watch?v={{ video.watch_id }}">
+										<button type="button" class="btn btn-gray" onclick="copyShareUrl()">Copy</button>
+									</div>
+									<button class="btn btn-gray" onclick="hideShare(event)">Close</button>
+								</div>
+							</div>
+						</div>
+						<!-- END SHARE MODAL -->
 						<button class="btn btn-gray" onclick="showReport(event)"><i class="fas fa-flag"></i></button>
 						<!-- REPORT MODAL -->
 						<div id="report-modal" style="display: none" class="modal-mask">

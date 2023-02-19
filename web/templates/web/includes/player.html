@@ -416,7 +416,26 @@
         event.preventDefault();
         var el = document.getElementById('report-modal');
         el.style.display = "table";
+    }
 
+    function hideShare(event) {
+      event.preventDefault();
+      var el = document.getElementById('share-modal');
+      el.style.display = "none";
+    }
+
+    function showShare(event) {
+      event.preventDefault();
+      var el = document.getElementById('share-modal');
+      el.style.display = "table";
+    }
+
+    function copyShareUrl() {
+      event.preventDefault();
+      var urlEl = document.getElementById('share-url');
+      urlEl.select();
+      urlEl.setSelectionRange(0, 99999); // For mobile devices
+      navigator.clipboard.writeText(urlEl.value);
     }
 
     function sendReport(event) {
