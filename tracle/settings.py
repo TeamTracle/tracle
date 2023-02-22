@@ -68,6 +68,9 @@ MIDDLEWARE = [
     'waffle.middleware.WaffleMiddleware',
 ]
 
+if 'silk' in INSTALLED_APPS:
+    MIDDLEWARE.append('silk.middleware.SilkyMiddleware')
+
 SESSION_ENGINE = 'qsessions.backends.db'
 
 if DEBUG and 'debug_toolbar' in INSTALLED_APPS:
