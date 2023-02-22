@@ -2,3 +2,8 @@
 django-debug-toolbar
 django-extensions
 django-silk
+
+pytest-django
+pytest-cov
+pdbpp
+mixer
