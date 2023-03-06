@@ -1,0 +1,52 @@
+version: "3.9"
+   
+services:
+  postgres:
+    image: postgres
+    container_name: tracle_local_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tracle_beta
+      - POSTGRES_USER=tracle
+      - POSTGRES_PASSWORD=tracle
+  
+  redis:
+    image: redis
+    container_name: tracle_local_redis
+  
+  django:
+    build: 
+      context: .
+      dockerfile: ./compose/local/Dockerfile
+    image: tracle_local_django
+    container_name: tracle_local_django
+    env_file: ./envs/local.env
+    volumes:
+      - ./src:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: /start
+  
+  django_rq:
+    image: tracle_local_django
+    container_name: tracle_local_djangorq
+    env_file: ./envs/local.env
+    volumes: 
+      - ./src:/app
+    depends_on:
+      - redis
+    command: python manage.py rqworker
+  
+  mailhog:
+    image: mailhog/mailhog
+    container_name: tracle_local_mailhog
+    ports:
+      - "8025:8025"
+
+volumes:
+  postgres_data:

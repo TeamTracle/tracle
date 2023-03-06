@@ -8,8 +8,11 @@ WORKDIR /app
 RUN apt-get update && apt-get -y -q install ffmpeg memcached
 
 RUN pip install --upgrade pip
-COPY requirements.txt .
 COPY requirements_dev.txt .
-RUN pip install -r requirements.txt -r requirements_dev.txt
+RUN pip install -r requirements_dev.txt
+
+COPY ./compose/local/start /start
+RUN sed -i 's/\r$//g' /start
+RUN chmod +x /start
 
 COPY . .
