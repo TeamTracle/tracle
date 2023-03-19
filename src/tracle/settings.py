@@ -1,7 +1,10 @@
 import os
+import sys
 
 from dotenv import load_dotenv
 from pathlib import Path
+
+from django.utils.log import ServerFormatter
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -178,44 +181,34 @@ EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.conso
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'mail@example.com')
 
 LOGGING = {
-    'version' : 1,
-    'disable_existing_loggers' : False,
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'server',
+            'stream': sys.stdout,
+        },
+    },
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
+        'server': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+        }
     },
-    'filters' : {
-        'require_debug_true' : {
-            '()' : 'django.utils.log.RequireDebugTrue',
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.environ.get('DJANGO_LOGLEVEL', 'INFO'),
+            'propagate': True,
         },
-    },
-    'handlers' : {
-        'console' : {
-            'class' : 'logging.StreamHandler',
-            'formatter' : 'simple',
-            'filters' : ['require_debug_true'],
-        },
-        'file' : {
-            'level' : os.environ.get('LOGLEVEL', 'WARNING'),
-            'class' : 'logging.FileHandler',
-            'filename' : os.path.join(BASE_DIR, 'tracle.log'),
-            'formatter' : 'verbose', 
-        },
-    },
-    'loggers' : {
-        'django' : {
-            'handlers' : ['console', 'file'],
-            'level' : os.environ.get('LOGLEVEL', 'WARNING'),
-            'propagate' : True,
+        'backend': {
+            'handlers': ['console'],
+            'level': os.environ.get('TRACLE_LOGLEVEL', 'DEBUG'),
+            'propagate': False,
         },
     },
 }
+
 
 BUNNYCDN = {
     'enabled' : os.environ.get('BUNNYCDN_ENABLED', '0') == '1',

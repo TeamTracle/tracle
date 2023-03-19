@@ -29,8 +29,12 @@ services:
     depends_on:
       - db
       - redis
-    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     command: /start
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
   
   django_rq:
     image: tracle_local_django
