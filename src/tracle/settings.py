@@ -4,8 +4,6 @@ import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
-from django.utils.log import ServerFormatter
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env_path = os.path.join(BASE_DIR, '.env')
