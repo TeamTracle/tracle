@@ -12,10 +12,24 @@ env_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(env_path):
     load_dotenv(dotenv_path=env_path)
 
-DEBUG = os.environ.get('DEBUG', '1') == '1'
+DEBUG = os.environ.get('DEBUG', '0') == '1'
 SECRET_KEY = os.environ.get('SECRET_KEY', 'SECRETDEVKEY')
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1;localhost').split(';')
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', '1') == '1'
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', '1') == '1'
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', '1') == '1'
+CSRF_COOKIE_DOMAIN = os.environ.get('CSRF_COOKIE_DOMAIN', 'localhost')
+SECURE_BROWSER_XSS_FILTER = os.environ.get('SECURE_BROWSER_XSS_FILTER', '1') == '1'
+
+CURRENT_SITE = {
+    'name' : os.environ.get('CURRENT_SITE_NAME', 'localhost'),
+    'domain' : os.environ.get('CURRENT_SITE_DOMAIN', 'localhost:8000'),
+    'protocol' : os.environ.get('CURRENT_SITE_PROTOCOL', 'http')
+}
+
 ROOT_URLCONF = 'tracle.urls'
+
+
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.sqlite3'),
@@ -164,13 +178,6 @@ RQ_QUEUES = {
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 FILE_UPLOAD_HANDLERS = ['django.core.files.uploadhandler.TemporaryFileUploadHandler']
-
-CSRF_COOKIE_DOMAIN = os.environ.get('CSRF_COOKIE_DOMAIN', 'localhost')
-CURRENT_SITE = {
-    'name' : os.environ.get('CURRENT_SITE_NAME', 'localhost'),
-    'domain' : os.environ.get('CURRENT_SITE_DOMAIN', 'localhost:8000'),
-    'protocol' : os.environ.get('CURRENT_SITE_PROTOCOL', 'http')
-}
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@example.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'PASSWORD')
