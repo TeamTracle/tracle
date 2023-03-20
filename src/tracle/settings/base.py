@@ -4,7 +4,7 @@ import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 env_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(env_path):
