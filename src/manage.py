@@ -3,9 +3,11 @@
 import os
 import sys
 
+from django.core.exceptions import ImproperlyConfigured
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tracle.settings')
+    if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+        raise ImproperlyConfigured('DJANGO_SETTINGS_MODULE is not set.')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
