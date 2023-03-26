@@ -4,8 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-python manage.py collectstatic -i '*.scss' --no-input -c
-python manage.py compress
 python manage.py rqworker &
 
-gunicorn tracle.wsgi:application --bind 0.0.0.0:8000 --reload
+gunicorn tracle.wsgi:application --bind 0.0.0.0:8000

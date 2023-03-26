@@ -20,3 +20,8 @@ RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
 COPY ./src/ .
+
+ENV DJANGO_SETTINGS_MODULE tracle.settings.production
+
+RUN python manage.py collectstatic -i '*.scss' --no-input -c
+RUN python manage.py compress
