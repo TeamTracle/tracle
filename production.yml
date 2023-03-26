@@ -1,9 +1,29 @@
 version: "3.9"
-   
+
 services:
+  traefik:
+    build:
+      context: .
+      dockerfile: ./compose/traefik/Dockerfile
+    container_name: tracle_prod_traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik-public-certificates:/certificates
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.tracle.tv`)"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.service=api@internal"
+
   redis:
     image: redis
     container_name: tracle_prod_redis
+    expose:
+      - 6379
   
   django:
     build: 
@@ -11,9 +31,17 @@ services:
       dockerfile: ./compose/production/Dockerfile
     image: tracle_prod_django
     container_name: tracle_prod_django
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.django.rule=Host(`vile.tracle.tv`)
+      - traefik.http.routers.django.tls=true
+      - traefik.http.routers.django.tls.certresolver=letsencrypt
     env_file: ./envs/production.env
     ports:
-      - "8000:8000"
+      - 8000
+    volumes:
+      - django_media:/app/media/
+      - /db.sqlite3:/app/db.sqlite3:rw
     depends_on:
       - redis
     command: /start
@@ -22,3 +50,7 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+
+volumes:
+  traefik-public-certificates:
+  django_media:
