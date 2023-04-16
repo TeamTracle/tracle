@@ -257,6 +257,9 @@ class BunnyVideo(models.Model):
     def get_preview(self):
         return f'{settings.BUNNYNET["storage_url"]}/{self.bunny_guid}/preview.webp'
 
+    def get_embed(self):
+        return f'https://iframe.mediadelivery.net/embed/{settings.BUNNYNET["library_id"]}/{self.bunny_guid}'
+
     def delete_files(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vapi.delete_video(self.bunny_guid)
