@@ -15,4 +15,4 @@ COPY ./compose/local/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY . .
+COPY ./src/ .
