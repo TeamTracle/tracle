@@ -5,3 +5,8 @@ __pycache__/
 .venv/
 .env*
 db.sqlite3
+src/static/
+.vscode/
+envs/local.env
+envs/production.env
+compose/traefik/traefik.prod.tml
