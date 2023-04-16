@@ -6,4 +6,4 @@ set -o nounset
 
 python manage.py rqworker &
 
-gunicorn tracle.wsgi:application --bind 0.0.0.0:8000
+gunicorn tracle.wsgi:application --bind 0.0.0.0:8000 -w 4
