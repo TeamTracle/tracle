@@ -19,7 +19,6 @@ services:
     build: 
       context: .
       dockerfile: ./compose/local/Dockerfile
-    image: tracle_local_django
     container_name: tracle_local_django
     env_file: ./envs/local.env
     volumes:
@@ -27,7 +26,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
       - redis
     command: /start
     logging:
@@ -35,16 +34,6 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-  
-  django_rq:
-    image: tracle_local_django
-    container_name: tracle_local_djangorq
-    env_file: ./envs/local.env
-    volumes: 
-      - ./src:/app
-    depends_on:
-      - redis
-    command: python manage.py rqworker
   
   mailhog:
     image: mailhog/mailhog
