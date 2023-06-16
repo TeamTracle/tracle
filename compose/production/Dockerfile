@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get -y -q install ffmpeg memcached curl gnupg
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get -y -q install nodejs
+RUN apt-get -y -q install npm
 
 RUN npm i -g postcss postcss-cli autoprefixer
 

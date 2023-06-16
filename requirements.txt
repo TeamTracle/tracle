@@ -12,7 +12,7 @@ better-profanity==0.7.0
     # via -r requirements.in
 bleach==5.0.1
     # via -r requirements.in
-bunnyapi==0.1.1
+bunnyapi==0.1.5
     # via -r requirements.in
 bunnycdn-storage==0.4
     # via -r requirements.in

@@ -247,6 +247,7 @@ class BunnyVideo(models.Model):
     status = models.CharField(max_length=255, choices=TranscodeStatus.choices, default=TranscodeStatus.QUEUED)
     bunny_guid = models.CharField(max_length=255, null=True, blank=True)
     video = models.OneToOneField('Video', on_delete=models.CASCADE)
+    views = models.BigIntegerField(default=0)
 
     def upload(self):
         django_rq.enqueue(tasks.bunnyvideo_upload_task, bunny_video=self)
@@ -263,6 +264,11 @@ class BunnyVideo(models.Model):
     def delete_files(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vapi.delete_video(self.bunny_guid)
+
+    def update_views(self):
+        vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
+        vstats = vapi.get_video_stats(self.bunny_guid, '1970-01-01T00:00:00Z')
+        self.views = sum(vstats['viewsChart'].values())
 
 def generate_chunked_filename(instance, filename):
     ext = '.part'

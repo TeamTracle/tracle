@@ -7,7 +7,10 @@ class VideoManager(models.Manager):
     use_for_related_fields = True
 
     def get_queryset(self):
-        return super().get_queryset().annotate(num_likes=models.Count('likes'), num_dislikes=models.Count('dislikes'))
+        return super().get_queryset().annotate(
+            num_likes=models.Count('likes'),
+            num_dislikes=models.Count('dislikes'),
+            views_sum=models.F('views') + models.F('bunnyvideo__views'))
 
     def public(self):
         qs = super().get_queryset()

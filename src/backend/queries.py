@@ -13,7 +13,12 @@ def get_user(pk):
 def get_top_videos():
 	videos = cache.get('topvideos')
 	if not videos:
-		videos = Video.objects.public().filter(age_restricted=False).annotate(like_count=Count('likes__id'), sub_count=Count('channel__subscriptions__id')).order_by('-like_count', '-sub_count', '-views', '-created')
+		videos = Video.objects.public()\
+			.filter(age_restricted=False)\
+			.annotate(
+				like_count=Count('likes__id'),
+				sub_count=Count('channel__subscriptions__id'))\
+			.order_by('-like_count', '-sub_count', '-views_sum', '-created')
 		if videos:
 			if videos.count() > 60:
 				start = random.randint(0, 40)
