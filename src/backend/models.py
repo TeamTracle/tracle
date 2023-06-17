@@ -270,6 +270,7 @@ class BunnyVideo(models.Model):
         cached_views = cache.get(f'{self.bunny_guid}_views')
         if not cached_views:
             self.update_views()
+            cache.set(f'{self.bunny_guid}_views', True)
         return self.views
 
     def update_views(self):
