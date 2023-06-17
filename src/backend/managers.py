@@ -13,7 +13,7 @@ class VideoManager(models.Manager):
             views_sum=models.F('views') + models.F('bunnyvideo__views'))
 
     def public(self):
-        qs = super().get_queryset()
+        qs = self.get_queryset()
         qs = qs.filter(visibility='PUBLIC', published=True, channel__user__banned=False, videostrike__isnull=True)
         return qs.filter(bunnyvideo__status='finished')
 
