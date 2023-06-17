@@ -33,6 +33,7 @@ from better_profanity import profanity
 import bleach
 
 from colorfield.fields import ColorField
+from requests import HTTPError
 
 from .storage import WrappedBCDNStorage
 from .fields import WrappedFileField, WrappedImageField
@@ -271,6 +272,8 @@ class BunnyVideo(models.Model):
         vapi.delete_video(self.bunny_guid)
     
     def get_views(self):
+        if not self.status == BunnyVideo.TranscodeStatus.DONE:
+            return self.views
         cached_views = cache.get(f'{self.bunny_guid}_views')
         if not cached_views:
             self.update_views()
@@ -279,9 +282,12 @@ class BunnyVideo(models.Model):
 
     def update_views(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
-        vstats = vapi.get_video_stats(self.bunny_guid, '1970-01-01T00:00:00Z')
-        self.views = sum(vstats['viewsChart'].values())
-        self.save()
+        try:
+            vstats = vapi.get_video_stats(self.bunny_guid, '1970-01-01T00:00:00Z')
+            self.views = sum(vstats['viewsChart'].values())
+            self.save()
+        except HTTPError:
+            pass
 
 def generate_chunked_filename(instance, filename):
     ext = '.part'
