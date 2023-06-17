@@ -20,6 +20,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.core.cache import cache
 
 import django_rq
 from django_rq.jobs import Job
@@ -264,11 +265,18 @@ class BunnyVideo(models.Model):
     def delete_files(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vapi.delete_video(self.bunny_guid)
+    
+    def get_views(self):
+        cached_views = cache.get(f'{self.bunny_guid}_views')
+        if not cached_views:
+            self.update_views()
+        return self.views
 
     def update_views(self):
         vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
         vstats = vapi.get_video_stats(self.bunny_guid, '1970-01-01T00:00:00Z')
         self.views = sum(vstats['viewsChart'].values())
+        self.save()
 
 def generate_chunked_filename(instance, filename):
     ext = '.part'
