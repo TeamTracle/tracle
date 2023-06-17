@@ -239,6 +239,10 @@ class Image(models.Model):
         }
 
 class BunnyVideo(models.Model):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.get_views()
+
     class TranscodeStatus(models.TextChoices):
         QUEUED = 'queued', 'Queued'
         PROCESSING = 'started', 'Processing'
