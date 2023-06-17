@@ -14,7 +14,6 @@ def get_top_videos():
 	videos = cache.get('topvideos')
 	if not videos:
 		videos = Video.objects.public()\
-			.filter(age_restricted=False)\
 			.annotate(
 				like_count=Count('likes__id'),
 				sub_count=Count('channel__subscriptions__id'))\
@@ -33,7 +32,7 @@ def get_top_videos():
 def get_latest_videos():
 	videos = cache.get('latestvideos')
 	if not videos:
-		videos = Video.objects.public().order_by('-created').filter(views__gt=10).filter(age_restricted=False)
+		videos = Video.objects.public().order_by('-created').filter(views__gt=10)
 		videos = list(videos[0:min(videos.count(), 50)])
 		for v in videos:
 			setattr(v, 'thumbnail_url', v.get_thumbnail())
@@ -45,7 +44,7 @@ def get_latest_videos():
 def get_videos_from_category(category):
 	videos = cache.get(f'{category.slug}_videos')
 	if not videos:
-		videos =  Video.objects.public().filter(category=category).filter(age_restricted=False).order_by('-created')
+		videos =  Video.objects.public().filter(category=category).order_by('-created')
 		for v in videos:
 			setattr(v, 'thumbnail_url', v.get_thumbnail())
 		cache.set(f'{category.slug}_videos', videos, timeout=3600)
@@ -53,7 +52,7 @@ def get_videos_from_category(category):
 
 
 def get_recommended_videos():
-	videos = Video.objects.public().filter(age_restricted=False)
+	videos = Video.objects.public()
 	if videos:
 		videos = list(videos)
 
