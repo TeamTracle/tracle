@@ -32,7 +32,7 @@ def get_top_videos():
 def get_latest_videos():
 	videos = cache.get('latestvideos')
 	if not videos:
-		videos = Video.objects.public().order_by('-created').filter(views__gt=10)
+		videos = Video.objects.public().order_by('-created').filter(views_sum__gt=10)
 		videos = list(videos[0:min(videos.count(), 50)])
 		for v in videos:
 			setattr(v, 'thumbnail_url', v.get_thumbnail())
