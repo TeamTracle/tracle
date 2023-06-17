@@ -39,7 +39,7 @@
                     <div class="feed__video__details">
                         <h2 class="feed__video__details__title"><a href="{% url 'web_watch' %}?v={{ video.watch_id }}">{{ video.title }}</a></h2>
                         <div class="feed__video__details__description">{{ video.description }}</div>
-                        <div class="feed__video__details__views">{{ video.views }} views</div>
+                        <div class="feed__video__details__views">{{ video.views_sum }} views</div>
                         <a href="{% url 'web_channel' video.channel.channel_id %}" class="feed__video__details__channel">{{ video.channel.name }} </a>
                         <div class="feed__video__details__timestamp">{{ video.created|naturaltime}}</div>
                     </div>

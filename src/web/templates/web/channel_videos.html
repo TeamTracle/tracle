@@ -49,7 +49,7 @@
 				<a href="{% url 'web_watch' %}?v={{ video.watch_id }}"><img class="feed__video__thumbnail" src="{{ video.get_thumbnail }}"></a>
 				<div class="feed__video__details">
 					<a class="feed__video__details__title" href="{% url 'web_watch' %}?v={{ video.watch_id }}" title="{{ video.title }}">{{ video.title }}</a>
-					<span class="feed__video__details__views">{{ video.views }} views</span><span class="feed__video__details__timestamp">{{ video.created|naturaltime }}</span>
+					<span class="feed__video__details__views">{{ video.views_sum }} views</span><span class="feed__video__details__timestamp">{{ video.created|naturaltime }}</span>
 				</div>
 			</div>
 			{% endfor %}

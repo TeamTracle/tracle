@@ -16,7 +16,7 @@
 			{% include 'web/includes/player.html' %}
 			<div class="channel-featured-video__details">
 				<a href="/watch?v={{ video.watch_id }}">{{ video.title }}</a>
-				<div>uploaded {{ video.created|naturaltime }}, {{ video.views }} views</div>
+				<div>uploaded {{ video.created|naturaltime }}, {{ video.views_sum }} views</div>
 			</div>
 		</div>
 		{% else %}
