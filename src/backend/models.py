@@ -243,6 +243,7 @@ class BunnyVideo(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.get_views()
+        self.get_views_gained()
 
     class TranscodeStatus(models.TextChoices):
         QUEUED = 'queued', 'Queued'
@@ -254,6 +255,7 @@ class BunnyVideo(models.Model):
     bunny_guid = models.CharField(max_length=255, null=True, blank=True)
     video = models.OneToOneField('Video', on_delete=models.CASCADE)
     views = models.BigIntegerField(default=0)
+    views_gained = models.BigIntegerField(default=0)
 
     def upload(self):
         django_rq.enqueue(tasks.bunnyvideo_upload_task, bunny_video=self)
@@ -287,6 +289,24 @@ class BunnyVideo(models.Model):
             self.views = sum(vstats['viewsChart'].values())
             self.save()
         except HTTPError:
+            pass
+    
+    def get_views_gained(self):
+        if not self.status == BunnyVideo.TranscodeStatus.DONE:
+            return self.views_gained
+        cached_views_gained = cache.get(f'{self.bunny_guid}_views_gained')
+        if not cached_views_gained:
+            self.update_views_gained()
+            cache.set(f'{self.bunny_guid}_views_gained', True)
+        return self.views_gained
+    
+    def update_views_gained(self):
+        vapi = VideosApi(settings.BUNNYNET['access_token'], settings.BUNNYNET['library_id'])
+        try:
+            vstats = vapi.get_video_stats(self.bunny_guid, '')
+            self.views_gained = sum(vstats['viewsChart'].values())
+            self.save()
+        except:
             pass
 
 def generate_chunked_filename(instance, filename):
