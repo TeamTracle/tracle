@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/traefik/Dockerfile
-    container_name: tracle_prod_traefik
+    container_name: tracle_staging_traefik
     ports:
       - "80:80"
       - "443:443"
@@ -21,7 +21,7 @@ services:
 
   redis:
     image: redis
-    container_name: tracle_prod_redis
+    container_name: tracle_staging_redis
     expose:
       - 6379
   
@@ -29,14 +29,14 @@ services:
     build: 
       context: .
       dockerfile: ./compose/production/Dockerfile
-    image: tracle_prod_django
-    container_name: tracle_prod_django
+    image: tracle_staging_django
+    container_name: tracle_staging_django
     labels:
       - traefik.enable=true
       - traefik.http.routers.django.rule=Host(`vile.tracle.tv`)
       - traefik.http.routers.django.tls=true
       - traefik.http.routers.django.tls.certresolver=letsencrypt
-    env_file: ./envs/production.env
+    env_file: ./envs/staging.env
     ports:
       - 8000
     volumes:
