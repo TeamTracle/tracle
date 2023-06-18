@@ -42,6 +42,9 @@ class HomeView(View):
             if category_slug == 'subscriptions':
                 videos = queries.get_sub_feed(request.channel)
                 context['selected_category'] = {'title' : 'Subscriptions', 'icon' : 'fa-list', 'slug' : 'subscriptions'}
+            elif category_slug == 'trending':
+                videos = queries.get_trending_videos()
+                context['selected_category'] = {'title': 'Trending', 'icon': 'fa-chart-bar', 'slug': 'trending'}
             else:
                 category = queries.get_category(category_slug)
                 videos = queries.get_videos_from_category(category)

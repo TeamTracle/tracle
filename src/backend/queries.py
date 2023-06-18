@@ -41,6 +41,17 @@ def get_latest_videos():
 
 	return videos
 
+def get_trending_videos():
+	videos = cache.get('trendingvideos')
+	if not videos:
+		videos = Video.objects.public().order_by('-bunnyvideo__views_gained').filter(bunnyvideo__views_gained__gt=1)
+		videos = list(videos[0:min(videos.count(), 50)])
+		for v in videos:
+			setattr(v, 'thumbnail_url', v.get_thumbnail())
+		random.shuffle(videos)
+		cache.set('trendingvideos', videos, timeout=3600)
+	return videos
+
 def get_videos_from_category(category):
 	videos = cache.get(f'{category.slug}_videos')
 	if not videos:
