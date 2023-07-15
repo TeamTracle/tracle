@@ -453,6 +453,8 @@ class Video(models.Model):
     #     super().save(*args, **kwargs)
 
     def transcode(self):
+        if self.uploaded_file.storage.using_local(self.uploaded_file.name):
+            self.transfer_files()
         bvideo = BunnyVideo.objects.create(video=self)
         bvideo.upload()
 
