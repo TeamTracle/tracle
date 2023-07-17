@@ -1,5 +1,8 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm, _unicode_ci_compare
+from django.contrib.auth.forms import (
+    ReadOnlyPasswordHashField,
+    PasswordResetForm,
+)
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth import get_user_model, authenticate
 
@@ -10,17 +13,22 @@ from colorfield.fields import color_hex_validator
 from captcha.fields import CaptchaField
 
 User = get_user_model()
+
+
 class UserAdminCreationForm(forms.ModelForm):
     """
     A form for creating new users. Includes all the required
     fields, plus a repeated password.
     """
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Password confirmation", widget=forms.PasswordInput
+    )
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ("email",)
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -44,11 +52,19 @@ class UserAdminChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     password hash display field.
     """
+
     password = ReadOnlyPasswordHashField()
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'email_confirmed', 'is_superuser', 'staff', 'banned')
+        fields = (
+            "email",
+            "password",
+            "email_confirmed",
+            "is_superuser",
+            "staff",
+            "banned",
+        )
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -58,18 +74,29 @@ class UserAdminChangeForm(forms.ModelForm):
 
 
 class SignupForm(forms.ModelForm):
-    email = forms.EmailField(max_length=254, widget=forms.EmailInput(attrs={'placeholder' : 'E-MAIL'}))
-    channel_name = forms.CharField(max_length=20, help_text='Required.', widget=forms.TextInput(attrs={'placeholder' : 'CHANNEL NAME'}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder' : 'PASSWORD'}))
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'placeholder' : 'CONFIRM PASSWORD'}))
+    email = forms.EmailField(
+        max_length=254, widget=forms.EmailInput(attrs={"placeholder": "E-MAIL"})
+    )
+    channel_name = forms.CharField(
+        max_length=20,
+        help_text="Required.",
+        widget=forms.TextInput(attrs={"placeholder": "CHANNEL NAME"}),
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "PASSWORD"})
+    )
+    password2 = forms.CharField(
+        label="Confirm password",
+        widget=forms.PasswordInput(attrs={"placeholder": "CONFIRM PASSWORD"}),
+    )
     captcha = CaptchaField()
 
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ("email",)
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get("email")
         email = email.lower()
         qs = User.objects.filter(email__iexact=email)
         if qs.exists():
@@ -85,34 +112,46 @@ class SignupForm(forms.ModelForm):
 
     def save(self, request):
         user = super(SignupForm, self).save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
+        user.set_password(self.cleaned_data["password1"])
         user.save()
-        channel = Channel.objects.create(name=self.cleaned_data.get('channel_name'), user=user)
+        Channel.objects.create(
+            name=self.cleaned_data.get("channel_name"), user=user
+        )
         # Playlist.objects.create(title='History', channel=channel)
         return user
 
+
 class SigninForm(forms.Form):
-        
-    email = forms.EmailField(max_length=254, widget=forms.EmailInput(attrs={'placeholder' : 'E-MAIL'}))
-    password = forms.CharField(widget=forms.TextInput(attrs={'type' : 'password', 'placeholder' : 'PASSWORD'}))
+    email = forms.EmailField(
+        max_length=254, widget=forms.EmailInput(attrs={"placeholder": "E-MAIL"})
+    )
+    password = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "password", "placeholder": "PASSWORD"})
+    )
 
     class Meta:
         model = User
-        fields = ('email', 'password')
+        fields = ("email", "password")
 
     def clean(self):
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
+        email = self.cleaned_data.get("email")
+        password = self.cleaned_data.get("password")
 
         if email is not None and password:
             user_cache = authenticate(username=email, password=password)
             if user_cache is None:
-                raise forms.ValidationError('Invalid email or password.', code='invalid')
+                raise forms.ValidationError(
+                    "Invalid email or password.", code="invalid"
+                )
             if user_cache.banned:
-                raise forms.ValidationError('Your account has been suspended. If you think you’ve been unjustifiably banned, please contact us. Your content will be deleted after 30 days', code='banned')
+                raise forms.ValidationError(
+                    "Your account has been suspended. If you think you’ve been unjustifiably banned, please contact us. Your content will be deleted after 30 days",
+                    code="banned",
+                )
             if not user_cache.email_confirmed:
-                raise forms.ValidationError('email address not confirmed.')
+                raise forms.ValidationError("email address not confirmed.")
         return self.cleaned_data
+
 
 class ResetPasswordForm(PasswordResetForm):
     def send_mail(self, user):
@@ -126,50 +165,72 @@ class ResetPasswordForm(PasswordResetForm):
         except User.DoesNotExist:
             pass
 
+
 class SetPasswordForm(DjangoSetPasswordForm):
     new_password1 = forms.CharField(
-        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder' : 'PASSWORD'}),
+        widget=forms.PasswordInput(
+            attrs={"autocomplete": "new-password", "placeholder": "PASSWORD"}
+        ),
         strip=False,
     )
     new_password2 = forms.CharField(
         strip=False,
-        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password', 'placeholder' : 'CONFIRM PASSWORD'}),
+        widget=forms.PasswordInput(
+            attrs={"autocomplete": "new-password", "placeholder": "CONFIRM PASSWORD"}
+        ),
     )
 
-class ChangeUserForm(forms.Form):
 
-    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'disabled' : True}))
+class ChangeUserForm(forms.Form):
+    email = forms.EmailField(
+        required=False, widget=forms.EmailInput(attrs={"disabled": True})
+    )
     channel_name = forms.CharField()
-    description = forms.CharField(required=False, max_length=5000, widget=forms.Textarea())
+    description = forms.CharField(
+        required=False, max_length=5000, widget=forms.Textarea()
+    )
 
     def save(self, instance):
-        instance.name = self.cleaned_data['channel_name']
-        instance.description = self.cleaned_data['description']
+        instance.name = self.cleaned_data["channel_name"]
+        instance.description = self.cleaned_data["description"]
         instance.save()
         return instance
+
 
 class ChangeAvatarForm(forms.ModelForm):
     class Meta:
         model = Channel
-        fields = ('avatar',)
+        fields = ("avatar",)
+
 
 class VideoDetailsForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ('title', 'description', 'category', 'visibility')
+        fields = ("title", "description", "category", "visibility")
+
 
 class ChannelBackgroundForm(forms.ModelForm):
-    avatar = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
-    desktop_image = forms.ImageField(widget=forms.FileInput(attrs={'style' : 'display: none'}), required=False)
-    color = forms.CharField(widget=forms.TextInput(attrs={'type' : 'color'}), validators=[color_hex_validator], initial='#CCCCCC')
-    desktop_image_repeat = forms.TypedChoiceField(empty_value=None, choices=ChannelBackground.RepeatChoices.choices)
+    avatar = forms.ImageField(
+        widget=forms.FileInput(attrs={"style": "display: none"}), required=False
+    )
+    desktop_image = forms.ImageField(
+        widget=forms.FileInput(attrs={"style": "display: none"}), required=False
+    )
+    color = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "color"}),
+        validators=[color_hex_validator],
+        initial="#CCCCCC",
+    )
+    desktop_image_repeat = forms.TypedChoiceField(
+        empty_value=None, choices=ChannelBackground.RepeatChoices.choices
+    )
 
     class Meta:
         model = ChannelBackground
-        exclude = ['channel']
+        exclude = ["channel"]
 
     def clean_desktop_image(self):
-        f = self.cleaned_data.get('desktop_image')
+        f = self.cleaned_data.get("desktop_image")
         if f and not self.instance.desktop_image:
-            f.name = f'bg.{f.name[-3:]}'
+            f.name = f"bg.{f.name[-3:]}"
         return f

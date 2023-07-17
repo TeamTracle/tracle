@@ -13,32 +13,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import os
 
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-handler404 = 'web.views.page_not_found_view'
-handler500 = 'web.views.server_error_view'
+handler404 = "web.views.page_not_found_view"
+handler500 = "web.views.server_error_view"
 
 urlpatterns = [
-    path('', include('web.urls')),
-    path('api/', include('api.urls')),
+    path("", include("web.urls")),
+    path("api/", include("api.urls")),
 ]
 
-urlpatterns += [path('admin/', admin.site.urls)]
-urlpatterns += [path('django-rq/', include('django_rq.urls'))]
+urlpatterns += [path("admin/", admin.site.urls)]
+urlpatterns += [path("django-rq/", include("django_rq.urls"))]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    if 'silk' in settings.INSTALLED_APPS:
-        urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
+    if "silk" in settings.INSTALLED_APPS:
+        urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
     try:
         import debug_toolbar
-        urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+
+        urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
     except ImportError:
         pass
-
-

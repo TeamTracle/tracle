@@ -1,8 +1,8 @@
+from typing import Callable
 import requests
 import os
 
 from django.conf import settings
-from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
 from django.utils.module_loading import import_string
 from django.utils.deconstruct import deconstructible
@@ -13,7 +13,6 @@ from bunnycdn_storage import bunnycdn_storage
 
 
 class LazyBackend(SimpleLazyObject):
-
     def __init__(self, import_path, options):
         backend = import_string(import_path)
         super().__init__(lambda: backend(**options))
@@ -21,13 +20,19 @@ class LazyBackend(SimpleLazyObject):
 
 @deconstructible
 class WrappedStorage(object):
-
-    local = None
+    local: "CustomFileSystemStorage"
     local_options = None
-    remote = None
+    remote: "BCDNStorage" = None
     remote_options = None
 
-    def __init__(self, local=None, remote=None, local_options=None, remote_options=None, cache_prefix='ws'):
+    def __init__(
+        self,
+        local=None,
+        remote=None,
+        local_options=None,
+        remote_options=None,
+        cache_prefix="ws",
+    ):
         self.local_path = local or self.local
         self.local_options = local_options or self.local_options or {}
         self.local = self._load_backend(self.local_path, self.local_options)
@@ -38,7 +43,7 @@ class WrappedStorage(object):
 
         self.cache_prefix = cache_prefix
 
-    def _load_backend(self, backend, options):
+    def _load_backend(self, backend, options) -> "CustomFileSystemStorage" | "BCDNStorage":
         return LazyBackend(backend, options)
 
     def get_storage(self, name):
@@ -52,7 +57,7 @@ class WrappedStorage(object):
             return self.local
 
     def get_cache_key(self, name):
-        return f'{self.cache_prefix}_{name}'
+        return f"{self.cache_prefix}_{name}"
 
     def using_local(self, name):
         return self.get_storage(name) is self.local
@@ -60,7 +65,7 @@ class WrappedStorage(object):
     def using_remote(self, name):
         return self.get_storage(name) is self.remote
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         return self.get_storage(name).open(name, mode)
 
     def save(self, name, content, max_length=None):
@@ -114,17 +119,25 @@ class WrappedStorage(object):
     def generate_filename(self, filename):
         return self.get_storage(filename).generate_filename(filename)
 
+
 @deconstructible
 class WrappedFileSystemStorage(WrappedStorage):
-    def __init__(self, local='backend.storage.CustomFileSystemStorage', *args, **kwargs):
+    def __init__(
+        self, local="backend.storage.CustomFileSystemStorage", *args, **kwargs
+    ):
         super().__init__(local=local, *args, **kwargs)
+
 
 @deconstructible
 class WrappedBCDNStorage(WrappedFileSystemStorage):
-    def __init__(self, remote='backend.storage.BCDNStorage', *args, **kwargs):
+    def __init__(self, remote="backend.storage.BCDNStorage", *args, **kwargs):
         super().__init__(remote=remote, *args, **kwargs)
 
+
 class CustomFileSystemStorage(FileSystemStorage):
+    _location: str | Callable
+    _value_or_setting: Callable
+
     @cached_property
     def location(self):
         if callable(self._location):
@@ -136,21 +149,45 @@ class CustomFileSystemStorage(FileSystemStorage):
     def base_url(self):
         if callable(self._base_url):
             self._base_url = self._base_url()
-        if self._base_url is not None and not self._base_url.endswith('/'):
-            self._base_url += '/'
+        if self._base_url is not None and not self._base_url.endswith("/"):
+            self._base_url += "/"
         return self._value_or_setting(self._base_url, settings.MEDIA_URL)
+
 
 @deconstructible
 class BCDNStorage(Storage):
-    def __init__(self, storage_zone_name=None, access_token=None, account_token=None, pullzone_url=None, debug=False):
-        self._access_token = access_token if access_token else settings.BUNNYCDN.get('access_token')
-        self._storage_zone_name = storage_zone_name if storage_zone_name else settings.BUNNYCDN.get('storage_zone_name')
-        self._account_token = account_token if account_token else settings.BUNNYCDN.get('account_token')
-        self._pullzone_url = pullzone_url if pullzone_url else settings.BUNNYCDN.get('pullzone_url')
-        self._DEBUG = debug if debug else settings.BUNNYCDN.get('debug')
-        self._bcdn = bunnycdn_storage.BunnyCDNStorage(self._storage_zone_name, self._access_token, self._pullzone_url, self._account_token, debug=debug)
+    def __init__(
+        self,
+        storage_zone_name=None,
+        access_token=None,
+        account_token=None,
+        pullzone_url=None,
+        debug=False,
+    ):
+        self._access_token = (
+            access_token if access_token else settings.BUNNYCDN.get("access_token")
+        )
+        self._storage_zone_name = (
+            storage_zone_name
+            if storage_zone_name
+            else settings.BUNNYCDN.get("storage_zone_name")
+        )
+        self._account_token = (
+            account_token if account_token else settings.BUNNYCDN.get("account_token")
+        )
+        self._pullzone_url = (
+            pullzone_url if pullzone_url else settings.BUNNYCDN.get("pullzone_url")
+        )
+        self._DEBUG = debug if debug else settings.BUNNYCDN.get("debug")
+        self._bcdn = bunnycdn_storage.BunnyCDNStorage(
+            self._storage_zone_name,
+            self._access_token,
+            self._pullzone_url,
+            self._account_token,
+            debug=debug,
+        )
 
-    def _open(self, name, mode='rb'):
+    def _open(self, name, mode="rb"):
         pass
 
     def get_available_name(self, name):
@@ -169,8 +206,7 @@ class BCDNStorage(Storage):
         return self._bcdn.object_exists(name)
 
     def url(self, name):
-        return '{}{}'.format(self._pullzone_url, name)
+        return "{}{}".format(self._pullzone_url, name)
 
     def listdir(self, name):
         return self._bcdn.get_storage_objects(name)
-

@@ -5,9 +5,10 @@ import sys
 
 from django.core.exceptions import ImproperlyConfigured
 
+
 def main():
-    if not os.environ.get('DJANGO_SETTINGS_MODULE'):
-        raise ImproperlyConfigured('DJANGO_SETTINGS_MODULE is not set.')
+    if not os.environ.get("DJANGO_SETTINGS_MODULE"):
+        raise ImproperlyConfigured("DJANGO_SETTINGS_MODULE is not set.")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -19,5 +20,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
