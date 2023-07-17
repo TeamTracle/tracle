@@ -477,7 +477,7 @@ class CommentTicketView(APIView):
             )
 
         body = request.data.get("body", "")
-        ct = CommentTicket.objects.create(
+        CommentTicket.objects.create(
             comment=comment,
             channel=request.channel,
             body=body,
@@ -499,7 +499,7 @@ class VideoTicketView(APIView):
                 {"message": "Please selet a reason."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        vt = VideoTicket.objects.create(
+        VideoTicket.objects.create(
             video=video, body=body, reason=reason, channel=request.channel
         )
         return Response({})
@@ -532,7 +532,7 @@ class NotificationsView(APIView):
     def post(self, request):
         try:
             notification = Notification.objects.get(pk=request.data.get("id"))
-        except Notification.DoesNotExist as e:
+        except Notification.DoesNotExist:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
         notification.unread = False
         notification.save()
