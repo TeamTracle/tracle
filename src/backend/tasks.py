@@ -2,10 +2,8 @@ from bunnyapi import VideosApi
 
 from django.conf import settings
 
-from backend.models import BunnyVideo
 
-
-def bunnyvideo_upload_task(bunny_video: BunnyVideo):
+def bunnyvideo_upload_task(bunny_video):
     vapi = VideosApi(settings.BUNNYNET["access_token"], settings.BUNNYNET["library_id"])
     vobj = vapi.create_video(bunny_video.video.watch_id)
     bunny_video.bunny_guid = vobj["guid"]

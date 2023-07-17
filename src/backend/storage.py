@@ -1,4 +1,3 @@
-from typing import Callable
 import requests
 import os
 
@@ -20,10 +19,10 @@ class LazyBackend(SimpleLazyObject):
 
 @deconstructible
 class WrappedStorage(object):
-    local: "CustomFileSystemStorage"
-    local_options = None
-    remote: "BCDNStorage" = None
-    remote_options = None
+    local = None
+    local_options = {}
+    remote = None
+    remote_options = {}
 
     def __init__(
         self,
@@ -43,7 +42,7 @@ class WrappedStorage(object):
 
         self.cache_prefix = cache_prefix
 
-    def _load_backend(self, backend, options) -> "CustomFileSystemStorage" | "BCDNStorage":
+    def _load_backend(self, backend, options):
         return LazyBackend(backend, options)
 
     def get_storage(self, name):
@@ -135,8 +134,6 @@ class WrappedBCDNStorage(WrappedFileSystemStorage):
 
 
 class CustomFileSystemStorage(FileSystemStorage):
-    _location: str | Callable
-    _value_or_setting: Callable
 
     @cached_property
     def location(self):
