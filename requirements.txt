@@ -22,7 +22,7 @@ charset-normalizer==3.0.1
     # via requests
 click==8.1.3
     # via rq
-django==3.2.18
+django==3.2.23
     # via
     #   -r requirements.in
     #   django-activity-stream
@@ -81,7 +81,7 @@ libsass==0.22.0
     # via django-libsass
 pilkit==2.0
     # via django-imagekit
-pillow==9.4.0
+pillow==10.0.0
     # via
     #   -r requirements.in
     #   django-colorfield
