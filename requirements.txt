@@ -81,7 +81,7 @@ libsass==0.22.0
     # via django-libsass
 pilkit==2.0
     # via django-imagekit
-pillow==9.4.0
+pillow==10.2.0
     # via
     #   -r requirements.in
     #   django-colorfield
