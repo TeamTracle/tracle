@@ -114,7 +114,7 @@ gprof2dot==2022.7.29
     # via django-silk
 gunicorn==20.1.0
     # via -r requirements.txt
-idna==3.4
+idna==3.7
     # via
     #   -r requirements.txt
     #   requests
