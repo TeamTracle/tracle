@@ -75,7 +75,7 @@ funcy==1.17
     # via django-cacheops
 gunicorn==20.1.0
     # via -r requirements.in
-idna==3.4
+idna==3.7
     # via requests
 libsass==0.22.0
     # via django-libsass
