@@ -112,7 +112,7 @@ funcy==1.17
     #   django-cacheops
 gprof2dot==2022.7.29
     # via django-silk
-gunicorn==20.1.0
+gunicorn==22.0.0
     # via -r requirements.txt
 idna==3.4
     # via
