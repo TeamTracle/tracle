@@ -241,3 +241,4 @@ wmctrl==0.4
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
