@@ -73,7 +73,7 @@ fixedint==0.2.0
     # via -r requirements.in
 funcy==1.17
     # via django-cacheops
-gunicorn==20.1.0
+gunicorn==23.0.0
     # via -r requirements.in
 idna==3.4
     # via requests
