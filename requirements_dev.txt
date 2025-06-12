@@ -38,7 +38,7 @@ click==8.1.3
     #   rq
 coverage[toml]==7.0.5
     # via pytest-cov
-django==3.2.18
+django==4.2.22
     # via
     #   -r requirements.txt
     #   django-activity-stream
@@ -182,7 +182,7 @@ redis==4.4.2
     #   django-cacheops
     #   django-rq
     #   rq
-requests==2.28.2
+requests==2.32.4
     # via
     #   -r requirements.txt
     #   bunnyapi
